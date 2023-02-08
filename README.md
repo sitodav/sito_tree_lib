@@ -1,6 +1,9 @@
 # sito_tree_lib
 typescript library for graph rendering
 
+The *tsconfig.json*, *package.json* and the */src* are relative to the librari.
+The */demo* folder is relative to the demo project (read below).
+
 The library depends on *P5js* for rendering (https://p5js.org/) that comes bundled with it (no need to include it directly
 in your project)
 
