@@ -1,0 +1,58 @@
+<div class="containerWithPadding">
+
+  <mat-accordion class="headers-align" multi>
+
+    <h4>Tree example: click on a white area to create a node. Drag a node onto another to merge them. Double click to explode and see the childs.</h4>
+    <br>
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title><b> Tree Demo : interactive, no autosize, color by cluster</b> (nodes get the same color of the father/cluster)</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-card-content>
+         
+          <div id="tree_interactive_clustercolors_noautosize" style="border-color:black; border-style: solid;">
+
+          </div> 
+
+        </mat-card-content>
+      </mat-card-content>
+
+    </mat-card>
+   
+  <br> 
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title><b> Tree Demo : interactive, autosize, color by cluster </b>(same as before, but the node gets bigger the more children it has)</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-card-content>
+         
+          <div id="tree_interactive_clustercolors_autosize" style="border-color:black; border-style: solid;">
+
+          </div> 
+
+        </mat-card-content>
+      </mat-card-content>
+
+    </mat-card>
+  <br>
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title><b> Tree Demo : readonly, autosize, color by state </b>(nodes are loaded by data and the tree is read only: drag, shrink and explode operations. The color are given by the node state)</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-card-content>
+         
+          <div id="tree_readonly_colorbystate_autosize" style="border-color:black; border-style: solid;">
+
+          </div> 
+
+        </mat-card-content>
+      </mat-card-content>
+
+    </mat-card>
+    
+  </mat-accordion>
+ 
+</div>
