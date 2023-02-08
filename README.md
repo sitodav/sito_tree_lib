@@ -13,10 +13,10 @@ Refer to the /demo folder
 little demo &amp; example of a typescript library for graph rendering (https://github.com/sitodav/sito_tree_lib)
 
 
- ![img](https://github.com/sitodav/sito_tree/blob/develop/images/Untitled.png "Optional title")
+ ![img](https://github.com/sitodav/sito_tree_lib/blob/develop/images/Untitled.png "Optional title")
  
  
- ![img](https://github.com/sitodav/sito_tree/blob/develop/images/Untitled2.png "Optional title")
+ ![img](https://github.com/sitodav/sito_tree_lib/blob/develop/images/Untitled2.png "Optional title")
  
   
 The library allows to draw trees interactively or using loading data.
