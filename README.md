@@ -7,7 +7,7 @@ in your project)
 This library is published on npm registry with the name *"sito-tree-lib"* .
 To install it just use *npm install sito-tree-lib* 
 
-# Usage Example (demo)-------------------------------------
+# Usage Example (demo)
 Refer to the /demo folder
 
 little demo &amp; example of a typescript library for graph rendering (https://github.com/sitodav/sito_tree_lib)
