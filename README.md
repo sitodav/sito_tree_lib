@@ -1,10 +1,13 @@
 # sito_tree_lib
 typescript library for graph rendering
+For the library refer to the */lib* folder 
+The */demo* folder is relative to the demo project (read below).
 
 The library depends on *P5js* for rendering (https://p5js.org/) that comes bundled with it (no need to include it directly
 in your project)
 
 This library is published on npm registry with the name *"sito-tree-lib"* .
+
 To install it just use *npm install sito-tree-lib* 
 
 # Usage Example (demo)
