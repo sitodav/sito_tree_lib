@@ -23,7 +23,7 @@ Refer to the /demo folder
  ![img](https://github.com/sitodav/sito_tree_lib/blob/develop/images/Untitled2.png "Optional title")
  
   
-The library allows to draw trees interactively or using loading data.
+The library allows to draw trees interactively and or using data (and can be set in readonly mode to just show the data underneath).
 The node color can be set according to the cluster it belongs to, or using an internal property (status) that can be linked to loading data.
 
 You can find a video for the demo here : https://youtu.be/st5lzQrSdFw
