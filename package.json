@@ -1,0 +1,16 @@
+{
+  "name": "sito-tree-lib",
+  "version": "1.0.6",
+  "description": "little library for graphs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  
+  "peerDependencies": {  
+    "@types/p5": "^1.5.0",  
+    "p5": "^0.7.3"  
+  },
+  "author": "davide sito (sitodskij)",
+  "license": "ISC"
+}
