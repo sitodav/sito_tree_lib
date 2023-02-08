@@ -16,10 +16,10 @@ To install it just use *npm install sito-tree-lib*
 Refer to the /demo folder
  
 
-
+*Color by cluster example*
  ![img](https://github.com/sitodav/sito_tree_lib/blob/develop/images/Untitled.png "Optional title")
  
- 
+ *Color by internal status example*
  ![img](https://github.com/sitodav/sito_tree_lib/blob/develop/images/Untitled2.png "Optional title")
  
   
