@@ -30,13 +30,7 @@ export class SitoTree {
 
 
 
-
-
-    
-
-    
-
-
+ 
 
 
     /***********************************                                                           ************************************
@@ -164,7 +158,7 @@ export class SitoTree {
     
 
     //this can be called only if we are sure the structures of data and nodes are the same
-    public static recursiveNodeUpdateFromData(data_element, node : SitoTreeNode, nodeschema : SitoTreeNodeSchema)
+    private static recursiveNodeUpdateFromData(data_element, node : SitoTreeNode, nodeschema : SitoTreeNodeSchema)
     { 
          
        
@@ -194,7 +188,7 @@ export class SitoTree {
     returns 1 if same structure but different status
     */
     
-    public static compareDataPathsAndTreePath(datas, tree : SitoTree, treenodeschema : SitoTreeNodeSchema) : number
+    private static compareDataPathsAndTreePath(datas, tree : SitoTree, treenodeschema : SitoTreeNodeSchema) : number
     {
         let result = 0;
         let treepaths = tree.getAllTreePaths();
@@ -245,7 +239,7 @@ export class SitoTree {
     */
 
 
-    public getAllTreePaths( ) : string[]
+    private getAllTreePaths( ) : string[]
     {
         let paths = [];
 
@@ -301,7 +295,7 @@ export class SitoTree {
 
 
      /*Same methods of two previous, but for data */
-     public static getAllDataPaths(data, treenodeschema : SitoTreeNodeSchema ) : string[]
+     private static getAllDataPaths(data, treenodeschema : SitoTreeNodeSchema ) : string[]
     {
         let paths = [];
 
@@ -322,7 +316,7 @@ export class SitoTree {
     }
 
   
-    public static dfs_visitAllDataPaths(treenodeschema : SitoTreeNodeSchema,data_elm: SitoTreeNode, pathToMyFather : string ) : string[]
+    private static dfs_visitAllDataPaths(treenodeschema : SitoTreeNodeSchema,data_elm: SitoTreeNode, pathToMyFather : string ) : string[]
     {
         let mySubPaths = [];
        
@@ -428,7 +422,7 @@ export class SitoTree {
         return node;
     }
 
- 
+    
 
 
 
@@ -440,28 +434,26 @@ export class SitoTree {
     ************************************                                                           ************************************
     ************************************                                                           ************************************/
 
+    public expandAll = () => {
+        for (let elm of this.roots) {
+            if (!elm.expanded)
+                this.triggerDoubleClick(elm.id, true);
+        }
+    }
+
+    public collapseAll = () => {
+        for (let elm of this.roots) {
+            if (elm.expanded)
+                this.triggerDoubleClick(elm.id, true);
+        }
+    }
+
     private isMouseInSketch(mouseX, mouseY, sketchRef): boolean {
         // console.log(mouseX,mouseY,sketchRef.width,sketchRef.height);
         return mouseX < sketchRef.width && mouseY < sketchRef.height;
 
     }
-
-    private expandAll = () => {
-        for (let elm of this.roots) {
-            if (!elm.expanded)
-                this.triggerDoubleClick(elm.label, true);
-        }
-    }
-
-    private collapseAll = () => {
-        for (let elm of this.roots) {
-            if (elm.expanded)
-                this.triggerDoubleClick(elm.label, true);
-        }
-    }
-
-
-
+ 
 
     private customDoubleClick = ( ) => {
 
@@ -518,27 +510,19 @@ export class SitoTree {
     }
 
 
+ 
 
+    private triggerDoubleClick = (id: string, deep: boolean) => {
 
-    private resetChildsFor = (label: string) => {
-
-        let found = this.roots.find(elm => elm.label === label)
-        if (null != found) {
-            if (found.expanded) {
-                found._applyChildStartPos();
-            }
-
-        }
-
-    }
-
-
-    private triggerDoubleClick = (label: string, deep: boolean) => {
-
-        let found = this.roots.find(elm => elm.label === label)
+        let found = this.roots.find(elm => elm.id === id)
         if (null != found) {
 
             found.expanded = !found.expanded;
+            if(found.expanded)
+            {
+                found._applyChildStartPos();
+            }
+
             if (deep && found.children != undefined && found.children.length > 0) {
                 for (let child of found.children) {
                     this.deepExpansionRecursive(child)
@@ -553,7 +537,7 @@ export class SitoTree {
     private deepExpansionRecursive = (elm: SitoTreeNode) => {
 
         elm.expanded = true;
-        //elm._applyChildStartPos();
+       
 
         if (elm.children != undefined && elm.children.length > 0) {
             for (let child of elm.children) {

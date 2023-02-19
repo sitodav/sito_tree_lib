@@ -1,6 +1,6 @@
 {
   "name": "sito-tree",
-  "version": "0.0.7",
+  "version": "0.1.2",
   "description": "little library for graphs",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "@types/p5": "^1.5.0",  
     "p5": "^0.7.3"  
   },
-  "author": "davide sito (sitodskij)",
+  "author": "davide sito (sitodskij) sitodav@gmail.com",
   "license": "ISC",
   "files": ["dist"]
 }

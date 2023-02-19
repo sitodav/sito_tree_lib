@@ -42,38 +42,25 @@ export class AppComponent implements OnInit {
     setTimeout(()=>{
       console.log("tree generation from data");
       this.tree_readOnlyStateColorsAutosize.createNewTreeFromData(this.mockedData, this.treeSchemaForMockedData,true);
-      let paths = this.tree_readOnlyStateColorsAutosize.getAllTreePaths( );
-      let dataPaths = SitoTree.getAllDataPaths(this.mockedData, this.treeSchemaForMockedData);
-      console.log("tree paths>>>>>>>>>>");
-      for(let i in paths)
-      {
-        console.log(paths[i]);
-      }
-      console.log("data paths>>>>>>>>>>>>");
-      for(let i in dataPaths)
-      {
-        console.log(dataPaths[i]);
-      }
-      console.log("Tree comparison (0 equals, 1 only status difference, 2 new set of nodes) : "+SitoTree.compareDataPathsAndTreePath(this.mockedData,this.tree_readOnlyStateColorsAutosize, this.treeSchemaForMockedData));
-      //we compare the tree with new data, same nodes but different status
-      console.log("Tree comparison (0 equals, 1 only status difference, 2 new set of nodes) : "+SitoTree.compareDataPathsAndTreePath(this.mockedData2,this.tree_readOnlyStateColorsAutosize, this.treeSchemaForMockedData));
-       //we compare the tree with new data, new nodes
-      console.log("Tree comparison (0 equals, 1 only status difference, 2 new set of nodes) : "+SitoTree.compareDataPathsAndTreePath(this.mockedData3,this.tree_readOnlyStateColorsAutosize, this.treeSchemaForMockedData));
-      
+    
      
       //CALLBACK HELL, just to debug/test , who cares
       setTimeout(()=>{
         //update only with status
         this.tree_readOnlyStateColorsAutosize.updateTreeWithData(this.mockedData2,this.treeSchemaForMockedData,true);
-
+        this.tree_readOnlyStateColorsAutosize.expandAll();
         setTimeout( () =>{
            //now we really update, this will recreate the tree because the nodes are different
           this.tree_readOnlyStateColorsAutosize.updateTreeWithData(this.mockedData,this.treeSchemaForMockedData,true);
+          this.tree_readOnlyStateColorsAutosize.collapseAll();
         },16000);
 
       },6000);
      
     },3000);
+
+
+
     
 
   }
