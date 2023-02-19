@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 ////import { SitoTree } from './sito_tree/sito_tree.class';
 //import { SitoTreeNodeSchema } from './sito_tree/sito_treenodeschema';
-import {SitoTree} from 'sito-tree-lib/dist'
-import {SitoTreeNodeSchema} from 'sito-tree-lib/dist'
+import {SitoTree} from 'sito-tree/dist'
+import {SitoTreeNodeSchema} from 'sito-tree/dist'
 
 @Component({
   selector: 'app-root',
@@ -41,6 +41,12 @@ export class AppComponent implements OnInit {
    
     setTimeout(()=>{
       this.tree_readOnlyStateColorsAutosize.generateTreesFromData(this.mockedData, this.treeSchemaForMockedData);
+      let paths = this.tree_readOnlyStateColorsAutosize.getAllTreePaths( );
+      for(let i in paths)
+      {
+        console.log(paths[i]);
+      }
+     
     },3000);
     
 
@@ -56,43 +62,44 @@ export class AppComponent implements OnInit {
   
 
   public mockedData = [
-    {
+    
+    { //1 root node (lvl 0) , path A
       status: "COMPLETED_SUCCESS", taskId: "...2sd", children:
         [
-          {
-            status: "RUNNING", taskId: "...dax", children:
+          { // 1 child (lvl1), path A->B
+            status: "RUNNING", taskId: "...dax", children: 
               [
-                {
+                { //1 child (lvl2) , path A-B-C
                   status: "CREATED", taskId: "...111", children:
                     [
-                      { status: "COMPLETED_SUCCESS", taskId: "...kdj" },
-                      { status: "COMPLETED_ERROR", taskId: "...dfs" }
+                      { status: "COMPLETED_SUCCESS", taskId: "...kdj" }, //1 child (lvl3), path A->B->C->D
+                      { status: "COMPLETED_ERROR", taskId: "...dfs" } //2 child (lvl3), path A->B->C->E
                     ]
                 }
               ]
           }
         ]
     },
-    {
+    { //2nd root (lvl 0)  , path A1
       status: "COMPLETED_SUCCESS", taskId: "...aaa", children:
         [
-          { status: "COMPLETED_SUCCESS", taskId: "...kdj" },
-          { status: "COMPLETED_SUCCESS", taskId: "...kdj" },
-          {
+          { status: "COMPLETED_SUCCESS", taskId: "...kdj" }, //1 child (lvl1) , path A1->B1
+          { status: "COMPLETED_SUCCESS", taskId: "...kdj" }, //2 child (lvl1), path A1->C1
+          {                                                  //3 child (lvl1) , path A1->D1
             status: "RUNNING", taskId: "...bbb", children:
-              [
-                {
+              [             
+                {                                               //1 child (lvl2) , path A1->D1->E1
                   status: "CREATED", taskId: "...ccc", children:
                     [
-                      { status: "COMPLETED_SUCCESS", taskId: "...ddd" },
-                      { status: "COMPLETED_ERROR", taskId: "...eee" }
+                      { status: "COMPLETED_SUCCESS", taskId: "...ddd" }, //1 child (lvl3), path A1->D1->E1->F1
+                      { status: "COMPLETED_ERROR", taskId: "...eee" } //2 child (lvl3), path A1->D1->E1->G1
                     ]
                 },
-                {
+                {                                             //2 child (lvl2) path A1->D1->H1
                   status: "CREATED", taskId: "...ccc", children:
                     [
-                      { status: "COMPLETED_SUCCESS", taskId: "...ddd" },
-                      { status: "COMPLETED_ERROR", taskId: "...eee" }
+                      { status: "COMPLETED_SUCCESS", taskId: "...ddd" }, //1 child (lvl 3), path A1->D1->H1->I1
+                      { status: "COMPLETED_ERROR", taskId: "...eee" } //2 child (lvl 4), path A1->D1->H1->L1
                     ]
                 }
               ]
