@@ -1,6 +1,10 @@
-# sito_tree_lib
-typescript library for graph rendering
-For the library refer to the */lib* folder 
+# sito_tree_lib 
+typescript library for graph rendering.
+
+**(NB: the name for the library on the npm registry is "sito-tree" not "sito-tree-lib" anymore)**
+
+For the library refer to the */lib* folder. 
+
 The */demo* folder is relative to the demo project (read below).
 
 The library depends on *P5js* for rendering (https://p5js.org/) that comes bundled with it (no need to include it directly
@@ -8,21 +12,22 @@ in your project)
 
 This library is published on npm registry with the name *"sito-tree-lib"* .
 
-To install it just use *npm install sito-tree-lib* 
+To install it just use *npm install sito-tree* 
 
 # Usage Example (demo)
 Refer to the /demo folder
+ 
 
-little demo &amp; example of a typescript library for graph rendering (https://github.com/sitodav/sito_tree_lib)
-
+*Color by cluster example*
 
  ![img](https://github.com/sitodav/sito_tree_lib/blob/develop/images/Untitled.png "Optional title")
  
+ *Color by internal status example*
  
  ![img](https://github.com/sitodav/sito_tree_lib/blob/develop/images/Untitled2.png "Optional title")
  
   
-The library allows to draw trees interactively or using loading data.
+The library allows to draw trees interactively and or using data (and can be set in readonly mode to just show the data underneath).
 The node color can be set according to the cluster it belongs to, or using an internal property (status) that can be linked to loading data.
 
 You can find a video for the demo here : https://youtu.be/st5lzQrSdFw
