@@ -1,5 +1,6 @@
 # sito_tree_lib 
 **(NB: the name for the library on the npm registry is "sito-tree" not "sito-tree-lib" anymore)**
+
 typescript library for graph rendering.
 
 
