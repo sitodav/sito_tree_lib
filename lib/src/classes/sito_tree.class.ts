@@ -45,63 +45,8 @@ export class SitoTree {
     ************************************                                                           ************************************
     ************************************                                                           ************************************/
 
-    /*Method used to get a snapshot for the internal structure.
-    So the tree knows when it only has to update the nodes status, or must recreate the structure because
-    the input data requires new nodes */
-    getAllTreePaths( ) : string[]
-    {
-        let paths = [];
 
-        if(this.roots)
-        {
-            for(let ir in  this.roots)
-            {
-                let rootsPaths  = this.dfs_visitAllPaths( this.roots[ir],"");
-                for(let ip in rootsPaths)
-                {
-                    paths.push(rootsPaths[ip]);
-                }
-               
-            }
-        }
-
-        return paths;
-    }
-
-    /*depth first search visit 
-    returns all the paths in the form
-    [
-        NODE_ID[STATUS]->NODE_ID[STATUS]->NODE_ID[STATUS],
-        NODE_ID[STATUS]->NODE_ID[STATUS]->NODE_ID[STATUS],
-        NODE_ID[STATUS]->NODE_ID[STATUS]->NODE_ID[STATUS],
-    ]
-    */
-    private dfs_visitAllPaths(node: SitoTreeNode, pathToMyFather : string ) : string[]
-    {
-        let mySubPaths = [];
-       
-        let pathToMe = pathToMyFather + "->"+node.id+"["+node.status+"]";
-        if(!node.children || node.children.length == 0) //no children, I am leaf, path completed
-        {
-            mySubPaths.push(pathToMe);
-        }
-        else //otherwise i have children, so my subpath will only be my path + children continuation until leaves
-        {
-            for(let ichild in node.children)
-            {
-                let children = node.children[ichild];
-                
-                let childrenpaths = this.dfs_visitAllPaths(children,pathToMe);
-                for(let kcp in childrenpaths)
-                {
-                    mySubPaths.push(childrenpaths[kcp]);
-                }
-            }
-        }
-
-        return mySubPaths;
-    }
-    //this takes in input a list of objects (to be mapped into nodes)
+     //this takes in input a list of objects (to be mapped into nodes)
     //that are roots. Every roots has a reference property that contains
     //a list of children, in a recursive manner (composite/tree like pattern)
     //every node must be uniquely identifiable
@@ -134,10 +79,12 @@ export class SitoTree {
       textproperty : "taskId",
     };
     */
-    generateTreesFromData(data: any, nodeschema: SitoTreeNodeSchema) {
+      
+    public createNewTreeFromData(data: any, nodeschema: SitoTreeNodeSchema, debug : boolean) {
         
         let newroots = [];
-        console.log("generating from data for "+this.containerDivId);
+        if(debug)
+            console.log("generating from data for "+this.containerDivId);
         //for every outer object in the data list we will have roots
         for (let i in data) {
             //create the node
@@ -167,59 +114,247 @@ export class SitoTree {
         this.reorderChilds();
         this.nativeP5SketchRef.loop(1);
     }
+    
 
-
-    /*this takes the same form and schema as the generate tree from data, but if the data is already present
-    and the snapshot for the tree is the same (this means that the structures doesn't need to be updated)
-    only update the internal states for the nodes, without recreating it.
-    If it has not data, or if the structure is changed , it calls the generateTreeFromData
-    In the first case is way faster, and you should use this for graph updates */
-    updateTreeData(data: any, nodeschema: SitoTreeNodeSchema) {
+    public updateTreeWithData(data: any, nodeschema: SitoTreeNodeSchema, debug :boolean) {
 
         //data is empty, so we call the generateTreeFromData
         if(!this.roots || this.roots.length == 0)
-        {
-            this.generateTreesFromData(data,nodeschema);
+        {   
+            if(debug)
+            {
+                console.log("no nodes, generating anew");
+            }
+            this.createNewTreeFromData(data,nodeschema,debug);
             return;
         }
-        //otherwise we want to only update the internal status
-        let newroots = [];
-        console.log("generating from data for "+this.containerDivId);
-        //for every outer object in the data list we will have roots
-        for (let i in data) {
-            //create the node
-            let idfornode = data[i][nodeschema.idproperty];
-            let labelfornode = data[i][nodeschema.textproperty];
-            let nodestatus = data[i][nodeschema.statusproperty];
-            //roots are created on the left, and the vertical allign is based on the index
-            let rootnode = this.createNewNode(100, 100 + parseInt(i) * 200, labelfornode, idfornode, nodestatus)
-            //save the root node
-            newroots.push(rootnode);
-            //check recursively on children
-            if (data[i][nodeschema.childrenproperty] &&
-                data[i][nodeschema.childrenproperty].length > 0) {
-                //link the children to father
-                let childrendatas = data[i][nodeschema.childrenproperty];
-                for (let j in childrendatas) {
-                    let children = this.recursiveNodeGeneration(rootnode, childrendatas[j], nodeschema);
-                    this.appendNodeTo(children, rootnode);
-                }
 
+        let comparison = SitoTree.compareDataPathsAndTreePath(data,this,nodeschema);
+        if(comparison == 0)
+        {   
+            if(debug)
+                console.log("tree and data represent the same tree structure and status, nothing to do")
+            return ; //nothing, the three doesn't have to be updated
+        }
+        else if(comparison == -1)
+        {
+            if(debug)
+             console.log("tree and data represent different node. Need to generate anew from data");
+
+            this.createNewTreeFromData(data,nodeschema,debug); //full re-generation for tree (the data represents a new tree)
+        }
+        else
+        {   
+            if(debug)
+                console.log("Tree and data only different in status. Updating status on every node from data");
+
+            if(this.roots)
+            {
+                for(let i in this.roots)
+                {
+                    SitoTree.recursiveNodeUpdateFromData(data[i],this.roots[i],nodeschema);
+                }
+            }
+
+            return;
+        }
+         
+    }
+
+    
+
+    //this can be called only if we are sure the structures of data and nodes are the same
+    public static recursiveNodeUpdateFromData(data_element, node : SitoTreeNode, nodeschema : SitoTreeNodeSchema)
+    { 
+         
+       
+        
+        if(!node.children || node.children.length == 0) //no children, I am leaf, path completed
+        {
+            node.status = data_element[nodeschema.statusproperty];
+        }
+        else //otherwise i have children, so my subpath will only be my path + children continuation until leaves
+        {
+            for(let ichild in node.children)
+            {
+                let childrenTreeNode = node.children[ichild];
+                let childrenDataNode = data_element[nodeschema.childrenproperty][ichild];
+                this.recursiveNodeUpdateFromData(childrenDataNode,childrenTreeNode, nodeschema);
+                
             }
         }
-        this.roots = newroots;
-        //native drawing (we trigger the sketch updates)
-        this.restoreRoots(); //this is used just to update cluster colors (if we are using cluster color)
-        this.updateRays();
-        this.reorderChilds();
-        this.nativeP5SketchRef.loop(1);
+
+        
     }
+
+    
+    /*
+    returns 0 if equals
+    returns -1 if completely different in structure
+    returns 1 if same structure but different status
+    */
+    
+    public static compareDataPathsAndTreePath(datas, tree : SitoTree, treenodeschema : SitoTreeNodeSchema) : number
+    {
+        let result = 0;
+        let treepaths = tree.getAllTreePaths();
+        let dataPaths = SitoTree.getAllDataPaths(datas,treenodeschema);
+        //comparing
+        if((!treepaths && !dataPaths) || (treepaths.length == 0 && dataPaths.length == 0))
+            result = 0;
+        else if(treepaths.length != dataPaths.length) 
+        {
+             result = -1;
+        }   
+        else
+        {   
+            let different = false;
+            for(let i in treepaths)
+            {
+                if(treepaths[i] != dataPaths[i])
+                {
+                    different = true;
+                    break;
+                }
+            }
+            if(!different)
+                result = 0;
+            else
+            {
+                different = false;
+                for(let i in treepaths)
+                {
+                    if(treepaths[i].replaceAll(/\[(.*?)\]/g,"?") != dataPaths[i].replaceAll(/\[(.*?)\]/g,"?"))
+                    {
+                        different = true;
+                        break;
+                    }
+                }
+                if(!different)
+                    result = 1;
+                else
+                    result = 1;
+            }
+        }
+        return result;
+    }
+
+      /*Method used to get a snapshot for the internal structure.
+    So the tree knows when it only has to update the nodes status, or must recreate the structure because
+    the input data requires new nodes 
+    */
+
+
+    public getAllTreePaths( ) : string[]
+    {
+        let paths = [];
+
+        if(this.roots)
+        {
+            for(let ir in  this.roots)
+            {
+                let rootsPaths  = this.dfs_visitAllTreePaths( this.roots[ir],"");
+                for(let ip in rootsPaths)
+                {
+                    paths.push(rootsPaths[ip]);
+                }
+               
+            }
+        }
+
+        return paths;
+    }
+
+    /*depth first search visit 
+    returns all the paths in the form
+    [
+        NODE_ID[STATUS]->NODE_ID[STATUS]->NODE_ID[STATUS],
+        NODE_ID[STATUS]->NODE_ID[STATUS]->NODE_ID[STATUS],
+        NODE_ID[STATUS]->NODE_ID[STATUS]->NODE_ID[STATUS],
+    ]
+    */
+    private dfs_visitAllTreePaths(node: SitoTreeNode, pathToMyFather : string ) : string[]
+    {
+        let mySubPaths = [];
+       
+        let pathToMe = pathToMyFather + "->"+node.id+"["+node.status+"]";
+        if(!node.children || node.children.length == 0) //no children, I am leaf, path completed
+        {
+            mySubPaths.push(pathToMe);
+        }
+        else //otherwise i have children, so my subpath will only be my path + children continuation until leaves
+        {
+            for(let ichild in node.children)
+            {
+                let children = node.children[ichild];
+                
+                let childrenpaths = this.dfs_visitAllTreePaths(children,pathToMe);
+                for(let kcp in childrenpaths)
+                {
+                    mySubPaths.push(childrenpaths[kcp]);
+                }
+            }
+        }
+
+        return mySubPaths;
+    }
+
+
+     /*Same methods of two previous, but for data */
+     public static getAllDataPaths(data, treenodeschema : SitoTreeNodeSchema ) : string[]
+    {
+        let paths = [];
+
+        if(data)
+        {
+            for(let ir in data)
+            {
+                let rootsPaths  = SitoTree.dfs_visitAllDataPaths(treenodeschema, data[ir],"");
+                for(let ip in rootsPaths)
+                {
+                    paths.push(rootsPaths[ip]);
+                }
+               
+            }
+        }
+
+        return paths;
+    }
+
+  
+    public static dfs_visitAllDataPaths(treenodeschema : SitoTreeNodeSchema,data_elm: SitoTreeNode, pathToMyFather : string ) : string[]
+    {
+        let mySubPaths = [];
+       
+        let pathToMe = pathToMyFather + "->"+data_elm[treenodeschema.idproperty]+"["+data_elm[treenodeschema.statusproperty]+"]";
+        if(!data_elm[treenodeschema.childrenproperty] || data_elm[treenodeschema.childrenproperty].length == 0) //no children, I am leaf, path completed
+        {
+            mySubPaths.push(pathToMe);
+        }
+        else //otherwise i have children, so my subpath will only be my path + children continuation until leaves
+        {
+            for(let ichild in data_elm[treenodeschema.childrenproperty])
+            {
+                let children = data_elm[treenodeschema.childrenproperty][ichild];
+                
+                let childrenpaths = this.dfs_visitAllDataPaths(treenodeschema,children,pathToMe);
+                for(let kcp in childrenpaths)
+                {
+                    mySubPaths.push(childrenpaths[kcp]);
+                }
+            }
+        }
+
+        return mySubPaths;
+    }
+
+   
 
 
     
     //this simply create a new node and returns it,
     //the new node will be alone, so a single root, with no children and no father
-    createNewNode(xpos, ypos, label, id, status) {
+    public createNewNode(xpos, ypos, label, id, status) {
         let newRoot = SitoTreeNode._builder(
             this.nativeP5SketchRef.createVector(xpos, ypos),
             50,
@@ -251,7 +386,7 @@ export class SitoTree {
     //source (the node to append)
     //target (where to append)
    
-    appendNodeTo(source: any, target: any ) {
+    public appendNodeTo(source: any, target: any ) {
  
         source.isRoot = false;
         let oldfatherDragged = source.father;
@@ -305,20 +440,20 @@ export class SitoTree {
     ************************************                                                           ************************************
     ************************************                                                           ************************************/
 
-    isMouseInSketch(mouseX, mouseY, sketchRef): boolean {
+    private isMouseInSketch(mouseX, mouseY, sketchRef): boolean {
         // console.log(mouseX,mouseY,sketchRef.width,sketchRef.height);
         return mouseX < sketchRef.width && mouseY < sketchRef.height;
 
     }
 
-    expandAll = () => {
+    private expandAll = () => {
         for (let elm of this.roots) {
             if (!elm.expanded)
                 this.triggerDoubleClick(elm.label, true);
         }
     }
 
-    collapseAll = () => {
+    private collapseAll = () => {
         for (let elm of this.roots) {
             if (elm.expanded)
                 this.triggerDoubleClick(elm.label, true);
@@ -328,7 +463,7 @@ export class SitoTree {
 
 
 
-    customDoubleClick = ( ) => {
+    private customDoubleClick = ( ) => {
 
         for (let i in this.roots) {
             let found = this.roots[i]._checkMouseIn(this.nativeP5SketchRef.mouseX, this.nativeP5SketchRef.mouseY);
@@ -347,7 +482,7 @@ export class SitoTree {
     }
 
 
-    removeById = (id, els) => {
+    private removeById = (id, els) => {
         console.log("removing by id");
         for (let i in els) {
             if (id == els[i].id) {
@@ -358,7 +493,7 @@ export class SitoTree {
     }
 
 
-    restoreRoots = () => {
+    private restoreRoots = () => {
         let newRoots = [];
         for (let i in this.roots) {
             if (this.roots[i].isRoot)
@@ -370,13 +505,13 @@ export class SitoTree {
     }
 
 
-    updateRays = () => {
+    private updateRays = () => {
         for (let i in this.roots) {
             this.roots[i]._updateRay();
         }
     }
 
-    reorderChilds = () => {
+    private  reorderChilds = () => {
         for (let i in this.roots) {
             this.roots[i]._reorderChilds();
         }
@@ -385,7 +520,7 @@ export class SitoTree {
 
 
 
-    resetChildsFor = (label: string) => {
+    private resetChildsFor = (label: string) => {
 
         let found = this.roots.find(elm => elm.label === label)
         if (null != found) {
@@ -398,7 +533,7 @@ export class SitoTree {
     }
 
 
-    triggerDoubleClick = (label: string, deep: boolean) => {
+    private triggerDoubleClick = (label: string, deep: boolean) => {
 
         let found = this.roots.find(elm => elm.label === label)
         if (null != found) {
@@ -415,7 +550,7 @@ export class SitoTree {
 
     }
 
-    deepExpansionRecursive = (elm: SitoTreeNode) => {
+    private deepExpansionRecursive = (elm: SitoTreeNode) => {
 
         elm.expanded = true;
         //elm._applyChildStartPos();
@@ -428,7 +563,7 @@ export class SitoTree {
 
     }
 
-    static createPalette = (_url) => {
+    public static createPalette = (_url) => {
         let slash_index = _url.lastIndexOf('/');
         let pallate_str = _url.slice(slash_index + 1);
         let arr = pallate_str.split('-');
@@ -483,7 +618,7 @@ export class SitoTree {
 
         //p5js other native functions
         _p5sketch.mouseMoved = () => {
-            _p5sketch.loop();
+            //_p5sketch.loop();
         }
 
 

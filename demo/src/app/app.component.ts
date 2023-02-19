@@ -40,12 +40,38 @@ export class AppComponent implements OnInit {
   ngAfterViewInit(): void {
    
     setTimeout(()=>{
-      this.tree_readOnlyStateColorsAutosize.generateTreesFromData(this.mockedData, this.treeSchemaForMockedData);
+      console.log("tree generation from data");
+      this.tree_readOnlyStateColorsAutosize.createNewTreeFromData(this.mockedData, this.treeSchemaForMockedData,true);
       let paths = this.tree_readOnlyStateColorsAutosize.getAllTreePaths( );
+      let dataPaths = SitoTree.getAllDataPaths(this.mockedData, this.treeSchemaForMockedData);
+      console.log("tree paths>>>>>>>>>>");
       for(let i in paths)
       {
         console.log(paths[i]);
       }
+      console.log("data paths>>>>>>>>>>>>");
+      for(let i in dataPaths)
+      {
+        console.log(dataPaths[i]);
+      }
+      console.log("Tree comparison (0 equals, 1 only status difference, 2 new set of nodes) : "+SitoTree.compareDataPathsAndTreePath(this.mockedData,this.tree_readOnlyStateColorsAutosize, this.treeSchemaForMockedData));
+      //we compare the tree with new data, same nodes but different status
+      console.log("Tree comparison (0 equals, 1 only status difference, 2 new set of nodes) : "+SitoTree.compareDataPathsAndTreePath(this.mockedData2,this.tree_readOnlyStateColorsAutosize, this.treeSchemaForMockedData));
+       //we compare the tree with new data, new nodes
+      console.log("Tree comparison (0 equals, 1 only status difference, 2 new set of nodes) : "+SitoTree.compareDataPathsAndTreePath(this.mockedData3,this.tree_readOnlyStateColorsAutosize, this.treeSchemaForMockedData));
+      
+     
+      //CALLBACK HELL, just to debug/test , who cares
+      setTimeout(()=>{
+        //update only with status
+        this.tree_readOnlyStateColorsAutosize.updateTreeWithData(this.mockedData2,this.treeSchemaForMockedData,true);
+
+        setTimeout( () =>{
+           //now we really update, this will recreate the tree because the nodes are different
+          this.tree_readOnlyStateColorsAutosize.updateTreeWithData(this.mockedData,this.treeSchemaForMockedData,true);
+        },16000);
+
+      },6000);
      
     },3000);
     
@@ -93,6 +119,99 @@ export class AppComponent implements OnInit {
                     [
                       { status: "COMPLETED_SUCCESS", taskId: "...ddd" }, //1 child (lvl3), path A1->D1->E1->F1
                       { status: "COMPLETED_ERROR", taskId: "...eee" } //2 child (lvl3), path A1->D1->E1->G1
+                    ]
+                },
+                {                                             //2 child (lvl2) path A1->D1->H1
+                  status: "CREATED", taskId: "...ccc", children:
+                    [
+                      { status: "COMPLETED_SUCCESS", taskId: "...ddd" }, //1 child (lvl 3), path A1->D1->H1->I1
+                      { status: "COMPLETED_ERROR", taskId: "...eee" } //2 child (lvl 4), path A1->D1->H1->L1
+                    ]
+                }
+              ]
+          }
+        ]
+    }
+  ];
+
+  //same nodes as mockedData, but different status
+  public mockedData2 = [
+    
+    { //1 root node (lvl 0) , path A
+      status: "RUNNING", taskId: "...2sd", children:
+        [
+          { // 1 child (lvl1), path A->B
+            status: "RUNNING", taskId: "...dax", children: 
+              [
+                { //1 child (lvl2) , path A-B-C
+                  status: "RUNNING", taskId: "...111", children:
+                    [
+                      { status: "RUNNING", taskId: "...kdj" }, //1 child (lvl3), path A->B->C->D
+                      { status: "COMPLETED_ERROR", taskId: "...dfs" } //2 child (lvl3), path A->B->C->E
+                    ]
+                }
+              ]
+          }
+        ]
+    },
+    { //2nd root (lvl 0)  , path A1
+      status: "RUNNING", taskId: "...aaa", children:
+        [
+          { status: "RUNNING", taskId: "...kdj" }, //1 child (lvl1) , path A1->B1
+          { status: "RUNNING", taskId: "...kdj" }, //2 child (lvl1), path A1->C1
+          {                                                  //3 child (lvl1) , path A1->D1
+            status: "RUNNING", taskId: "...bbb", children:
+              [             
+                {                                               //1 child (lvl2) , path A1->D1->E1
+                  status: "RUNNING", taskId: "...ccc", children:
+                    [
+                      { status: "COMPLETED_SUCCESS", taskId: "...ddd" }, //1 child (lvl3), path A1->D1->E1->F1
+                      { status: "COMPLETED_SUCCESS", taskId: "...eee" } //2 child (lvl3), path A1->D1->E1->G1
+                    ]
+                },
+                {                                             //2 child (lvl2) path A1->D1->H1
+                  status: "CREATED", taskId: "...ccc", children:
+                    [
+                      { status: "COMPLETED_SUCCESS", taskId: "...ddd" }, //1 child (lvl 3), path A1->D1->H1->I1
+                      { status: "COMPLETED_ERROR", taskId: "...eee" } //2 child (lvl 4), path A1->D1->H1->L1
+                    ]
+                }
+              ]
+          }
+        ]
+    }
+  ];
+
+
+  //different nodes
+  public mockedData3 = [
+    
+    { //1 root node (lvl 0) , path A
+      status: "COMPLETED_SUCCESS", taskId: "...2sd", children:
+        [
+          { // 1 child (lvl1), path A->B
+            status: "RUNNING", taskId: "...dax", children: 
+              [
+                { //1 child (lvl2) , path A-B-C
+                  status: "RUNNING", taskId: "...111"   
+                }
+              ]
+          }
+        ]
+    },
+    { //2nd root (lvl 0)  , path A1
+      status: "COMPLETED_SUCCESS", taskId: "...aaa", children:
+        [
+          { status: "COMPLETED_SUCCESS", taskId: "...kdj" }, //1 child (lvl1) , path A1->B1
+          { status: "COMPLETED_SUCCESS", taskId: "...kdj" }, //2 child (lvl1), path A1->C1
+          {                                                  //3 child (lvl1) , path A1->D1
+            status: "COMPLETED_ERROR", taskId: "...bbb", children:
+              [             
+                {                                               //1 child (lvl2) , path A1->D1->E1
+                  status: "CREATED", taskId: "...ccc", children:
+                    [
+                      { status: "COMPLETED_SUCCESS", taskId: "...ddd" }, //1 child (lvl3), path A1->D1->E1->F1
+                      { status: "COMPLETED_SUCCESS", taskId: "...eee" } //2 child (lvl3), path A1->D1->E1->G1
                     ]
                 },
                 {                                             //2 child (lvl2) path A1->D1->H1

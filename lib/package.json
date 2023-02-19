@@ -1,6 +1,6 @@
 {
   "name": "sito-tree",
-  "version": "0.0.2",
+  "version": "0.0.7",
   "description": "little library for graphs",
   "main": "index.js",
   "scripts": {
