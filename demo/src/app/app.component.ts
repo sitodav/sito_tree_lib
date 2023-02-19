@@ -41,17 +41,16 @@ export class AppComponent implements OnInit {
    
     setTimeout(()=>{
       console.log("tree generation from data");
-      this.tree_readOnlyStateColorsAutosize.createNewTreeFromData(this.mockedData, this.treeSchemaForMockedData,true);
-    
-     
+      this.tree_readOnlyStateColorsAutosize.loadData(this.mockedData, this.treeSchemaForMockedData,true);
+
       //CALLBACK HELL, just to debug/test , who cares
       setTimeout(()=>{
         //update only with status
-        this.tree_readOnlyStateColorsAutosize.updateTreeWithData(this.mockedData2,this.treeSchemaForMockedData,true);
+        this.tree_readOnlyStateColorsAutosize.loadData(this.mockedData2,this.treeSchemaForMockedData,true);
         this.tree_readOnlyStateColorsAutosize.expandAll();
         setTimeout( () =>{
            //now we really update, this will recreate the tree because the nodes are different
-          this.tree_readOnlyStateColorsAutosize.updateTreeWithData(this.mockedData,this.treeSchemaForMockedData,true);
+          this.tree_readOnlyStateColorsAutosize.loadData(this.mockedData3,this.treeSchemaForMockedData,true);
           this.tree_readOnlyStateColorsAutosize.collapseAll();
         },16000);
 

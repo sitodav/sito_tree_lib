@@ -74,7 +74,56 @@ export class SitoTree {
     };
     */
       
-    public createNewTreeFromData(data: any, nodeschema: SitoTreeNodeSchema, debug : boolean) {
+   
+    
+
+    public loadData(data: any, nodeschema: SitoTreeNodeSchema, debug :boolean) {
+
+        //data is empty, so we call the generateTreeFromData
+        if(!this.roots || this.roots.length == 0)
+        {   
+            if(debug)
+            {
+                console.log("no nodes, generating anew");
+            }
+            this.createNewNodesStructure(data,nodeschema,debug);
+            return;
+        }
+
+        let comparison = SitoTree.compareDataPathsAndTreePath(data,this,nodeschema);
+        if(comparison == 0)
+        {   
+            if(debug)
+                console.log("tree and data represent the same tree structure and status, nothing to do")
+            return ; //nothing, the three doesn't have to be updated
+        }
+        else if(comparison == -1)
+        {
+            if(debug)
+             console.log("tree and data represent different node. Need to generate anew from data");
+
+            this.createNewNodesStructure(data,nodeschema,debug); //full re-generation for tree (the data represents a new tree)
+        }
+        else
+        {   
+            if(debug)
+                console.log("Tree and data only different in status. Updating status on every node from data");
+
+            if(this.roots)
+            {
+                for(let i in this.roots)
+                {
+                    SitoTree.recursiveNodeUpdateFromData(data[i],this.roots[i],nodeschema);
+                }
+            }
+
+            return;
+        }
+         
+    }
+
+
+    private createNewNodesStructure(data: any, nodeschema: SitoTreeNodeSchema, debug : boolean) {
         
         let newroots = [];
         if(debug)
@@ -108,53 +157,6 @@ export class SitoTree {
         this.reorderChilds();
         this.nativeP5SketchRef.loop(1);
     }
-    
-
-    public updateTreeWithData(data: any, nodeschema: SitoTreeNodeSchema, debug :boolean) {
-
-        //data is empty, so we call the generateTreeFromData
-        if(!this.roots || this.roots.length == 0)
-        {   
-            if(debug)
-            {
-                console.log("no nodes, generating anew");
-            }
-            this.createNewTreeFromData(data,nodeschema,debug);
-            return;
-        }
-
-        let comparison = SitoTree.compareDataPathsAndTreePath(data,this,nodeschema);
-        if(comparison == 0)
-        {   
-            if(debug)
-                console.log("tree and data represent the same tree structure and status, nothing to do")
-            return ; //nothing, the three doesn't have to be updated
-        }
-        else if(comparison == -1)
-        {
-            if(debug)
-             console.log("tree and data represent different node. Need to generate anew from data");
-
-            this.createNewTreeFromData(data,nodeschema,debug); //full re-generation for tree (the data represents a new tree)
-        }
-        else
-        {   
-            if(debug)
-                console.log("Tree and data only different in status. Updating status on every node from data");
-
-            if(this.roots)
-            {
-                for(let i in this.roots)
-                {
-                    SitoTree.recursiveNodeUpdateFromData(data[i],this.roots[i],nodeschema);
-                }
-            }
-
-            return;
-        }
-         
-    }
-
     
 
     //this can be called only if we are sure the structures of data and nodes are the same
