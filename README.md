@@ -1,6 +1,7 @@
-# sito_tree_lib
+# sito_tree_lib 
 typescript library for graph rendering.
 
+**(NB: the name for the library on the npm registry is "sito-tree" not "sito-tree-lib" anymore)**
 For the library refer to the */lib* folder. 
 
 The */demo* folder is relative to the demo project (read below).
