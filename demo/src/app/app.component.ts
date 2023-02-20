@@ -47,6 +47,7 @@ export class AppComponent implements OnInit {
       setTimeout(()=>{
         //update only with status
         this.tree_readOnlyStateColorsAutosize.loadData(this.mockedData2,this.treeSchemaForMockedData,true);
+        this.tree_readOnlyStateColorsAutosize.highlightNode("...2sd","#ff0020");
         this.tree_readOnlyStateColorsAutosize.expandAll();
         setTimeout( () =>{
            //now we really update, this will recreate the tree because the nodes are different
@@ -64,7 +65,8 @@ export class AppComponent implements OnInit {
 
   }
 
-
+ /*
+ the schema is used to know which structural keys use to compose the tree from data */
   public treeSchemaForMockedData: SitoTreeNodeSchema = {
     statusproperty: "status",
     idproperty: "taskId",
@@ -72,7 +74,7 @@ export class AppComponent implements OnInit {
     textproperty: "taskId",
   };
   
-
+  /*the data must be nested. Then it can have different properties, the schema will map them */
   public mockedData = [
     
     { //1 root node (lvl 0) , path A

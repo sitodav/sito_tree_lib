@@ -13,6 +13,7 @@ export class SitoTreeNode {
     public children = [];
     public goToCenter = null;
     public orderInfather = 0;
+    public borderHightlightColor = undefined;
     //public justInitialized = true;
 
 
@@ -75,7 +76,7 @@ export class SitoTreeNode {
             this.p5NativeSketchRef.fill(this.colorByCluster);
         else
             this.p5NativeSketchRef.fill(this.colorByStateMap[this.status]);
-
+      
         //node border based on having children or not
         if(this.children && this.children.length > 0)
         {
@@ -88,7 +89,12 @@ export class SitoTreeNode {
             this.p5NativeSketchRef.strokeWeight(1);
         }
         this.p5NativeSketchRef.ellipse(0, 0, this.ray, this.ray);
-
+        if(this.borderHightlightColor)
+        {
+            this.p5NativeSketchRef.noFill();
+            this.p5NativeSketchRef.stroke(this.borderHightlightColor);
+            this.p5NativeSketchRef.ellipse(0, 0, this.ray+10, this.ray+10);
+        }
         this.p5NativeSketchRef.strokeWeight(0.5);
         this.p5NativeSketchRef.fill(255, 255);
         this.p5NativeSketchRef.textSize(14);

@@ -346,7 +346,77 @@ export class SitoTree {
 
    
 
+    public highlightNode(nodeId,color)
+    {
+        if(this.roots)
+        {   
+            for(let i in this.roots)
+            {
+                if(this.highlightNodRecursive(this.roots[i],nodeId,color))
+                    break;
+            }
+        }
+        
+    }
 
+    private highlightNodRecursive(node, nodeId,color) : boolean
+    {
+        if(node.id == nodeId)
+        {
+            node.borderHightlightColor = color;
+            return true;
+        }
+        if(node.children)
+        {
+            for(let i in node.children)
+            {
+                if(this.highlightNodRecursive(node.children[i],nodeId,color))
+                    return true;
+            }
+        }
+     
+
+        return false;
+      
+    }
+
+    public highlightOnlyRoots(color)
+    {
+        if(this.roots)
+        {
+            for(let i in this.roots)
+            {
+                this.roots[i].borderHightlightColor = color;
+            }
+        }
+        
+    }
+
+    public removeAllhightlits()
+    {
+        if(this.roots)
+        {
+            for(let i in this.roots)
+            {
+                this.removeAllhightlitsRecurs(this.roots[i]   );
+            }
+        }
+        
+    }
+
+    public removeAllhightlitsRecurs(node)
+    {
+        node.highlightNode = undefined;
+        if(node.children)
+        {
+            for(let i in node.children)
+            {
+                this.removeAllhightlitsRecurs(node.children[i]);
+            }
+        }
+     
+        
+    }
     
     //this simply create a new node and returns it,
     //the new node will be alone, so a single root, with no children and no father
