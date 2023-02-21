@@ -478,6 +478,39 @@ export class SitoTree {
      
         
     }
+
+    public findRootForNode( id)
+    {
+        let foundRoot;
+        if(this.roots)
+        {
+            for(let i in this.roots)
+            {
+                let t = this.findIdRecursive(this.roots[i],id);
+                if(t)
+                    return t;
+            }
+        }
+
+        return null; 
+
+    }
+
+    private findIdRecursive(node, nodeId)
+    {
+        if(node.id == nodeId)
+            return node;
+        if(node.children)
+        {
+            for(let i in node.children)
+            {
+                let t = this.findIdRecursive(node.children[i],nodeId);
+                if(t)
+                    return t;
+            }
+        }
+        return null;
+    }
     
     //this simply create a new node and returns it,
     //the new node will be alone, so a single root, with no children and no father
@@ -556,7 +589,7 @@ export class SitoTree {
     }
 
     
-
+    
 
 
 
