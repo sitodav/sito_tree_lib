@@ -18,6 +18,7 @@ export class SitoTree {
     canvasWidth: number;
     canvasHeight: number;
     hidden : boolean = false;
+    addedCallback   = {}
 
     /*If using colorByClusterPalettes , we want a single color, and this will be 
     passend to the childs of the cluster 
@@ -84,7 +85,10 @@ export class SitoTree {
     */
       
    
-    
+    public addCallback( type : string, callback : Function)
+    {
+        this.addedCallback[type] = callback;
+    }
     public empty()
     {
         this.roots.length = 0;
@@ -785,7 +789,12 @@ export class SitoTree {
 
         //allowed only in readOnly == false mode
         _p5sketch.mouseClicked = (e) => {
-          
+            
+            if(this.addedCallback["mouseClicked"])
+            {
+                this.addedCallback["mouseClicked"](e,this,this.draggedNode);
+            }
+
             if (this.readOnly) //no new node creation allowed
                 return;
 
@@ -843,6 +852,12 @@ export class SitoTree {
                 this.draggedNode.center = _p5sketch.createVector(_p5sketch.mouseX, _p5sketch.mouseY);
                 this.draggedNode.goToCenter = this.draggedNode.center.copy();
             }
+
+            if(this.addedCallback["mouseDragged"])
+            {
+                this.addedCallback["mouseDragged"](this,this.draggedNode);
+            }
+
             _p5sketch.loop(1);
         }
 
