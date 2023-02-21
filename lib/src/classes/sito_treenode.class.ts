@@ -73,10 +73,20 @@ export class SitoTreeNode {
         this.p5NativeSketchRef.stroke(0, 0, 0, 120);
 
         if (this.colorByCluster)
+        {
             this.p5NativeSketchRef.fill(this.colorByCluster);
+        }
         else
-            this.p5NativeSketchRef.fill(this.colorByStateMap[this.status]);
-      
+        {
+            try{
+                this.p5NativeSketchRef.fill(this.colorByStateMap[this.status]);
+            }
+            catch( ex)
+            {
+                this.p5NativeSketchRef.fill(this.colorByStateMap["DEFAULT"]);
+            }
+            
+        }
         //node border based on having children or not
         if(this.children && this.children.length > 0)
         {

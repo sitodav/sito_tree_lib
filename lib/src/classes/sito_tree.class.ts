@@ -85,6 +85,10 @@ export class SitoTree {
       
    
     
+    public empty()
+    {
+        this.roots.length = 0;
+    }
 
     public loadData(data: any, nodeschema: SitoTreeNodeSchema, debug :boolean) {
 
@@ -213,13 +217,9 @@ export class SitoTree {
     private static recursiveNodeUpdateFromData(data_element, node : SitoTreeNode, nodeschema : SitoTreeNodeSchema)
     { 
          
-       
+        node.status = data_element[nodeschema.statusproperty];
         
-        if(!node.children || node.children.length == 0) //no children, I am leaf, path completed
-        {
-            node.status = data_element[nodeschema.statusproperty];
-        }
-        else //otherwise i have children, so my subpath will only be my path + children continuation until leaves
+        if( node.children && node.children.length > 0) //no children, I am leaf, path completed
         {
             for(let ichild in node.children)
             {
@@ -229,6 +229,7 @@ export class SitoTree {
                 
             }
         }
+        
 
         
     }
@@ -753,15 +754,18 @@ export class SitoTree {
         //p5js draw function
         _p5sketch.draw = ( ) => {
 
+            _p5sketch.background("#fffffff");
             if(this.hidden)
-                return;
+            {
+
+            }
             if (this.isDoubleClicked) {
 
                 this.customDoubleClick();
                 this.isDoubleClicked = false;
               
             }
-            _p5sketch.background("#fffffff");
+            
             for (let i in this.roots) {
                 this.roots[i]._draw();
             }
