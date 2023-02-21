@@ -263,7 +263,7 @@ export class SitoTree {
                     break;
                 }
             }
-            if(!different)
+            if(!different) 
                 result = 0;
             else
             {
@@ -279,7 +279,7 @@ export class SitoTree {
                 if(!different)
                     result = 1;
                 else
-                    result = 1;
+                    result = -1;
             }
         }
         return result;
