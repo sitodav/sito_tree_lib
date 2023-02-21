@@ -30,6 +30,9 @@ export class SitoTreeNode {
 
     public _draw = () => {
 
+        if(!this.status)
+            return;
+            
         //movement
         if (!this.isDragged)
             this.center = this.p5NativeSketchRef.createVector(this.center.x + (this.goToCenter.x - this.center.x) * 0.1, this.center.y + (this.goToCenter.y - this.center.y) * 0.1);
