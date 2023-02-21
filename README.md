@@ -42,4 +42,7 @@ You can find a video for the demo here : https://youtu.be/st5lzQrSdFw
 - ng serve --port=4201
 - connect to http://localhost:4201
 
+
+-------
+*Version 0.3.7 : added horizontal and vertical layout for trees generated via data loading*
  
