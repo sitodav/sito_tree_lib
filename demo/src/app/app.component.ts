@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 //import { SitoTreeNodeSchema } from './sito_tree/sito_treenodeschema';
 import {SitoTree} from 'sito-tree/dist'
 import {SitoTreeNodeSchema} from 'sito-tree/dist'
+import { SitoForestLayout_Horizontal, SitoForestLayout_Vertical } from 'sito-tree/dist/classes/sito_forest_layout';
 
 @Component({
   selector: 'app-root',
@@ -22,6 +23,27 @@ export class AppComponent implements OnInit {
     "SCHEDULED": "#bfbfbf"
   };
 
+  forest_layout_hor : SitoForestLayout_Horizontal =
+  {
+    numOfColumns: 2,
+    verticalReservedSpaceForTree: 400,
+    paddingLeft: 100,
+    paddingTop: 100,
+    paddingRight: 100,
+    paddingBottom: 100
+  }
+
+  forest_layout_vert : SitoForestLayout_Vertical =
+  {
+    numOfRows: 2,
+    horizontalReservedSpaceForTree: 400,
+    paddingLeft: 100,
+    paddingTop: 100,
+    paddingRight: 100,
+    paddingBottom: 100
+  }
+
+
   //mocked data 
 
   tree_interactiveClustercolorsNoautosize: SitoTree;
@@ -34,7 +56,7 @@ export class AppComponent implements OnInit {
     console.log("ngOnInit");
     this.tree_interactiveClustercolorsNoautosize = new SitoTree('tree_interactive_clustercolors_noautosize', false, this.paletteForClusterColor, null, false);
     this.tree_interactiveClustercolorsAutosize = new SitoTree('tree_interactive_clustercolors_autosize', false, this.paletteForClusterColor, null, true);
-    this.tree_readOnlyStateColorsAutosize = new SitoTree('tree_readonly_colorbystate_autosize', true, null, this.palettesForStateColor, true);
+    this.tree_readOnlyStateColorsAutosize = new SitoTree('tree_readonly_colorbystate_autosize', true, null, this.palettesForStateColor, true,   this.forest_layout_hor, /*this.forest_layout_vert */null);
 
    }
   ngAfterViewInit(): void {
@@ -43,19 +65,19 @@ export class AppComponent implements OnInit {
       console.log("tree generation from data");
       this.tree_readOnlyStateColorsAutosize.loadData(this.mockedData, this.treeSchemaForMockedData,true);
 
-      //CALLBACK HELL, just to debug/test , who cares
-      setTimeout(()=>{
-        //update only with status
-        this.tree_readOnlyStateColorsAutosize.loadData(this.mockedData2,this.treeSchemaForMockedData,true);
-        this.tree_readOnlyStateColorsAutosize.highlightNode("...2sd","#ff0020");
-        this.tree_readOnlyStateColorsAutosize.expandAll();
-        setTimeout( () =>{
-           //now we really update, this will recreate the tree because the nodes are different
-          this.tree_readOnlyStateColorsAutosize.loadData(this.mockedData3,this.treeSchemaForMockedData,true);
-          this.tree_readOnlyStateColorsAutosize.collapseAll();
-        },16000);
+      // //CALLBACK HELL, just to debug/test , who cares
+      // setTimeout(()=>{
+      //   //update only with status
+      //   this.tree_readOnlyStateColorsAutosize.loadData(this.mockedData2,this.treeSchemaForMockedData,true);
+      //   this.tree_readOnlyStateColorsAutosize.highlightNode("...2sd","#ff0020");
+      //   this.tree_readOnlyStateColorsAutosize.expandAll();
+      //   setTimeout( () =>{
+      //      //now we really update, this will recreate the tree because the nodes are different
+      //     this.tree_readOnlyStateColorsAutosize.loadData(this.mockedData3,this.treeSchemaForMockedData,true);
+      //     this.tree_readOnlyStateColorsAutosize.collapseAll();
+      //   },16000);
 
-      },6000);
+      // },6000);
      
     },3000);
 

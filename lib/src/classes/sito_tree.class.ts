@@ -1,5 +1,6 @@
  
 import * as p5 from "p5";
+import { SitoForestLayout_Horizontal, SitoForestLayout_Vertical } from "./sito_forest_layout";
 import { SitoTreeNode } from "./sito_treenode.class";
 import { SitoTreeNodeSchema } from "./sito_treenodeschema";
 
@@ -16,14 +17,22 @@ export class SitoTree {
     nativeP5SketchRef = undefined;
     canvasWidth: number;
     canvasHeight: number;
+    hidden : boolean = false;
 
     /*If using colorByClusterPalettes , we want a single color, and this will be 
     passend to the childs of the cluster 
     /*Otherwise if we use colorByStateMap we want a map STATE:color 
     and the color of a node will change according to the internal node state, instead of via inheritance of father's color */
-
-    constructor(public containerDivId,public readOnly: boolean,
-        public colorByClusterPalettes, public colorByStateMap, public sizeBasedOnNumChildren :boolean) {
+   /*the forests layout are used to define how to distribute different roots for different trees */
+   //horizontal layout feels a grid horizontally  (first row first column, first row secondo clumn until the rows is completed
+   //to the max specified column number, then it start on the second row etc, keeping the specified row reserved space) giving a space to each root for a different tree
+   //vertical layout fills first column first row, first column second row..untin the row is completed to the specified max , then it starts
+   //with the following column, keeping a reserved space for each column
+   //NB: forest layout make sense only for tree created for data, otherwise the node will be placed where the user click on the canvas!!
+    constructor(public containerDivId, public readOnly: boolean,
+        public colorByClusterPalettes, public colorByStateMap, public sizeBasedOnNumChildren :boolean, 
+        public horizontal_layout? : SitoForestLayout_Horizontal,
+        public vertical_layout ? : SitoForestLayout_Vertical) {
 
         this.p5wrapper = new p5(this.sketchDefinitionFunction);
     }
@@ -86,7 +95,7 @@ export class SitoTree {
             {
                 console.log("no nodes, generating anew");
             }
-            this.createNewNodesStructure(data,nodeschema,debug);
+            this.createNewNodesStructureFromDataLoading( data,nodeschema,debug);
             return;
         }
 
@@ -102,7 +111,7 @@ export class SitoTree {
             if(debug)
              console.log("tree and data represent different node. Need to generate anew from data");
 
-            this.createNewNodesStructure(data,nodeschema,debug); //full re-generation for tree (the data represents a new tree)
+            this.createNewNodesStructureFromDataLoading(data,nodeschema,debug); //full re-generation for tree (the data represents a new tree)
         }
         else
         {   
@@ -123,7 +132,8 @@ export class SitoTree {
     }
 
 
-    private createNewNodesStructure(data: any, nodeschema: SitoTreeNodeSchema, debug : boolean) {
+    /*the forests layout are used to define how to distribute different roots for different trees */
+    private createNewNodesStructureFromDataLoading( data: any, nodeschema: SitoTreeNodeSchema, debug : boolean) {
         
         let newroots = [];
         if(debug)
@@ -134,8 +144,42 @@ export class SitoTree {
             let idfornode = data[i][nodeschema.idproperty];
             let labelfornode = data[i][nodeschema.textproperty];
             let nodestatus = data[i][nodeschema.statusproperty];
+            /*If horizontal layout is given it will try to dispose horizontally,
+            otherwise it will use vertical layout if given
+            otherwise it will just set them at start of window going down*/
+            let xPos = 0;
+            let yPos = 0;
+            if(this.horizontal_layout)
+            {
+                let columnReservedSpace = (this.nativeP5SketchRef.windowWidth - this.horizontal_layout.paddingLeft - this.horizontal_layout.paddingRight) 
+                 / this.horizontal_layout.numOfColumns;
+
+                let hIndex = (this.strip( i ))%this.strip(this.horizontal_layout.numOfColumns);
+                xPos = this.horizontal_layout.paddingLeft + hIndex * columnReservedSpace;
+                xPos = xPos + 0.5 * columnReservedSpace; //we center it in the reserved space horizontally
+                let vIndex = parseInt(""+this.strip( i )/this.strip(this.horizontal_layout.numOfColumns));
+                yPos = this.horizontal_layout.paddingTop + vIndex * this.horizontal_layout.verticalReservedSpaceForTree;
+                yPos = yPos + 0.5 * this.horizontal_layout.verticalReservedSpaceForTree;
+            }
+            else if(this.vertical_layout)
+            {
+                let rowsReservedSpace = (this.nativeP5SketchRef.windowHeight - this.vertical_layout.paddingTop - this.vertical_layout.paddingBottom) 
+                    / this.vertical_layout.numOfRows;
+
+                let vIndex = this.strip( i )%this.strip(this.vertical_layout.numOfRows);
+                yPos = this.vertical_layout.paddingTop + vIndex * rowsReservedSpace;
+                yPos = yPos + 0.5 * rowsReservedSpace; //we center it in the reserved space vertically
+                let hIndex = parseInt(""+this.strip( i )/this.strip(this.vertical_layout.numOfRows));
+                xPos = this.vertical_layout.paddingLeft + hIndex * this.vertical_layout.horizontalReservedSpaceForTree;
+                xPos = xPos + 0.5 * this.vertical_layout.horizontalReservedSpaceForTree;
+            }
+            else
+            {
+                xPos = 100;
+                yPos = 100 + parseInt(i) * 200;
+            }
             //roots are created on the left, and the vertical allign is based on the index
-            let rootnode = this.createNewNode(100, 100 + parseInt(i) * 200, labelfornode, idfornode, nodestatus)
+            let rootnode = this.createNewNode( xPos, yPos, labelfornode, idfornode, nodestatus)
             //save the root node
             newroots.push(rootnode);
             //check recursively on children
@@ -158,6 +202,12 @@ export class SitoTree {
         this.nativeP5SketchRef.loop(1);
     }
     
+    //to avoid rounding error on index
+    private strip(number:any) : any{
+        return (parseFloat(number).toPrecision(12));
+    }
+
+ 
 
     //this can be called only if we are sure the structures of data and nodes are the same
     private static recursiveNodeUpdateFromData(data_element, node : SitoTreeNode, nodeschema : SitoTreeNodeSchema)
@@ -345,6 +395,17 @@ export class SitoTree {
     }
 
    
+    public hide()
+    {
+        this.hidden = true;
+        this.nativeP5SketchRef.loop(1);
+    }
+    public show()
+    {
+        this.hidden = false;
+        this.nativeP5SketchRef.loop(1);
+    }
+
 
     public highlightNode(nodeId,color)
     {
@@ -406,7 +467,7 @@ export class SitoTree {
 
     public removeAllhightlitsRecurs(node)
     {
-        node.highlightNode = undefined;
+        node.borderHightlightColor = undefined;
         if(node.children)
         {
             for(let i in node.children)
@@ -478,7 +539,7 @@ export class SitoTree {
         let labelfornode = childdata[nodeschema.textproperty];
         let nodestatus = childdata[nodeschema.statusproperty];
         //use the same vertical align of the father , and move orizontally
-        let node = this.createNewNode(Math.random() * 500, father.goToCenter.x + 100, labelfornode, idfornode, nodestatus)
+        let node = this.createNewNode(Math.random() * 500, father.goToCenter.y + 100, labelfornode, idfornode, nodestatus)
 
         //check recursively on children
         if (childdata[nodeschema.childrenproperty] &&
@@ -658,7 +719,9 @@ export class SitoTree {
 
         //p5js draw function
         _p5sketch.draw = ( ) => {
-            
+
+            if(this.hidden)
+                return;
             if (this.isDoubleClicked) {
 
                 this.customDoubleClick();

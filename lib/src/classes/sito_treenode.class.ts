@@ -36,7 +36,7 @@ export class SitoTreeNode {
 
         if (null != this.father && !this.father.expanded)
             return;
-
+         
 
         //drawing the line connecting the node with the father
         if (null != this.father) {
@@ -91,15 +91,17 @@ export class SitoTreeNode {
         this.p5NativeSketchRef.ellipse(0, 0, this.ray, this.ray);
         if(this.borderHightlightColor)
         {
+            this.p5NativeSketchRef.strokeWeight(3);
             this.p5NativeSketchRef.noFill();
             this.p5NativeSketchRef.stroke(this.borderHightlightColor);
             this.p5NativeSketchRef.ellipse(0, 0, this.ray+10, this.ray+10);
         }
         this.p5NativeSketchRef.strokeWeight(0.5);
-        this.p5NativeSketchRef.fill(255, 255);
+        this.p5NativeSketchRef.fill(0, 255);
         this.p5NativeSketchRef.textSize(14);
-        this.p5NativeSketchRef.stroke(255, 255);
-        this.p5NativeSketchRef.text( this.label, 0, 0);
+        this.p5NativeSketchRef.stroke(0, 255);
+        let labelToShow = this.label.substring(0,Math.min(3,this.label.length))+"...";
+        this.p5NativeSketchRef.text( labelToShow, 0, 0);
         //if the node has children we will write the num of children 
         if(this.children && this.children.length > 0)
         {   
