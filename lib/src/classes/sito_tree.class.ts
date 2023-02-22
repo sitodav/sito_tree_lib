@@ -790,9 +790,18 @@ export class SitoTree {
         //allowed only in readOnly == false mode
         _p5sketch.mouseClicked = (e) => {
             
-            if(this.addedCallback["mouseClicked"])
+            let amInExisting = false;
+            let found ;
+            for (let i in this.roots) {
+                found = this.roots[i]._checkMouseIn(_p5sketch.mouseX, _p5sketch.mouseY);
+                amInExisting = found;
+                if (found)
+                    break;
+            }
+
+            if(this.addedCallback["mouseClicked"] && found)
             {
-                this.addedCallback["mouseClicked"](e,this,this.draggedNode);
+                this.addedCallback["mouseClicked"](e,this,found);
             }
 
             if (this.readOnly) //no new node creation allowed
@@ -805,13 +814,7 @@ export class SitoTree {
                 return;
 
             //console.log("CLICKED");
-            let amInExisting = false;
-            for (let i in this.roots) {
-                let found = this.roots[i]._checkMouseIn(_p5sketch.mouseX, _p5sketch.mouseY);
-                amInExisting = found;
-                if (found)
-                    break;
-            }
+            
 
             if (amInExisting)
                 return;
