@@ -108,6 +108,7 @@ export class SitoTreeNode {
             this.p5NativeSketchRef.noFill();
             this.p5NativeSketchRef.stroke(this.borderHightlightColor);
             this.p5NativeSketchRef.ellipse(0, 0, this.ray+10, this.ray+10);
+            this.p5NativeSketchRef.ellipse(0, 0, this.ray+20, this.ray+20);
         }
         this.p5NativeSketchRef.strokeWeight(0.5);
         this.p5NativeSketchRef.fill(0, 255);
