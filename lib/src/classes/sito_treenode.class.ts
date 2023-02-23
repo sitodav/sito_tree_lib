@@ -6,7 +6,7 @@ export class SitoTreeNode {
 
    
     public expanded = false;
-    public father = null;
+    public fathers = null;
     public isRoot = false;
     public isDragged = false;
     public internalAngleRotation = 0;
@@ -37,28 +37,46 @@ export class SitoTreeNode {
         if (!this.isDragged)
             this.center = this.p5NativeSketchRef.createVector(this.center.x + (this.goToCenter.x - this.center.x) * 0.1, this.center.y + (this.goToCenter.y - this.center.y) * 0.1);
 
-        if (null != this.father && !this.father.expanded)
-            return;
+        let atLeastOneFatherExpanded = false;
+        if(this.fathers && this.fathers.length > 0) //if i have one or more fathers and they are all collapsed, i don't draw 
+        {
+            for(let i in this.fathers)
+            {
+                if(this.fathers[i].expanded)
+                {
+                    atLeastOneFatherExpanded = true;
+                    break;
+                }
+            }
+            if (!atLeastOneFatherExpanded)
+                return;
+        }
+        
+       
          
 
         //drawing the line connecting the node with the father
-        if (null != this.father) {
+        //only for expanded fathers
+        if (null != this.fathers) {
 
-            /*if (this.colorByCluster)
-                this.p5NativeSketchRef.stroke(this.father.colorByCluster);
-            else
-                this.p5NativeSketchRef.stroke(this.father.colorByStateMap[this.father.status]);*/
-            this.p5NativeSketchRef.stroke(0,0,0,255);
+            for(let i in this.fathers)
+            {
+                if(this.fathers[i].expanded)
+                {
 
-            this.p5NativeSketchRef.line(this.father.center.x, this.father.center.y, this.center.x, this.center.y);
-            this.p5NativeSketchRef.push();
-            this.p5NativeSketchRef.strokeWeight(2);
-            let angle = this.p5NativeSketchRef.atan2((this.center.y - this.father.center.y), (this.center.x - this.father.center.x));
-            this.p5NativeSketchRef.translate(this.center.x - this.p5NativeSketchRef.cos(angle) * this.ray * 0.5, this.center.y - this.p5NativeSketchRef.sin(angle) * this.ray * 0.5);
-            this.p5NativeSketchRef.rotate(angle);
-            this.p5NativeSketchRef.line(0, 0, -5, -5);
-            this.p5NativeSketchRef.line(0, 0, -5, 5);
-            this.p5NativeSketchRef.pop();
+                    this.p5NativeSketchRef.stroke(0,0,0,255); 
+                    this.p5NativeSketchRef.line(this.fathers[i].center.x, this.fathers[i].center.y, this.center.x, this.center.y);
+                    this.p5NativeSketchRef.push();
+                    this.p5NativeSketchRef.strokeWeight(2);
+                    let angle = this.p5NativeSketchRef.atan2((this.center.y - this.fathers[i].center.y), (this.center.x - this.fathers[i].center.x));
+                    this.p5NativeSketchRef.translate(this.center.x - this.p5NativeSketchRef.cos(angle) * this.ray * 0.5, this.center.y - this.p5NativeSketchRef.sin(angle) * this.ray * 0.5);
+                    this.p5NativeSketchRef.rotate(angle);
+                    this.p5NativeSketchRef.line(0, 0, -5, -5);
+                    this.p5NativeSketchRef.line(0, 0, -5, 5);
+                    this.p5NativeSketchRef.pop();
+                }
+            }
+            
         }
          
 

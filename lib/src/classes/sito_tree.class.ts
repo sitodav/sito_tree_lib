@@ -1,4 +1,4 @@
- 
+
 import * as p5 from "p5";
 import { SitoForestLayout_Horizontal, SitoForestLayout_Vertical } from "./sito_forest_layout";
 import { SitoTreeNode } from "./sito_treenode.class";
@@ -17,30 +17,32 @@ export class SitoTree {
     nativeP5SketchRef = undefined;
     canvasWidth: number;
     canvasHeight: number;
-    hidden : boolean = false;
-    addedCallback   = {}
+    hidden: boolean = false;
+    addedCallback = {}
+    alreadyEncounteredNodes: any = {};
 
     /*If using colorByClusterPalettes , we want a single color, and this will be 
     passend to the childs of the cluster 
     /*Otherwise if we use colorByStateMap we want a map STATE:color 
     and the color of a node will change according to the internal node state, instead of via inheritance of father's color */
-   /*the forests layout are used to define how to distribute different roots for different trees */
-   //horizontal layout feels a grid horizontally  (first row first column, first row secondo clumn until the rows is completed
-   //to the max specified column number, then it start on the second row etc, keeping the specified row reserved space) giving a space to each root for a different tree
-   //vertical layout fills first column first row, first column second row..untin the row is completed to the specified max , then it starts
-   //with the following column, keeping a reserved space for each column
-   //NB: forest layout make sense only for tree created for data, otherwise the node will be placed where the user click on the canvas!!
+    /*the forests layout are used to define how to distribute different roots for different trees */
+    //horizontal layout feels a grid horizontally  (first row first column, first row secondo clumn until the rows is completed
+    //to the max specified column number, then it start on the second row etc, keeping the specified row reserved space) giving a space to each root for a different tree
+    //vertical layout fills first column first row, first column second row..untin the row is completed to the specified max , then it starts
+    //with the following column, keeping a reserved space for each column
+    //NB: forest layout make sense only for tree created for data, otherwise the node will be placed where the user click on the canvas!!
     constructor(public containerDivId, public readOnly: boolean,
-        public colorByClusterPalettes, public colorByStateMap, public sizeBasedOnNumChildren :boolean, 
-        public horizontal_layout? : SitoForestLayout_Horizontal,
-        public vertical_layout ? : SitoForestLayout_Vertical) {
+        public colorByClusterPalettes, public colorByStateMap, public sizeBasedOnNumChildren: boolean,
+        public multipleFathers?: boolean,
+        public horizontal_layout?: SitoForestLayout_Horizontal,
+        public vertical_layout?: SitoForestLayout_Vertical) {
 
         this.p5wrapper = new p5(this.sketchDefinitionFunction);
     }
 
 
 
- 
+
 
 
     /***********************************                                                           ************************************
@@ -50,7 +52,7 @@ export class SitoTree {
     ************************************                                                           ************************************/
 
 
-     //this takes in input a list of objects (to be mapped into nodes)
+    //this takes in input a list of objects (to be mapped into nodes)
     //that are roots. Every roots has a reference property that contains
     //a list of children, in a recursive manner (composite/tree like pattern)
     //every node must be uniquely identifiable
@@ -83,69 +85,60 @@ export class SitoTree {
       textproperty : "taskId",
     };
     */
-      
-   
-    public addCallback( type : string, callback : Function)
-    {
+
+
+    public addCallback(type: string, callback: Function) {
         this.addedCallback[type] = callback;
     }
-    public empty()
-    {
+    public empty() {
         this.roots.length = 0;
     }
 
-    public loadData(data: any, nodeschema: SitoTreeNodeSchema, debug :boolean) {
+    public loadData(data: any, nodeschema: SitoTreeNodeSchema, debug: boolean) {
 
         //data is empty, so we call the generateTreeFromData
-        if(!this.roots || this.roots.length == 0)
-        {   
-            if(debug)
-            {
+        if (!this.roots || this.roots.length == 0) {
+            if (debug) {
                 console.log("no nodes, generating anew");
             }
-            this.createNewNodesStructureFromDataLoading( data,nodeschema,debug);
+            this.createNewNodesStructureFromDataLoading(data, nodeschema, debug);
             return;
         }
 
-        let comparison = SitoTree.compareDataPathsAndTreePath(data,this,nodeschema);
-        if(comparison == 0)
-        {   
-            if(debug)
+        let comparison = SitoTree.compareDataPathsAndTreePath(data, this, nodeschema);
+        if (comparison == 0) {
+            if (debug)
                 console.log("tree and data represent the same tree structure and status, nothing to do")
-            return ; //nothing, the three doesn't have to be updated
+            return; //nothing, the three doesn't have to be updated
         }
-        else if(comparison == -1)
-        {
-            if(debug)
-             console.log("tree and data represent different node. Need to generate anew from data");
+        else if (comparison == -1) {
+            if (debug)
+                console.log("tree and data represent different node. Need to generate anew from data");
 
-            this.createNewNodesStructureFromDataLoading(data,nodeschema,debug); //full re-generation for tree (the data represents a new tree)
+            this.createNewNodesStructureFromDataLoading(data, nodeschema, debug); //full re-generation for tree (the data represents a new tree)
         }
-        else
-        {   
-            if(debug)
+        else {
+            if (debug)
                 console.log("Tree and data only different in status. Updating status on every node from data");
 
-            if(this.roots)
-            {
-                for(let i in this.roots)
-                {
-                    SitoTree.recursiveNodeUpdateFromData(data[i],this.roots[i],nodeschema);
+            if (this.roots) {
+                for (let i in this.roots) {
+                    SitoTree.recursiveNodeUpdateFromData(data[i], this.roots[i], nodeschema);
                 }
             }
 
             return;
         }
-         
+
     }
 
 
     /*the forests layout are used to define how to distribute different roots for different trees */
-    private createNewNodesStructureFromDataLoading( data: any, nodeschema: SitoTreeNodeSchema, debug : boolean) {
-        
+    private createNewNodesStructureFromDataLoading(data: any, nodeschema: SitoTreeNodeSchema, debug: boolean) {
+
         let newroots = [];
-        if(debug)
-            console.log("generating from data for "+this.containerDivId);
+        if (debug)
+            console.log("generating from data for " + this.containerDivId);
         //for every outer object in the data list we will have roots
         for (let i in data) {
             //create the node
@@ -157,37 +150,34 @@ export class SitoTree {
             otherwise it will just set them at start of window going down*/
             let xPos = 0;
             let yPos = 0;
-            if(this.horizontal_layout)
-            {
-                let columnReservedSpace = (this.nativeP5SketchRef.windowWidth - this.horizontal_layout.paddingLeft - this.horizontal_layout.paddingRight) 
-                 / this.horizontal_layout.numOfColumns;
+            if (this.horizontal_layout) {
+                let columnReservedSpace = (this.nativeP5SketchRef.windowWidth - this.horizontal_layout.paddingLeft - this.horizontal_layout.paddingRight)
+                    / this.horizontal_layout.numOfColumns;
 
-                let hIndex = (this.strip( i ))%this.strip(this.horizontal_layout.numOfColumns);
+                let hIndex = (this.strip(i)) % this.strip(this.horizontal_layout.numOfColumns);
                 xPos = this.horizontal_layout.paddingLeft + hIndex * columnReservedSpace;
                 xPos = xPos + 0.5 * columnReservedSpace; //we center it in the reserved space horizontally
-                let vIndex = parseInt(""+this.strip( i )/this.strip(this.horizontal_layout.numOfColumns));
+                let vIndex = parseInt("" + this.strip(i) / this.strip(this.horizontal_layout.numOfColumns));
                 yPos = this.horizontal_layout.paddingTop + vIndex * this.horizontal_layout.verticalReservedSpaceForTree;
                 yPos = yPos + 0.5 * this.horizontal_layout.verticalReservedSpaceForTree;
             }
-            else if(this.vertical_layout)
-            {
-                let rowsReservedSpace = (this.nativeP5SketchRef.windowHeight - this.vertical_layout.paddingTop - this.vertical_layout.paddingBottom) 
+            else if (this.vertical_layout) {
+                let rowsReservedSpace = (this.nativeP5SketchRef.windowHeight - this.vertical_layout.paddingTop - this.vertical_layout.paddingBottom)
                     / this.vertical_layout.numOfRows;
 
-                let vIndex = this.strip( i )%this.strip(this.vertical_layout.numOfRows);
+                let vIndex = this.strip(i) % this.strip(this.vertical_layout.numOfRows);
                 yPos = this.vertical_layout.paddingTop + vIndex * rowsReservedSpace;
                 yPos = yPos + 0.5 * rowsReservedSpace; //we center it in the reserved space vertically
-                let hIndex = parseInt(""+this.strip( i )/this.strip(this.vertical_layout.numOfRows));
+                let hIndex = parseInt("" + this.strip(i) / this.strip(this.vertical_layout.numOfRows));
                 xPos = this.vertical_layout.paddingLeft + hIndex * this.vertical_layout.horizontalReservedSpaceForTree;
                 xPos = xPos + 0.5 * this.vertical_layout.horizontalReservedSpaceForTree;
             }
-            else
-            {
+            else {
                 xPos = 100;
                 yPos = 100 + parseInt(i) * 200;
             }
             //roots are created on the left, and the vertical allign is based on the index
-            let rootnode = this.createNewNode( xPos, yPos, labelfornode, idfornode, nodestatus)
+            let rootnode = this.createNewNode(xPos, yPos, labelfornode, idfornode, nodestatus)
             //save the root node
             newroots.push(rootnode);
             //check recursively on children
@@ -209,79 +199,69 @@ export class SitoTree {
         this.reorderChilds();
         this.nativeP5SketchRef.loop(1);
     }
-    
+
     //to avoid rounding error on index
-    private strip(number:any) : any{
+    private strip(number: any): any {
         return (parseFloat(number).toPrecision(12));
     }
 
- 
+
 
     //this can be called only if we are sure the structures of data and nodes are the same
-    private static recursiveNodeUpdateFromData(data_element, node : SitoTreeNode, nodeschema : SitoTreeNodeSchema)
-    { 
-         
+    private static recursiveNodeUpdateFromData(data_element, node: SitoTreeNode, nodeschema: SitoTreeNodeSchema) {
+
         node.status = data_element[nodeschema.statusproperty];
-        
-        if( node.children && node.children.length > 0) //no children, I am leaf, path completed
+
+        if (node.children && node.children.length > 0) //no children, I am leaf, path completed
         {
-            for(let ichild in node.children)
-            {
+            for (let ichild in node.children) {
                 let childrenTreeNode = node.children[ichild];
                 let childrenDataNode = data_element[nodeschema.childrenproperty][ichild];
-                this.recursiveNodeUpdateFromData(childrenDataNode,childrenTreeNode, nodeschema);
-                
+                this.recursiveNodeUpdateFromData(childrenDataNode, childrenTreeNode, nodeschema);
+
             }
         }
-        
 
-        
+
+
     }
 
-    
+
     /*
     returns 0 if equals
     returns -1 if completely different in structure
     returns 1 if same structure but different status
     */
-    
-    private static compareDataPathsAndTreePath(datas, tree : SitoTree, treenodeschema : SitoTreeNodeSchema) : number
-    {
+
+    private static compareDataPathsAndTreePath(datas, tree: SitoTree, treenodeschema: SitoTreeNodeSchema): number {
         let result = 0;
         let treepaths = tree.getAllTreePaths();
-        let dataPaths = SitoTree.getAllDataPaths(datas,treenodeschema);
+        let dataPaths = SitoTree.getAllDataPaths(datas, treenodeschema);
         //comparing
-        if((!treepaths && !dataPaths) || (treepaths.length == 0 && dataPaths.length == 0))
+        if ((!treepaths && !dataPaths) || (treepaths.length == 0 && dataPaths.length == 0))
             result = 0;
-        else if(treepaths.length != dataPaths.length) 
-        {
-             result = -1;
-        }   
-        else
-        {   
+        else if (treepaths.length != dataPaths.length) {
+            result = -1;
+        }
+        else {
             let different = false;
-            for(let i in treepaths)
-            {
-                if(treepaths[i] != dataPaths[i])
-                {
+            for (let i in treepaths) {
+                if (treepaths[i] != dataPaths[i]) {
                     different = true;
                     break;
                 }
             }
-            if(!different) 
+            if (!different)
                 result = 0;
-            else
-            {
+            else {
                 different = false;
-                for(let i in treepaths)
-                {
-                    if(treepaths[i].replaceAll(/\[(.*?)\]/g,"?") != dataPaths[i].replaceAll(/\[(.*?)\]/g,"?"))
-                    {
+                for (let i in treepaths) {
+                    if (treepaths[i].replaceAll(/\[(.*?)\]/g, "?") != dataPaths[i].replaceAll(/\[(.*?)\]/g, "?")) {
                         different = true;
                         break;
                     }
                 }
-                if(!different)
+                if (!different)
                     result = 1;
                 else
                     result = -1;
@@ -290,26 +270,22 @@ export class SitoTree {
         return result;
     }
 
-      /*Method used to get a snapshot for the internal structure.
-    So the tree knows when it only has to update the nodes status, or must recreate the structure because
-    the input data requires new nodes 
-    */
+    /*Method used to get a snapshot for the internal structure.
+  So the tree knows when it only has to update the nodes status, or must recreate the structure because
+  the input data requires new nodes 
+  */
 
 
-    private getAllTreePaths( ) : string[]
-    {
+    private getAllTreePaths(): string[] {
         let paths = [];
 
-        if(this.roots)
-        {
-            for(let ir in  this.roots)
-            {
-                let rootsPaths  = this.dfs_visitAllTreePaths( this.roots[ir],"");
-                for(let ip in rootsPaths)
-                {
+        if (this.roots) {
+            for (let ir in this.roots) {
+                let rootsPaths = this.dfs_visitAllTreePaths(this.roots[ir], "");
+                for (let ip in rootsPaths) {
                     paths.push(rootsPaths[ip]);
                 }
-               
+
             }
         }
 
@@ -324,24 +300,21 @@ export class SitoTree {
         NODE_ID[STATUS]->NODE_ID[STATUS]->NODE_ID[STATUS],
     ]
     */
-    private dfs_visitAllTreePaths(node: SitoTreeNode, pathToMyFather : string ) : string[]
-    {
+    private dfs_visitAllTreePaths(node: SitoTreeNode, pathToMyFather: string): string[] {
         let mySubPaths = [];
-       
-        let pathToMe = pathToMyFather + "->"+node.id+"["+node.status+"]";
-        if(!node.children || node.children.length == 0) //no children, I am leaf, path completed
+
+        let pathToMe = pathToMyFather + "->" + node.id + "[" + node.status + "]";
+        if (!node.children || node.children.length == 0) //no children, I am leaf, path completed
         {
             mySubPaths.push(pathToMe);
         }
         else //otherwise i have children, so my subpath will only be my path + children continuation until leaves
         {
-            for(let ichild in node.children)
-            {
+            for (let ichild in node.children) {
                 let children = node.children[ichild];
-                
-                let childrenpaths = this.dfs_visitAllTreePaths(children,pathToMe);
-                for(let kcp in childrenpaths)
-                {
+
+                let childrenpaths = this.dfs_visitAllTreePaths(children, pathToMe);
+                for (let kcp in childrenpaths) {
                     mySubPaths.push(childrenpaths[kcp]);
                 }
             }
@@ -351,46 +324,39 @@ export class SitoTree {
     }
 
 
-     /*Same methods of two previous, but for data */
-     private static getAllDataPaths(data, treenodeschema : SitoTreeNodeSchema ) : string[]
-    {
+    /*Same methods of two previous, but for data */
+    private static getAllDataPaths(data, treenodeschema: SitoTreeNodeSchema): string[] {
         let paths = [];
 
-        if(data)
-        {
-            for(let ir in data)
-            {
-                let rootsPaths  = SitoTree.dfs_visitAllDataPaths(treenodeschema, data[ir],"");
-                for(let ip in rootsPaths)
-                {
+        if (data) {
+            for (let ir in data) {
+                let rootsPaths = SitoTree.dfs_visitAllDataPaths(treenodeschema, data[ir], "");
+                for (let ip in rootsPaths) {
                     paths.push(rootsPaths[ip]);
                 }
-               
+
             }
         }
 
         return paths;
     }
 
-  
-    private static dfs_visitAllDataPaths(treenodeschema : SitoTreeNodeSchema,data_elm: SitoTreeNode, pathToMyFather : string ) : string[]
-    {
+
+    private static dfs_visitAllDataPaths(treenodeschema: SitoTreeNodeSchema, data_elm: SitoTreeNode, pathToMyFather: string): string[] {
         let mySubPaths = [];
-       
-        let pathToMe = pathToMyFather + "->"+data_elm[treenodeschema.idproperty]+"["+data_elm[treenodeschema.statusproperty]+"]";
-        if(!data_elm[treenodeschema.childrenproperty] || data_elm[treenodeschema.childrenproperty].length == 0) //no children, I am leaf, path completed
+
+        let pathToMe = pathToMyFather + "->" + data_elm[treenodeschema.idproperty] + "[" + data_elm[treenodeschema.statusproperty] + "]";
+        if (!data_elm[treenodeschema.childrenproperty] || data_elm[treenodeschema.childrenproperty].length == 0) //no children, I am leaf, path completed
         {
             mySubPaths.push(pathToMe);
         }
         else //otherwise i have children, so my subpath will only be my path + children continuation until leaves
         {
-            for(let ichild in data_elm[treenodeschema.childrenproperty])
-            {
+            for (let ichild in data_elm[treenodeschema.childrenproperty]) {
                 let children = data_elm[treenodeschema.childrenproperty][ichild];
-                
-                let childrenpaths = this.dfs_visitAllDataPaths(treenodeschema,children,pathToMe);
-                for(let kcp in childrenpaths)
-                {
+
+                let childrenpaths = this.dfs_visitAllDataPaths(treenodeschema, children, pathToMe);
+                for (let kcp in childrenpaths) {
                     mySubPaths.push(childrenpaths[kcp]);
                 }
             }
@@ -399,124 +365,100 @@ export class SitoTree {
         return mySubPaths;
     }
 
-   
-    public hide()
-    {
+
+    public hide() {
         this.hidden = true;
         this.nativeP5SketchRef.loop(1);
     }
-    public show()
-    {
+    public show() {
         this.hidden = false;
         this.nativeP5SketchRef.loop(1);
     }
 
 
-    public highlightNode(nodeId,color)
-    {
-        if(this.roots)
-        {   
-            for(let i in this.roots)
-            {
-                if(this.highlightNodRecursive(this.roots[i],nodeId,color))
+    public highlightNode(nodeId, color) {
+        if (this.roots) {
+            for (let i in this.roots) {
+                if (this.highlightNodRecursive(this.roots[i], nodeId, color))
                     break;
             }
         }
-        
+
     }
 
-    private highlightNodRecursive(node, nodeId,color) : boolean
-    {
-        if(node.id == nodeId)
-        {
+    private highlightNodRecursive(node, nodeId, color): boolean {
+        if (node.id == nodeId) {
             node.borderHightlightColor = color;
             return true;
         }
-        if(node.children)
-        {
-            for(let i in node.children)
-            {
-                if(this.highlightNodRecursive(node.children[i],nodeId,color))
+        if (node.children) {
+            for (let i in node.children) {
+                if (this.highlightNodRecursive(node.children[i], nodeId, color))
                     return true;
             }
         }
-     
+
 
         return false;
-      
+
     }
 
-    public highlightOnlyRoots(color)
-    {
-        if(this.roots)
-        {
-            for(let i in this.roots)
-            {
+    public highlightOnlyRoots(color) {
+        if (this.roots) {
+            for (let i in this.roots) {
                 this.roots[i].borderHightlightColor = color;
             }
         }
-        
+
     }
 
-    public removeAllhightlits()
-    {
-        if(this.roots)
-        {
-            for(let i in this.roots)
-            {
-                this.removeAllhightlitsRecurs(this.roots[i]   );
+    public removeAllhightlits() {
+        if (this.roots) {
+            for (let i in this.roots) {
+                this.removeAllhightlitsRecurs(this.roots[i]);
             }
         }
-        
+
     }
 
-    public removeAllhightlitsRecurs(node)
-    {
+    public removeAllhightlitsRecurs(node) {
         node.borderHightlightColor = undefined;
-        if(node.children)
-        {
-            for(let i in node.children)
-            {
+        if (node.children) {
+            for (let i in node.children) {
                 this.removeAllhightlitsRecurs(node.children[i]);
             }
         }
-     
-        
+
+
     }
 
-    public findRootForNode( id)
-    {
+    public findRootForNode(id) {
         let foundRoot;
-        if(this.roots)
-        {
-            for(let i in this.roots)
-            {
-                let t = this.findIdRecursive(this.roots[i],id);
-                if(t)
+        if (this.roots) {
+            for (let i in this.roots) {
+                let t = this.findIdRecursive(this.roots[i], id);
+                if (t)
                     return t;
             }
         }
 
-        return null; 
+        return null;
 
     }
 
-    private findIdRecursive(node, nodeId)
-    {
-        if(node.id == nodeId)
+    private findIdRecursive(node, nodeId) {
+        if (node.id == nodeId)
             return node;
-        if(node.children)
-        {
-            for(let i in node.children)
-            {
-                let t = this.findIdRecursive(node.children[i],nodeId);
-                if(t)
+        if (node.children) {
+            for (let i in node.children) {
+                let t = this.findIdRecursive(node.children[i], nodeId);
+                if (t)
                     return t;
             }
         }
         return null;
     }
-    
+
     //this simply create a new node and returns it,
     //the new node will be alone, so a single root, with no children and no father
     public createNewNode(xpos, ypos, label, id, status) {
@@ -550,21 +492,37 @@ export class SitoTree {
     //merges two nodes
     //source (the node to append)
     //target (where to append)
-   
-    public appendNodeTo(source: any, target: any ) {
- 
+
+    public appendNodeTo(source: any, target: any) {
+
         source.isRoot = false;
-        let oldfatherDragged = source.father;
-        source.father = target;
-        source.myColor = target.myColor;
+        if (!source.fathers) {
+            source.fathers = [];
+        }
+        if (this.multipleFathers) {
+            source.fathers.push(target);
+
+        }
+        else {
+            let oldfatherDragged = source.fathers.length > 0 ? source.fathers[0] : undefined;
+            source.fathers[0] = target;
+            if (null != oldfatherDragged) {
+                this.removeById(source.id, oldfatherDragged.children);
+            }
+
+        }
+
+        source.myColor = target.myColor; //if color by cluster
         target.children.push(source);
         source.orderInfather = target.children.length - 1;
-        if (null != oldfatherDragged) {
-            this.removeById(source.id, oldfatherDragged.children);
+        if (!this.multipleFathers) {
+
+            if (target.fathers && target.fathers.length > 0)
+                target.father._applyChildStartPos();
+            else 
+                target._applyChildStartPos();
         }
-        if (target.father != null)
-            target.father._applyChildStartPos();
-        else target._applyChildStartPos();
+
 
         return target;
 
@@ -577,7 +535,18 @@ export class SitoTree {
         let labelfornode = childdata[nodeschema.textproperty];
         let nodestatus = childdata[nodeschema.statusproperty];
         //use the same vertical align of the father , and move orizontally
-        let node = this.createNewNode(Math.random() * 500, father.goToCenter.y + 100, labelfornode, idfornode, nodestatus)
+        //to allow multiple fathers we have to reuse already encountered nodes
+        let node;
+        if(this.alreadyEncounteredNodes[idfornode])
+        {
+            return this.alreadyEncounteredNodes[idfornode];
+        }
+        else
+        {
+            node = this.createNewNode(Math.random() * 500, father.goToCenter.y + 100, labelfornode, idfornode, nodestatus)
+            this.alreadyEncounteredNodes[idfornode] = node;
+        }
+          
 
         //check recursively on children
         if (childdata[nodeschema.childrenproperty] &&
@@ -593,8 +562,8 @@ export class SitoTree {
         return node;
     }
 
-    
-    
+
+
 
 
 
@@ -624,9 +593,9 @@ export class SitoTree {
         return mouseX < sketchRef.width && mouseY < sketchRef.height;
 
     }
- 
 
-    private customDoubleClick = ( ) => {
+
+    private customDoubleClick = () => {
 
         for (let i in this.roots) {
             let found = this.roots[i]._checkMouseIn(this.nativeP5SketchRef.mouseX, this.nativeP5SketchRef.mouseY);
@@ -674,14 +643,14 @@ export class SitoTree {
         }
     }
 
-    private  reorderChilds = () => {
+    private reorderChilds = () => {
         for (let i in this.roots) {
             this.roots[i]._reorderChilds();
         }
     }
 
 
- 
+
 
     private triggerDoubleClick = (id: string, deep: boolean) => {
 
@@ -689,8 +658,7 @@ export class SitoTree {
         if (null != found) {
 
             found.expanded = !found.expanded;
-            if(found.expanded)
-            {
+            if (found.expanded) {
                 found._applyChildStartPos();
             }
 
@@ -708,7 +676,7 @@ export class SitoTree {
     private deepExpansionRecursive = (elm: SitoTreeNode) => {
 
         elm.expanded = true;
-       
+
 
         if (elm.children != undefined && elm.children.length > 0) {
             for (let child of elm.children) {
@@ -741,7 +709,7 @@ export class SitoTree {
 
         //p5js setup function
         _p5sketch.setup = () => {
-            console.log("setup for "+this.containerDivId);
+            console.log("setup for " + this.containerDivId);
             this.canvasWidth = _p5sketch.windowWidth - 180;
             this.canvasHeight = _p5sketch.windowHeight - 200;
             let canvas2 = _p5sketch.createCanvas(this.canvasWidth, this.canvasHeight);
@@ -756,20 +724,19 @@ export class SitoTree {
 
 
         //p5js draw function
-        _p5sketch.draw = ( ) => {
+        _p5sketch.draw = () => {
 
             _p5sketch.background("#fffffff");
-            if(this.hidden)
-            {
+            if (this.hidden) {
 
             }
             if (this.isDoubleClicked) {
 
                 this.customDoubleClick();
                 this.isDoubleClicked = false;
-              
+
             }
-            
+
             for (let i in this.roots) {
                 this.roots[i]._draw();
             }
@@ -789,9 +756,9 @@ export class SitoTree {
 
         //allowed only in readOnly == false mode
         _p5sketch.mouseClicked = (e) => {
-            
+
             let amInExisting = false;
-            let found ;
+            let found;
             for (let i in this.roots) {
                 found = this.roots[i]._checkMouseIn(_p5sketch.mouseX, _p5sketch.mouseY);
                 amInExisting = found;
@@ -799,9 +766,8 @@ export class SitoTree {
                     break;
             }
 
-            if(this.addedCallback["mouseClicked"] && found)
-            {
-                this.addedCallback["mouseClicked"](e,this,found);
+            if (this.addedCallback["mouseClicked"] && found) {
+                this.addedCallback["mouseClicked"](e, this, found);
             }
 
             if (this.readOnly) //no new node creation allowed
@@ -814,7 +780,7 @@ export class SitoTree {
                 return;
 
             //console.log("CLICKED");
-            
+
 
             if (amInExisting)
                 return;
@@ -856,9 +822,8 @@ export class SitoTree {
                 this.draggedNode.goToCenter = this.draggedNode.center.copy();
             }
 
-            if(this.addedCallback["mouseDragged"])
-            {
-                this.addedCallback["mouseDragged"](this,this.draggedNode);
+            if (this.addedCallback["mouseDragged"]) {
+                this.addedCallback["mouseDragged"](this, this.draggedNode);
             }
 
             _p5sketch.loop(1);
@@ -894,9 +859,8 @@ export class SitoTree {
         /*when releasing a node on top of another, we merge them only if we are
         in readonly == false */
         _p5sketch.mouseReleased = () => {
-            if (this.isDoubleClicked )
-            {
-               
+            if (this.isDoubleClicked) {
+
                 return;
             }
 
@@ -908,7 +872,7 @@ export class SitoTree {
                     if (null == found || found.isDragged)
                         continue;
                     let target = found;
-                    if(!this.readOnly)
+                    if (!this.readOnly)
                         this.appendNodeTo(this.draggedNode, target);
                     break;
                 }
