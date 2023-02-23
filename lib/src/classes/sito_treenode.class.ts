@@ -162,10 +162,14 @@ export class SitoTreeNode {
         return null;
     }
 
-    public _applyChildStartPos = () => {
+    //partial means not all the way, used for multiple fathers
+    public _applyChildStartPos = (partial?:number) => {
+        partial = !partial ? 1.0 : partial;
+
         for (let i in this.children) {
 
             let childRay = this.p5NativeSketchRef.max(this.ray, this.children[i].children.length * 30);
+            childRay = childRay * partial;
             let anglePorz = (this.children[i].orderInfather) * this.p5NativeSketchRef.TWO_PI / this.p5NativeSketchRef.max(6, this.children.length);
 
             this.children[i].goToCenter = this.p5NativeSketchRef.createVector(this.goToCenter.x + 2*childRay * this.p5NativeSketchRef.cos(anglePorz),
