@@ -3,28 +3,20 @@
 /*
 author: sitodav@gmail.com
 */
-export interface SitoForestLayout_Horizontal {
+export interface SitoForestLayout{
 
-     
-     numOfColumns : number;
+     orientation : string ; //FILLFIXEDHORIZONTAL_EXPANDVERTICAL (DEFAULT), FILLFIXEDVERTICAL_EXPANDHORIZONTAL 
+     maxNumOfColumns : number; //for FILLFIXEDHORIZONTAL_EXPANDVERTICAL
+     maxNumberOfRows : number; //for FILLFIXEDVERTICAL_EXPANDHORIZONTAL
      verticalReservedSpaceForTree : number;
-     paddingLeft : number;
-     paddingTop : number;
-     paddingRight : number;
-     paddingBottom : number;
-}
-
-
-export interface SitoForestLayout_Vertical {
-
-     
-     numOfRows : number;
      horizontalReservedSpaceForTree : number;
      paddingLeft : number;
      paddingTop : number;
      paddingRight : number;
      paddingBottom : number;
 }
+
+ 
 
 
 

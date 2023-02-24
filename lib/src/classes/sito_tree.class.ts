@@ -1,6 +1,6 @@
 
 import * as p5 from "p5";
-import { SitoForestLayout_Horizontal, SitoForestLayout_Vertical } from "./sito_forest_layout";
+import { SitoForestLayout } from "./sito_forest_layout";
 import { SitoTreeNode } from "./sito_treenode.class";
 import { SitoTreeNodeSchema } from "./sito_treenodeschema";
 
@@ -34,8 +34,7 @@ export class SitoTree {
     constructor(public containerDivId, public readOnly: boolean,
         public colorByClusterPalettes, public colorByStateMap, public sizeBasedOnNumChildren: boolean,
         public multipleFathers?: boolean,
-        public horizontal_layout?: SitoForestLayout_Horizontal,
-        public vertical_layout?: SitoForestLayout_Vertical) {
+        public layout?: SitoForestLayout) {
 
         this.p5wrapper = new p5(this.sketchDefinitionFunction);
     }
@@ -135,7 +134,7 @@ export class SitoTree {
 
     /*the forests layout are used to define how to distribute different roots for different trees */
     private createNewNodesStructureFromDataLoading(data: any, nodeschema: SitoTreeNodeSchema, debug: boolean) {
-
+        this.alreadyEncounteredNodes = {};
         let newroots = [];
         if (debug)
             console.log("generating from data for " + this.containerDivId);
@@ -150,27 +149,29 @@ export class SitoTree {
             otherwise it will just set them at start of window going down*/
             let xPos = 0;
             let yPos = 0;
-            if (this.horizontal_layout) {
-                let columnReservedSpace = (this.nativeP5SketchRef.windowWidth - this.horizontal_layout.paddingLeft - this.horizontal_layout.paddingRight)
-                    / this.horizontal_layout.numOfColumns;
+            if (this.layout) {
+                if (this.layout)
+                    if (!this.layout.orientation || this.layout.orientation == "FILLFIXEDHORIZONTAL_EXPANDVERTICAL") {//fixed num of columns, fill every rows horizontally until the max num of columns, then expand vertically on a new row
 
-                let hIndex = (this.strip(i)) % this.strip(this.horizontal_layout.numOfColumns);
-                xPos = this.horizontal_layout.paddingLeft + hIndex * columnReservedSpace;
-                xPos = xPos + 0.5 * columnReservedSpace; //we center it in the reserved space horizontally
-                let vIndex = parseInt("" + this.strip(i) / this.strip(this.horizontal_layout.numOfColumns));
-                yPos = this.horizontal_layout.paddingTop + vIndex * this.horizontal_layout.verticalReservedSpaceForTree;
-                yPos = yPos + 0.5 * this.horizontal_layout.verticalReservedSpaceForTree;
-            }
-            else if (this.vertical_layout) {
-                let rowsReservedSpace = (this.nativeP5SketchRef.windowHeight - this.vertical_layout.paddingTop - this.vertical_layout.paddingBottom)
-                    / this.vertical_layout.numOfRows;
 
-                let vIndex = this.strip(i) % this.strip(this.vertical_layout.numOfRows);
-                yPos = this.vertical_layout.paddingTop + vIndex * rowsReservedSpace;
-                yPos = yPos + 0.5 * rowsReservedSpace; //we center it in the reserved space vertically
-                let hIndex = parseInt("" + this.strip(i) / this.strip(this.vertical_layout.numOfRows));
-                xPos = this.vertical_layout.paddingLeft + hIndex * this.vertical_layout.horizontalReservedSpaceForTree;
-                xPos = xPos + 0.5 * this.vertical_layout.horizontalReservedSpaceForTree;
+                        let hIndex = (this.strip(i)) % this.strip(this.layout.maxNumOfColumns);
+                        xPos = this.layout.paddingLeft + hIndex * this.layout.horizontalReservedSpaceForTree;
+                        xPos = xPos + 0.5 * this.layout.horizontalReservedSpaceForTree; //we center it in the reserved space horizontally
+                        let vIndex = parseInt("" + this.strip(i) / this.strip(this.layout.maxNumOfColumns));
+                        yPos = this.layout.paddingTop + vIndex * this.layout.verticalReservedSpaceForTree;
+                        yPos = yPos + 0.5 * this.layout.verticalReservedSpaceForTree;
+                    }
+                    else if (this.layout.orientation == "FILLFIXEDVERTICAL_EXPANDHORIZONTAL") {//fixed number of rows, fill every column until max num of rows, then expand on a new column
+
+
+                        let vIndex = this.strip(i) % this.strip(this.layout.maxNumberOfRows);
+                        yPos = this.layout.paddingTop + vIndex * this.layout.verticalReservedSpaceForTree;
+                        yPos = yPos + 0.5 * this.layout.verticalReservedSpaceForTree; //we center it in the reserved space vertically
+                        let hIndex = parseInt("" + this.strip(i) / this.strip(this.layout.maxNumberOfRows));
+                        xPos = this.layout.paddingLeft + hIndex * this.layout.horizontalReservedSpaceForTree;
+                        xPos = xPos + 0.5 * this.layout.horizontalReservedSpaceForTree;
+                    }
+
             }
             else {
                 xPos = 100;
@@ -519,7 +520,7 @@ export class SitoTree {
 
             if (target.fathers && target.fathers.length > 0)
                 target.father._applyChildStartPos();
-            else 
+            else
                 target._applyChildStartPos();
         }
 
@@ -537,16 +538,14 @@ export class SitoTree {
         //use the same vertical align of the father , and move orizontally
         //to allow multiple fathers we have to reuse already encountered nodes
         let node;
-        if(this.alreadyEncounteredNodes[idfornode])
-        {
+        if (this.alreadyEncounteredNodes[idfornode]) {
             return this.alreadyEncounteredNodes[idfornode];
         }
-        else
-        {
+        else {
             node = this.createNewNode(Math.random() * 500, father.goToCenter.y + 100, labelfornode, idfornode, nodestatus)
             this.alreadyEncounteredNodes[idfornode] = node;
         }
-          
+
 
         //check recursively on children
         if (childdata[nodeschema.childrenproperty] &&
