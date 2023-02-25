@@ -85,7 +85,37 @@ export class SitoTree {
     };
     */
 
-
+    /*available callback are :
+        loadData_start : function input (tree,nodeschema,data),
+        loadData_end : function input (tree,nodeschema,data),
+        createNode_start : function input (tree,xpos, ypos, label, id, status),
+        createNode_end : function input (tree,newRoot),
+        appendNodeTo_start : function input (tree,source,target),
+        appendNodeTo_end : function input (tree,source,target),
+        expandAll_start : function input (tree ),
+        expandAll_end : function input (tree ),
+        collapseAll_start : function input (tree ),
+        collapseAll_end : function input (tree ),
+        doubleClick_start : function input (tree,node),
+        doubleClick_end : function input (tree,node),
+        setup_start : function input (tree,p5sketch),
+        setup_end : function input (tree,p5sketch),
+        draw_start : function input (tree,p5sketch),
+        draw_start : function input (tree,p5sketch),
+        mouseMoved_start : function input (evt,tree,p5sketch),
+        mouseMoved_end : function input (evt,tree,p5sketch),
+        mouseStopped_start : function input (evt,tree,p5sketch),
+        mouseStopped_end : function input (evt,tree,p5sketch),
+        mouseClicked_start : function input (evt,tree,p5sketch,node),
+        mouseClicked_end : function input (evt,tree,p5sketch,node),
+        mouseDragged_start : function input (evt,tree,p5sketch,node),
+        mouseDragged_end : function input (evt,tree,p5sketch,node),
+        mousePressed_start : function input (evt,tree,p5sketch,node),
+        mousePressed_end : function input (evt,tree,p5sketch,node),
+        mouseReleased_start : function input (evt,tree,p5sketch,node),
+        mouseReleased_end : function input (evt,tree,p5sketch,node) 
+        
+    */
     public addCallback(type: string, callback: Function) {
         this.addedCallback[type] = callback;
     }
@@ -95,12 +125,20 @@ export class SitoTree {
 
     public loadData(data: any, nodeschema: SitoTreeNodeSchema, debug: boolean) {
 
+        if (this.addedCallback["loadData_start"] ) {
+            this.addedCallback["loadData_start"](this,nodeschema,data);
+        }
         //data is empty, so we call the generateTreeFromData
         if (!this.roots || this.roots.length == 0) {
             if (debug) {
                 console.log("no nodes, generating anew");
             }
             this.createNewNodesStructureFromDataLoading(data, nodeschema, debug);
+
+            if (this.addedCallback["loadData_end"] ) {
+                this.addedCallback["loadData_end"](this,nodeschema,data);
+            }
+
             return;
         }
 
@@ -108,6 +146,10 @@ export class SitoTree {
         if (comparison == 0) {
             if (debug)
                 console.log("tree and data represent the same tree structure and status, nothing to do")
+
+            if (this.addedCallback["loadData_end"] ) {
+                    this.addedCallback["loadData_end"](this,nodeschema,data);
+            }
             return; //nothing, the three doesn't have to be updated
         }
         else if (comparison == -1) {
@@ -126,6 +168,9 @@ export class SitoTree {
                 }
             }
 
+            if (this.addedCallback["loadData_end"] ) {
+                this.addedCallback["loadData_end"](this,nodeschema,data);
+            }
             return;
         }
 
@@ -463,6 +508,11 @@ export class SitoTree {
     //this simply create a new node and returns it,
     //the new node will be alone, so a single root, with no children and no father
     public createNewNode(xpos, ypos, label, id, status) {
+
+        if (this.addedCallback["createNode_start"] ) {
+            this.addedCallback["createNode_start"](this,xpos, ypos, label, id, status);
+        }
+
         let newRoot = SitoTreeNode._builder(
             this.nativeP5SketchRef.createVector(xpos, ypos),
             50,
@@ -487,6 +537,10 @@ export class SitoTree {
         this.restoreRoots();
         this.nativeP5SketchRef.loop(1);
 
+        if (this.addedCallback["createNode_end"] ) {
+            this.addedCallback["createNode_end"](this, newRoot);
+        }
+
         return newRoot;
     }
 
@@ -495,6 +549,10 @@ export class SitoTree {
     //target (where to append)
 
     public appendNodeTo(source: any, target: any) {
+
+        if (this.addedCallback["appendNodeTo_start"] ) {
+            this.addedCallback["appendNodeTo_start"](this,source,target);
+        }
 
         source.isRoot = false;
         if (!source.fathers) {
@@ -524,6 +582,9 @@ export class SitoTree {
                 target._applyChildStartPos();
         }
 
+        if (this.addedCallback["appendNodeTo_end"] ) {
+            this.addedCallback["appendNodeTo_end"](this,source,target);
+        }
 
         return target;
 
@@ -574,16 +635,34 @@ export class SitoTree {
     ************************************                                                           ************************************/
 
     public expandAll = () => {
+
+        if (this.addedCallback["expandAll_start"] ) {
+            this.addedCallback["expandAll_start"](this);
+        }
+
         for (let elm of this.roots) {
             if (!elm.expanded)
                 this.triggerDoubleClick(elm.id, true);
         }
+
+        if (this.addedCallback["expandAll_end"] ) {
+            this.addedCallback["expandAll_end"](this);
+        }
+
     }
 
     public collapseAll = () => {
+        if (this.addedCallback["collapseAll_start"] ) {
+            this.addedCallback["collapseAll_start"](this);
+        }
+
         for (let elm of this.roots) {
             if (elm.expanded)
                 this.triggerDoubleClick(elm.id, true);
+        }
+
+        if (this.addedCallback["collapseAll_end"] ) {
+            this.addedCallback["collapseAll_end"](this);
         }
     }
 
@@ -596,6 +675,10 @@ export class SitoTree {
 
     private customDoubleClick = () => {
 
+        if (this.addedCallback["doubleClick_start"] ) {
+            this.addedCallback["doubleClick_start"](this,null);
+        }
+
         for (let i in this.roots) {
             let found = this.roots[i]._checkMouseIn(this.nativeP5SketchRef.mouseX, this.nativeP5SketchRef.mouseY);
             if (null != found) {
@@ -607,9 +690,18 @@ export class SitoTree {
                     //found.justInitialized = false;
                 }
 
+                if (this.addedCallback["doubleClick_end"] ) {
+                    this.addedCallback["doubleClick_end"](this,found);
+                }
+
                 return;
             }
         }
+
+        if (this.addedCallback["doubleClick_end"] ) {
+            this.addedCallback["doubleClick_end"](this,null);
+        }
+
     }
 
 
@@ -708,6 +800,11 @@ export class SitoTree {
 
         //p5js setup function
         _p5sketch.setup = () => {
+
+            if (this.addedCallback["setup_start"] ) {
+                this.addedCallback["setup_start"](this,_p5sketch);
+            }
+
             console.log("setup for " + this.containerDivId);
             this.canvasWidth = _p5sketch.windowWidth - 180;
             this.canvasHeight = _p5sketch.windowHeight - 200;
@@ -718,6 +815,10 @@ export class SitoTree {
             _p5sketch.textSize(10);
             _p5sketch.textAlign(_p5sketch.CENTER, _p5sketch.CENTER);
             this.nativeP5SketchRef = _p5sketch;
+
+            if (this.addedCallback["setup_end"] ) {
+                this.addedCallback["setup_end"](this,_p5sketch);
+            }
         };
 
 
@@ -725,6 +826,11 @@ export class SitoTree {
         //p5js draw function
         _p5sketch.draw = () => {
 
+           
+            if (this.addedCallback["draw_start"] ) {
+                this.addedCallback["draw_start"](this, _p5sketch);
+            }
+            
             _p5sketch.background("#fffffff");
             if (this.hidden) {
 
@@ -740,21 +846,46 @@ export class SitoTree {
                 this.roots[i]._draw();
             }
 
+            if (this.addedCallback["draw_end"] ) {
+                this.addedCallback["draw_end"](this, _p5sketch);
+            }
+
         };
 
         //p5js other native functions
-        _p5sketch.mouseMoved = () => {
-            //_p5sketch.loop();
+        _p5sketch.mouseMoved = (evt) => {
+            if (this.addedCallback["mouseMoved_start"] ) {
+                this.addedCallback["mouseMoved_start"](evt,this, _p5sketch);
+            }
+
+            /* ... */
+
+            if (this.addedCallback["mouseMoved_end"] ) {
+                this.addedCallback["mouseMoved_end"](evt,this, _p5sketch);
+            }
         }
 
 
-        _p5sketch.mouseStopped = () => {
+        _p5sketch.mouseStopped = (evt) => {
             _p5sketch.noLoop();
+
+            if (this.addedCallback["mouseStopped_start"] ) {
+                this.addedCallback["mouseStopped_start"](evt,this, _p5sketch);
+            }
+            /*... */
+
+            if (this.addedCallback["mouseStopped_end"] ) {
+                this.addedCallback["mouseStopped_end"](evt,this, _p5sketch);
+            }
         }
 
 
         //allowed only in readOnly == false mode
-        _p5sketch.mouseClicked = (e) => {
+        _p5sketch.mouseClicked = (evt) => {
+
+            if (this.addedCallback["mouseClicked_start"]  ) {
+                this.addedCallback["mouseClicked_start"](evt, this, null);
+            }
 
             let amInExisting = false;
             let found;
@@ -765,19 +896,30 @@ export class SitoTree {
                     break;
             }
 
-            if (this.addedCallback["mouseClicked"] && found) {
-                this.addedCallback["mouseClicked"](e, this, found);
-            }
+            
 
-            if (this.readOnly) //no new node creation allowed
+            if (this.readOnly)
+            {
+               
+
+                if (this.addedCallback["mouseClicked_end"] && found) {
+                    this.addedCallback["mouseClicked_end"](evt, this, _p5sketch, found);
+                }
+
                 return;
+            }
+                
 
             if (!this.isMouseInSketch(_p5sketch.mouseX, _p5sketch.mouseY, this.nativeP5SketchRef)) {
+                 if (this.addedCallback["mouseClicked_end"] ) {
+                    this.addedCallback["mouseClicked_end"](evt, this,  _p5sketch,found);
+                }
                 return;
             }
             if (this.isDoubleClicked)
+            {
                 return;
-
+            }
             //console.log("CLICKED");
 
 
@@ -786,33 +928,23 @@ export class SitoTree {
 
 
             /*NEW NODE CREATION ****************************************************************************************************************************/
-            //creation where the user clicks
+            //creation where the user clicks 
+            
             let newRootId = "" + (_p5sketch.frameCount % 1000);
-            let newRoot = SitoTreeNode._builder(
-                _p5sketch.createVector(_p5sketch.mouseX, _p5sketch.mouseY),
-                50,
-                newRootId,
-                newRootId,
-                this.nativeP5SketchRef
-                , this.colorByClusterPalettes ? this.nativeP5SketchRef.random(this.colorByClusterPalettes) : undefined,
-                this.colorByStateMap ? this.colorByStateMap : undefined,
-                "COMPLETED_SUCCESS",
-                this.sizeBasedOnNumChildren);
-            //this.createElementt(s.createVector(s.mouseX, s.mouseY), 35, "", "");
-            newRoot.isRoot = true;
+            this.createNewNode(_p5sketch.mouseX,_p5sketch.mouseY,newRootId,newRootId,"COMPLETED_SUCCESS");
+            
 
-            this.roots.push(newRoot);
-
-
-            if (null != this.draggedNode) {
-                this.draggedNode.isDragged = false;
-                this.draggedNode = null;
+            if (this.addedCallback["mouseClicked_end"] ) {
+                this.addedCallback["mouseClicked_end"](evt, this,  _p5sketch,found);
             }
-            this.restoreRoots();
-            _p5sketch.loop(1);
         }
 
-        _p5sketch.mouseDragged = () => {
+        _p5sketch.mouseDragged = (evt) => {
+
+            if (this.addedCallback["mouseDragged_start"]) {
+                this.addedCallback["mouseDragged_start"](evt,this,  _p5sketch,null);
+            }
+
             if (this.isDoubleClicked)
                 return;
 
@@ -821,15 +953,19 @@ export class SitoTree {
                 this.draggedNode.goToCenter = this.draggedNode.center.copy();
             }
 
-            if (this.addedCallback["mouseDragged"]) {
-                this.addedCallback["mouseDragged"](this, this.draggedNode);
+            if (this.addedCallback["mouseDragged_end"]) {
+                this.addedCallback["mouseDragged_end"](evt,this,  _p5sketch,this.draggedNode);
             }
 
             _p5sketch.loop(1);
         }
 
 
-        _p5sketch.mousePressed = () => {
+        _p5sketch.mousePressed = (evt) => {
+
+            if (this.addedCallback["mousePressed_start"]) {
+                this.addedCallback["mousePressed_start"](evt,this, _p5sketch, null);
+            }
 
             let millisT = _p5sketch.millis(); //Math.floor(Date.now() / 1000);
             if (millisT - this.lastClick < 200)
@@ -841,6 +977,7 @@ export class SitoTree {
             if (this.isDoubleClicked)
                 return;
 
+            let found;
             for (let i in this.roots) {
                 let found = this.roots[i]._checkMouseIn(_p5sketch.mouseX, _p5sketch.mouseY);
 
@@ -852,16 +989,26 @@ export class SitoTree {
 
                 }
             }
+
+            if (this.addedCallback["mousePressed_end"]) {
+                this.addedCallback["mousePressed_end"](evt,this,  _p5sketch,found);
+            }
+
             _p5sketch.loop(1);
         }
 
         /*when releasing a node on top of another, we merge them only if we are
         in readonly == false */
-        _p5sketch.mouseReleased = () => {
+        _p5sketch.mouseReleased = (evt) => {
             if (this.isDoubleClicked) {
 
                 return;
             }
+
+            if (this.addedCallback["mouseReleased_start"]) {
+                this.addedCallback["mouseReleased_start"](evt,this, _p5sketch, null);
+            }
+
 
             if (null != this.draggedNode) {
 
@@ -884,6 +1031,10 @@ export class SitoTree {
                 //printAll();
                 _p5sketch.loop(1);
 
+            }
+
+            if (this.addedCallback["mouseReleased_end"]) {
+                this.addedCallback["mouseReleased_end"](evt,this, _p5sketch, this.draggedNode);
             }
 
         }

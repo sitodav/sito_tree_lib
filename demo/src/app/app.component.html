@@ -2,57 +2,137 @@
 
   <mat-accordion class="headers-align" multi>
 
-    <h4>Tree example: click on a white area to create a node. Drag a node onto another to merge them. Double click to explode and see the childs.</h4>
+    <h4>Tree example: click on a white area to create a node. Drag a node onto another to merge them. Double click to
+      explode and see the childs.</h4>
     <br>
     <mat-card>
       <mat-card-header>
-        <mat-card-title><b> Tree Demo : interactive, no autosize, color by cluster</b> (nodes get the same color of the father/cluster)</mat-card-title>
+        <mat-card-title style="font-size:larger;"><b> Example 1: </b>Interactive, no autosize, color by cluster (nodes get the same color of the
+          father/cluster). <br>Click on the canvas to create a new node, drag a node on top of another to append to, double click a node to expand</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <mat-card-content>
-         
+
           <div id="tree_interactive_clustercolors_noautosize" style="border-color:black; border-style: solid;">
 
-          </div> 
+          </div>
 
         </mat-card-content>
       </mat-card-content>
 
     </mat-card>
-   
-  <br> 
+
+    <br>
     <mat-card>
-      <mat-card-header>
-        <mat-card-title><b> Tree Demo : interactive, autosize, color by cluster </b>(same as before, but the node gets bigger the more children it has)</mat-card-title>
+      <mat-card-header> 
+          <mat-card-title  style="font-size:larger;"><b> Example 2: </b>Same as before, but node get bigger the more children they have</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <mat-card-content>
-         
+
           <div id="tree_interactive_clustercolors_autosize" style="border-color:black; border-style: solid;">
 
-          </div> 
+          </div>
 
         </mat-card-content>
       </mat-card-content>
 
     </mat-card>
-  <br>
+    <br>
     <mat-card>
       <mat-card-header>
-        <mat-card-title><b> Tree Demo : readonly, autosize, color by state </b>(nodes are loaded by data and the tree is read only: drag, shrink and explode operations. The color are given by the node state)</mat-card-title>
+        <mat-card-title style="font-size:larger;"><b> Example 3: </b>Readonly, autosize, color by state (the color of a node depends on its internal status). 
+          <br>After some seconds you can see the node colors changing because their internal status changed <br>
+          <br>Double click a node to expand</mat-card-title>
+ 
       </mat-card-header>
       <mat-card-content>
         <mat-card-content>
-         
+
           <div id="tree_readonly_colorbystate_autosize" style="border-color:black; border-style: solid;">
 
-          </div> 
+          </div>
 
         </mat-card-content>
       </mat-card-content>
 
     </mat-card>
-    
+
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title  style="font-size:larger;"><b> Example 4: </b>
+          Readonly, color by state, but with multiple fathers for a node allowed
+        </mat-card-title>
+
+      </mat-card-header>
+      <mat-card-content>
+        <mat-card-content>
+
+          <div id="tree_readonly_multiplefathers" style="border-color:black; border-style: solid;">
+
+          </div>
+
+        </mat-card-content>
+      </mat-card-content>
+
+    </mat-card>
+
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title  style="font-size:larger;"><b> Example 5: </b>
+          Same as before, but trees are disposed along row-wise using a fixed layout.
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-card-content>
+
+          <div id="tree_readonly_expandverticallayout" style="border-color:black; border-style: solid;">
+
+          </div>
+
+        </mat-card-content>
+      </mat-card-content>
+
+    </mat-card>
+
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title  style="font-size:larger;"><b> Example 6: </b>
+          Same as before, but trees are disposed along column wise using a fixed layout.
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-card-content>
+
+          <div id="tree_readonly_expandhorizontallayout" style="border-color:black; border-style: solid;">
+
+          </div>
+
+        </mat-card-content>
+      </mat-card-content>
+
+    </mat-card>
+
+    <mat-card>
+      <mat-card-header>
+         <mat-card-title  style="font-size:larger;"><b> Example 7: </b>
+          Interactive tree with registered callback.<br>
+          Open the console to see the logs on double click and node creation (there are lots of events you can catch)
+        </mat-card-title>
+       
+      </mat-card-header>
+      <mat-card-content>
+        <mat-card-content>
+
+          <div id="tree_readonly_interactive_withcallbacks" style="border-color:black; border-style: solid;">
+
+          </div>
+
+        </mat-card-content>
+      </mat-card-content>
+
+    </mat-card>
+
   </mat-accordion>
- 
+
 </div>
