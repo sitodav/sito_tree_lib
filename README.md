@@ -3,7 +3,41 @@
 
 typescript library for graph rendering.
 
+The library allows tree creation/interaction (expansion, collapse, drag, redisposition) and json loading/export.
+It allows multiple callback functions to be registered on events on tree.
+A list of events you can register on :
 
+ 
+-loadData_start : function input (tree,nodeschema,data)
+-loadData_end : function input (tree,nodeschema,data) 
+-createNode_start : function input (tree,xpos, ypos, label, id, status
+-createNode_end : function input (tree,newRoot
+-appendNodeTo_start : function input (tree,source,target
+-appendNodeTo_end : function input (tree,source,target
+-expandAll_start : function input (tree 
+-expandAll_end : function input (tree 
+-collapseAll_start : function input (tree 
+-collapseAll_end : function input (tree 
+-doubleClick_start : function input (tree,node
+-doubleClick_end : function input (tree,node
+-setup_start : function input (tree,p5sketch
+-setup_end : function input (tree,p5sketch
+-draw_start : function input (tree,p5sketch
+-draw_start : function input (tree,p5sketch
+-mouseMoved_start : function input (evt,tree,p5sketch
+-mouseMoved_end : function input (evt,tree,p5sketch
+-mouseStopped_start : function input (evt,tree,p5sketch
+-mouseStopped_end : function input (evt,tree,p5sketch
+-mouseClicked_start : function input (evt,tree,p5sketch,node
+-mouseClicked_end : function input (evt,tree,p5sketch,node
+-mouseDragged_start : function input (evt,tree,p5sketch,node
+-mouseDragged_end : function input (evt,tree,p5sketch,node
+-mousePressed_start : function input (evt,tree,p5sketch,node
+-mousePressed_end : function input (evt,tree,p5sketch,node
+-mouseReleased_start : function input (evt,tree,p5sketch,node
+-mouseReleased_end : function input (evt,tree,p5sketch,node) 
+       
+ 
 
 For the library refer to the */lib* folder. 
 

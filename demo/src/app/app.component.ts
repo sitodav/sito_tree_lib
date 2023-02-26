@@ -113,13 +113,8 @@ export class AppComponent implements OnInit {
       this.tree_readonly_expandhorizontallayout.expandAll();
       this.tree_interactive_anddataviajson.loadData(this.mockedData1, this.treeSchemaForMockedData,true);
 
-        /*simulating status changing on some trees*/
-      setTimeout(()=>{
-        
-       
-        this.tree_readonly_colorbystate_autosize.loadData(this.mockedData1_differentstatus, this.treeSchemaForMockedData,false);
-        
-      },6000);
+      
+      
     },3000);
 
 
@@ -194,6 +189,8 @@ export class AppComponent implements OnInit {
   }
 
 
+ 
+
   
     //mocked data   
   /*the data must be nested. Then it can have different properties, the schema will map them */
@@ -236,6 +233,16 @@ export class AppComponent implements OnInit {
     }
   ];
 
+
+  public updateDataForTree()
+  {
+    setTimeout(()=>{
+        
+       
+      this.tree_readonly_colorbystate_autosize.loadData(this.mockedData1_differentstatus, this.treeSchemaForMockedData,false);
+      
+    },1000);
+  }
   /*same structures but different status, to show how the tree update the internal status for each node /color */
   public mockedData1_differentstatus = [
     
