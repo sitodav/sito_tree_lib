@@ -79,4 +79,5 @@ You can find a video for the demo here : https://youtu.be/st5lzQrSdFw
 
 -------
 *Version 0.3.7 : added horizontal and vertical layout for trees generated via data loading*
+*Version 0.7.0 : multiple fathers allowed , callback and export *
  
