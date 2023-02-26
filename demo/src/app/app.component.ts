@@ -75,6 +75,8 @@ export class AppComponent implements OnInit {
   tree_readonly_expandverticallayout:SitoTree;
   tree_readonly_expandhorizontallayout:SitoTree;
   tree_readonly_interactive_withcallbacks:SitoTree;
+  tree_interactive_anddataviajson:SitoTree;
+  exportedData_jsonPretty : string;
 
   ngOnInit() {
      
@@ -92,6 +94,8 @@ export class AppComponent implements OnInit {
     this.tree_readonly_expandhorizontallayout = new SitoTree('tree_readonly_expandhorizontallayout', true, null, this.palettesForStateColor, false,  true,this.forest_layout_expandhorizontal );
     // /*interactive tree with color by cluster, no autosize, interactive, and callbacks */
     this.tree_readonly_interactive_withcallbacks = new SitoTree('tree_readonly_interactive_withcallbacks', false, this.paletteForClusterColor, null, true,false); 
+    // /*interactive tree but initialized with json data*/
+    this.tree_interactive_anddataviajson = new SitoTree('tree_interactive_anddataviajson', false, null, this.palettesForStateColor, false,  true);
    }
   ngAfterViewInit(): void {
    
@@ -107,6 +111,8 @@ export class AppComponent implements OnInit {
       this.tree_readonly_expandverticallayout.expandAll();
       this.tree_readonly_expandhorizontallayout.loadData(this.mockedDataMultipleFathers, this.treeSchemaForMockedData,true);
       this.tree_readonly_expandhorizontallayout.expandAll();
+      this.tree_interactive_anddataviajson.loadData(this.mockedData1, this.treeSchemaForMockedData,true);
+
         /*simulating status changing on some trees*/
       setTimeout(()=>{
         
@@ -154,10 +160,41 @@ export class AppComponent implements OnInit {
         
       }
     );
+
+
+    /*and callbacks on the other tree, for refresh of exported data on interaction */
     
+     //nb : always catch exception in callback, or check what parameters are available
+     this.tree_interactive_anddataviajson.addCallback(
+      "createNode_start", 
+      (tree,xpos, ypos, label, id, status) =>{
+        try
+        {
+          let dataForTree  = tree.exportData(this.treeSchemaForMockedData);
+          this.exportedData_jsonPretty = this.prittifyJson(dataForTree);
+        }catch(e){}
+       
+      }
+    );
+
+    
+    this.tree_interactive_anddataviajson.addCallback(
+      "appendNodeTo_end", 
+      (tree,source,target) =>{
+        try
+        {
+          let dataForTree  = tree.exportData(this.treeSchemaForMockedData);
+          this.exportedData_jsonPretty = this.prittifyJson(dataForTree);
+        }catch(e){}
+        
+      }
+    );
+
 
   }
 
+
+  
     //mocked data   
   /*the data must be nested. Then it can have different properties, the schema will map them */
   public mockedData1 = [
@@ -334,7 +371,27 @@ export class AppComponent implements OnInit {
 
  
 
-
+  prittifyJson(json) {
+    if (typeof json != 'string') {
+      json = JSON.stringify(json, undefined, 2);
+    }
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return '<pre >' + json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+      var cls = 'number';
+      if (/^"/.test(match)) {
+        if (/:$/.test(match)) {
+          cls = 'key';
+        } else {
+          cls = 'string';
+        }
+      } else if (/true|false/.test(match)) {
+        cls = 'boolean';
+      } else if (/null/.test(match)) {
+        cls = 'null';
+      }
+      return '<span  class="' + cls + '" >' + match + '</span>';
+    }) + '</pre>';
+  }
 
 
 }

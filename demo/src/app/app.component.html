@@ -7,8 +7,10 @@
     <br>
     <mat-card>
       <mat-card-header>
-        <mat-card-title style="font-size:larger;"><b> Example 1: </b>Interactive, no autosize, color by cluster (nodes get the same color of the
-          father/cluster). <br>Click on the canvas to create a new node, drag a node on top of another to append to, double click a node to expand</mat-card-title>
+        <mat-card-title style="font-size:larger;"><b> Example 1: </b>Interactive, no autosize, color by cluster (nodes
+          get the same color of the
+          father/cluster). <br>Click on the canvas to create a new node, drag a node on top of another to append to,
+          double click a node to expand</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <mat-card-content>
@@ -24,8 +26,9 @@
 
     <br>
     <mat-card>
-      <mat-card-header> 
-          <mat-card-title  style="font-size:larger;"><b> Example 2: </b>Same as before, but node get bigger the more children they have</mat-card-title>
+      <mat-card-header>
+        <mat-card-title style="font-size:larger;"><b> Example 2: </b>Same as before, but node get bigger the more
+          children they have</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <mat-card-content>
@@ -41,10 +44,11 @@
     <br>
     <mat-card>
       <mat-card-header>
-        <mat-card-title style="font-size:larger;"><b> Example 3: </b>Readonly, autosize, color by state (the color of a node depends on its internal status). 
+        <mat-card-title style="font-size:larger;"><b> Example 3: </b>Readonly, autosize, color by state (the color of a
+          node depends on its internal status).
           <br>After some seconds you can see the node colors changing because their internal status changed <br>
           <br>Double click a node to expand</mat-card-title>
- 
+
       </mat-card-header>
       <mat-card-content>
         <mat-card-content>
@@ -60,7 +64,7 @@
 
     <mat-card>
       <mat-card-header>
-        <mat-card-title  style="font-size:larger;"><b> Example 4: </b>
+        <mat-card-title style="font-size:larger;"><b> Example 4: </b>
           Readonly, color by state, but with multiple fathers for a node allowed
         </mat-card-title>
 
@@ -79,7 +83,7 @@
 
     <mat-card>
       <mat-card-header>
-        <mat-card-title  style="font-size:larger;"><b> Example 5: </b>
+        <mat-card-title style="font-size:larger;"><b> Example 5: </b>
           Same as before, but trees are disposed along row-wise using a fixed layout.
         </mat-card-title>
       </mat-card-header>
@@ -97,7 +101,7 @@
 
     <mat-card>
       <mat-card-header>
-        <mat-card-title  style="font-size:larger;"><b> Example 6: </b>
+        <mat-card-title style="font-size:larger;"><b> Example 6: </b>
           Same as before, but trees are disposed along column wise using a fixed layout.
         </mat-card-title>
       </mat-card-header>
@@ -115,11 +119,11 @@
 
     <mat-card>
       <mat-card-header>
-         <mat-card-title  style="font-size:larger;"><b> Example 7: </b>
+        <mat-card-title style="font-size:larger;"><b> Example 7: </b>
           Interactive tree with registered callback.<br>
           Open the console to see the logs on double click and node creation (there are lots of events you can catch)
         </mat-card-title>
-       
+
       </mat-card-header>
       <mat-card-content>
         <mat-card-content>
@@ -127,6 +131,38 @@
           <div id="tree_readonly_interactive_withcallbacks" style="border-color:black; border-style: solid;">
 
           </div>
+
+        </mat-card-content>
+      </mat-card-content>
+
+    </mat-card>
+
+
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title style="font-size:larger;"><b> Example 8: </b>
+          Tree loaded via json and interactive, with data exporting in json<br>
+          Interact to create new nodes on the loaded (via json data) tree. On every interaction with the tree
+          (create/append etc)
+          the data is exported (on the right)
+
+        </mat-card-title>
+
+      </mat-card-header>
+      <mat-card-content>
+        <mat-card-content>
+
+          <div class="float-container" style="border-color:black; border-style: solid;">
+            <div class="float-child-left">
+              <div id="tree_interactive_anddataviajson"></div>
+            </div>
+
+            <div class="float-child-right" >
+              <h3>Exported Data</h3>
+              <pre style="overflow-y: scroll; height:600px;" [innerHTML]="exportedData_jsonPretty"></pre>
+            </div>
+          </div>
+
 
         </mat-card-content>
       </mat-card-content>
