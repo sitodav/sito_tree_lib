@@ -20,6 +20,7 @@ export class SitoTree {
     hidden: boolean = false;
     addedCallback = {}
     alreadyEncounteredNodes: any = {};
+    
 
     /*If using colorByClusterPalettes , we want a single color, and this will be 
     passend to the childs of the cluster 
@@ -31,7 +32,7 @@ export class SitoTree {
     //vertical layout fills first column first row, first column second row..untin the row is completed to the specified max , then it starts
     //with the following column, keeping a reserved space for each column
     //NB: forest layout make sense only for tree created for data, otherwise the node will be placed where the user click on the canvas!!
-    constructor(public containerDivId, public readOnly: boolean,
+    constructor(public containerDivId, public allowedOperations,
         public colorByClusterPalettes, public colorByStateMap, public sizeBasedOnNumChildren: boolean,
         public multipleFathers?: boolean,
         public layout?: SitoForestLayout) {
@@ -737,7 +738,7 @@ export class SitoTree {
 
     private isMouseInSketch(mouseX, mouseY, sketchRef): boolean {
         // console.log(mouseX,mouseY,sketchRef.width,sketchRef.height);
-        return mouseX < sketchRef.width && mouseY < sketchRef.height;
+        return mouseX > 0 && mouseY> 0 && mouseX < sketchRef.width && mouseY < sketchRef.height;
 
     }
 
@@ -952,50 +953,61 @@ export class SitoTree {
         //allowed only in readOnly == false mode
         _p5sketch.mouseClicked = (evt) => {
 
+            /*not in sketch, return anyway */
+            if (!this.isMouseInSketch(_p5sketch.mouseX, _p5sketch.mouseY, this.nativeP5SketchRef)) {
+               
+                return;
+            }
+
             if (this.addedCallback["mouseClicked_start"]) {
                 this.addedCallback["mouseClicked_start"](evt, this, null);
             }
 
-            let amInExisting = false;
+            //find the clicked node
             let found;
             for (let i in this.roots) {
-                found = this.roots[i]._checkMouseIn(_p5sketch.mouseX, _p5sketch.mouseY);
-                amInExisting = found;
+                found = this.roots[i]._checkMouseIn(_p5sketch.mouseX, _p5sketch.mouseY); 
                 if (found)
                     break;
             }
+            
 
-
-
-            if (this.readOnly) {
-
-
-                if (this.addedCallback["mouseClicked_end"] && found) {
-                    this.addedCallback["mouseClicked_end"](evt, this, _p5sketch, found);
-                }
-
-                return;
-            }
-
-
-            if (!this.isMouseInSketch(_p5sketch.mouseX, _p5sketch.mouseY, this.nativeP5SketchRef)) {
+            //click on already existing node, we do nothing (return) in the tree, just call the external callback if present
+            if (found)
+            {
                 if (this.addedCallback["mouseClicked_end"]) {
                     this.addedCallback["mouseClicked_end"](evt, this, _p5sketch, found);
                 }
                 return;
             }
+
+            //if we are in readonly we can do nothing else
+            if (this.allowedOperations.readOnly) {
+               //no need to call the callback because we clicked outside a node , in the sketch,
+               //so we consider it a click outside the tree
+                // if (this.addedCallback["mouseClicked_end"] && found) {
+                //     this.addedCallback["mouseClicked_end"](evt, this, _p5sketch, found);
+                // } 
+                return;
+            }
+
+
+            //if we are handling double clicking we do nothing (not even the callback that will be triggered
+            //in the double click itself)
             if (this.isDoubleClicked) {
                 return;
             }
-            //console.log("CLICKED");
-
-
-            if (amInExisting)
-                return;
-
-
+            
+             
             /*NEW NODE CREATION ****************************************************************************************************************************/
             //creation where the user clicks 
+            if(!this.allowedOperations.nodeCreation) //no node creation allowed, we exit
+            {
+                if (this.addedCallback["mouseClicked_end"]) {
+                    this.addedCallback["mouseClicked_end"](evt, this, _p5sketch, found);
+                }
+                return;
+            }
 
             let newRootId = "" + (_p5sketch.frameCount % 1000);
             this.createNewNode(_p5sketch.mouseX, _p5sketch.mouseY, newRootId, newRootId, "COMPLETED_SUCCESS");
@@ -1085,7 +1097,7 @@ export class SitoTree {
                     if (null == found || found.isDragged)
                         continue;
                     let target = found;
-                    if (!this.readOnly)
+                    if (!this.allowedOperations.readOnly && this.allowedOperations.nodeAppend)
                         this.appendNodeTo(this.draggedNode, target);
                     break;
                 }

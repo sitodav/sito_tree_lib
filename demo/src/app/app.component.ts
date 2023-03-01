@@ -81,21 +81,21 @@ export class AppComponent implements OnInit {
   ngOnInit() {
      
     /*tree with color by cluster, no autosize, interactive */
-    this.tree_interactiveClustercolorsNoautosize = new SitoTree('tree_interactive_clustercolors_noautosize', false, this.paletteForClusterColor, null, false);
+    this.tree_interactiveClustercolorsNoautosize = new SitoTree('tree_interactive_clustercolors_noautosize', {readOnly: false, nodeCreation : true, nodeAppend : true}, this.paletteForClusterColor, null, false);
     /*tree with color by cluster, autosize, interactive */
-    this.tree_interactiveClustercolorsAutosize = new SitoTree('tree_interactive_clustercolors_autosize', false, this.paletteForClusterColor, null, true);
+    this.tree_interactiveClustercolorsAutosize = new SitoTree('tree_interactive_clustercolors_autosize', {readOnly: false, nodeCreation : true, nodeAppend : true}, this.paletteForClusterColor, null, true);
     // /*tree with color by node state, autosize, data loaded with json data, single father */
-    this.tree_readonly_colorbystate_autosize = new SitoTree('tree_readonly_colorbystate_autosize', true, null, this.palettesForStateColor, false,  false);
+    this.tree_readonly_colorbystate_autosize = new SitoTree('tree_readonly_colorbystate_autosize', {readOnly: true, nodeCreation : false, nodeAppend : false}, null, this.palettesForStateColor, false,  false);
     // /*tree with color by node state, autosize, loaded with json data, multiple fathers */
-    this.tree_readonly_multiplefathers = new SitoTree('tree_readonly_multiplefathers', true, null, this.palettesForStateColor, false,  true);
+    this.tree_readonly_multiplefathers = new SitoTree('tree_readonly_multiplefathers', {readOnly: true, nodeCreation : false, nodeAppend : false}, null, this.palettesForStateColor, false,  true);
     // /*tree with color by node state, autosize, loaded with json data, multiple father and expand vertical layout */
-    this.tree_readonly_expandverticallayout = new SitoTree('tree_readonly_expandverticallayout', true, null, this.palettesForStateColor, false,  true,this.forest_layout_expandvertical );
+    this.tree_readonly_expandverticallayout = new SitoTree('tree_readonly_expandverticallayout', {readOnly: true, nodeCreation : false, nodeAppend : false}, null, this.palettesForStateColor, false,  true,this.forest_layout_expandvertical );
     // /*tree with color by node state, autosize, loaded with json data, multiple father and expand horizontal layout */
-    this.tree_readonly_expandhorizontallayout = new SitoTree('tree_readonly_expandhorizontallayout', true, null, this.palettesForStateColor, false,  true,this.forest_layout_expandhorizontal );
+    this.tree_readonly_expandhorizontallayout = new SitoTree('tree_readonly_expandhorizontallayout', {readOnly: true, nodeCreation : false, nodeAppend : false}, null, this.palettesForStateColor, false,  true,this.forest_layout_expandhorizontal );
     // /*interactive tree with color by cluster, no autosize, interactive, and callbacks */
-    this.tree_readonly_interactive_withcallbacks = new SitoTree('tree_readonly_interactive_withcallbacks', false, this.paletteForClusterColor, null, true,false); 
+    this.tree_readonly_interactive_withcallbacks = new SitoTree('tree_readonly_interactive_withcallbacks', {readOnly: false, nodeCreation : true, nodeAppend : true}, this.paletteForClusterColor, null, true,false); 
     // /*interactive tree but initialized with json data*/
-    this.tree_interactive_anddataviajson = new SitoTree('tree_interactive_anddataviajson', false, null, this.palettesForStateColor, false,  true);
+    this.tree_interactive_anddataviajson = new SitoTree('tree_interactive_anddataviajson', {readOnly: false, nodeCreation : true, nodeAppend : true}, null, this.palettesForStateColor, false,  true);
    }
   ngAfterViewInit(): void {
    
