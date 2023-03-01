@@ -2,6 +2,7 @@
 import * as p5 from "p5";
 import { SitoForestLayout } from "./sito_forest_layout";
 import { SitoTreeNode } from "./sito_treenode.class";
+import { SitoTreeNodeRendering } from "./sito_treenoderendering";
 import { SitoTreeNodeSchema } from "./sito_treenodeschema";
 
 /*
@@ -32,8 +33,7 @@ export class SitoTree {
     //vertical layout fills first column first row, first column second row..untin the row is completed to the specified max , then it starts
     //with the following column, keeping a reserved space for each column
     //NB: forest layout make sense only for tree created for data, otherwise the node will be placed where the user click on the canvas!!
-    constructor(public containerDivId, public allowedOperations,
-        public colorByClusterPalettes, public colorByStateMap, public sizeBasedOnNumChildren: boolean,
+    constructor(public containerDivId, public allowedOperations, public node_rendering : SitoTreeNodeRendering,  
         public multipleFathers?: boolean,
         public layout?: SitoForestLayout) {
 
@@ -588,10 +588,9 @@ export class SitoTree {
             label,
             id,
             this.nativeP5SketchRef,
-            this.colorByClusterPalettes ? this.nativeP5SketchRef.random(this.colorByClusterPalettes) : undefined,
-            this.colorByStateMap ? this.colorByStateMap : undefined,
-            status,
-            this.sizeBasedOnNumChildren);
+            this.node_rendering.colorByClusterPalettes ? this.nativeP5SketchRef.random(this.node_rendering.colorByClusterPalettes) : undefined,
+            this.node_rendering,
+            status );
 
 
         newRoot.isRoot = true;

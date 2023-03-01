@@ -8,9 +8,11 @@ export interface SitoTreeNodeSchema {
      statusproperty : string,
      childrenproperty : string  ,
      idproperty : string,
-     textproperty : string
+     textproperty : string 
 
 }
+
+
 
 
  

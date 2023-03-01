@@ -14,6 +14,7 @@ export class SitoTreeNode {
     public goToCenter = null;
     public orderInfather = 0;
     public borderHightlightColor = undefined;
+    
     //public justInitialized = true;
 
 
@@ -21,9 +22,10 @@ export class SitoTreeNode {
 
 
     constructor(public center, public ray,  public label, public id,
-        public p5NativeSketchRef, public colorByCluster, public colorByStateMap, public status,
-        public sizeBasedOnNumChildren) {
-
+        public p5NativeSketchRef, public myColor,  public node_renderingprops, public status 
+        ) {
+         
+        
         this.goToCenter = center.copy();
 
     }
@@ -93,18 +95,18 @@ export class SitoTreeNode {
         this.p5NativeSketchRef.ellipseMode(this.p5NativeSketchRef.CENTER);
         this.p5NativeSketchRef.stroke(0, 0, 0, 120);
 
-        if (this.colorByCluster)
+        if (this.node_renderingprops.colorByClusterPalettes)
         {
-            this.p5NativeSketchRef.fill(this.colorByCluster);
+            this.p5NativeSketchRef.fill(this.myColor);
         }
         else
         {
             try{
-                this.p5NativeSketchRef.fill(this.colorByStateMap[this.status]);
+                this.p5NativeSketchRef.fill(this.node_renderingprops.colorByStateMap[this.status]);
             }
             catch( ex)
             {
-                this.p5NativeSketchRef.fill(this.colorByStateMap["DEFAULT"]);
+                this.p5NativeSketchRef.fill(this.node_renderingprops.colorByStateMap["DEFAULT"]);
             }
             
         }
@@ -179,7 +181,7 @@ export class SitoTreeNode {
     }
 
     public _updateRay = () => {
-        if(!this.sizeBasedOnNumChildren)
+        if(!this.node_renderingprops.sizeBasedOnNumChildren)
             return;
         this.ray = this.p5NativeSketchRef.max(50, 30 * this.children.length);
         for (let i in this.children) {
@@ -189,22 +191,22 @@ export class SitoTreeNode {
 
     //used only if colorByCluster
     public _giveChildNewColor = () => {
-        if (!this.colorByCluster)
+        if (!this.node_renderingprops.colorByClusterPalettes)
             return;
 
         for (let ifig in this.children) {
-            this.children[ifig]._updateElementClusterColor(this.colorByCluster);
+            this.children[ifig]._updateElementClusterColor(this.myColor);
         }
     }
 
     //used only if colorByCluster
     public _updateElementClusterColor = (_newColor) => {
-        if (!this.colorByCluster)
+        if (!this.node_renderingprops.colorByClusterPalettes)
             return;
 
-        this.colorByCluster = _newColor;
+        this.myColor = _newColor;
         for (let ifig in this.children) {
-            this.children[ifig]._updateElementClusterColor(this.colorByCluster);
+            this.children[ifig]._updateElementClusterColor(this.myColor);
         }
     }
 
@@ -222,11 +224,11 @@ export class SitoTreeNode {
 
 
     public static _builder = (center, ray,  label,id,
-        sketchRef, colorByClusterPalettes, colorByStateMap, status,sizeBasedOnNumChildren): SitoTreeNode => {
+        sketchRef, startingColor, node_renderingprops , status ): SitoTreeNode => {
 
         if (sketchRef) {
 
-            let newTreeNode = new SitoTreeNode(center, ray,  label, id,sketchRef, colorByClusterPalettes, colorByStateMap, status,sizeBasedOnNumChildren);
+            let newTreeNode = new SitoTreeNode(center, ray,  label, id,sketchRef, startingColor,node_renderingprops, status );
 
             return newTreeNode;
         }
