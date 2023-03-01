@@ -66,10 +66,14 @@ export class SitoTreeNode {
                 if(this.fathers[i].expanded)
                 {
 
-                    this.p5NativeSketchRef.stroke(0,0,0,255); 
+                    let colorForEdges = this.node_renderingprops.vertexColor ? this.node_renderingprops.vertexColor : "#000000";
+                    let WeightForEdges = this.node_renderingprops.vertexStrokeWeight ? this.node_renderingprops.vertexStrokeWeight : 1.0;
+                    this.p5NativeSketchRef.strokeWeight(WeightForEdges);
+                    this.p5NativeSketchRef.stroke(colorForEdges); 
                     this.p5NativeSketchRef.line(this.fathers[i].center.x, this.fathers[i].center.y, this.center.x, this.center.y);
                     this.p5NativeSketchRef.push();
-                    this.p5NativeSketchRef.strokeWeight(2);
+                   
+                    this.p5NativeSketchRef.strokeWeight(WeightForEdges * 2);
                     let angle = this.p5NativeSketchRef.atan2((this.center.y - this.fathers[i].center.y), (this.center.x - this.fathers[i].center.x));
                     this.p5NativeSketchRef.translate(this.center.x - this.p5NativeSketchRef.cos(angle) * this.ray * 0.5, this.center.y - this.p5NativeSketchRef.sin(angle) * this.ray * 0.5);
                     this.p5NativeSketchRef.rotate(angle);
@@ -88,11 +92,9 @@ export class SitoTreeNode {
             }
         }
 
+        this.p5NativeSketchRef.ellipseMode(this.p5NativeSketchRef.CENTER);
         this.p5NativeSketchRef.push();
         this.p5NativeSketchRef.translate(this.center.x, this.center.y);
-        this.p5NativeSketchRef.noFill();
-        this.p5NativeSketchRef.stroke(0, 255);
-        this.p5NativeSketchRef.ellipseMode(this.p5NativeSketchRef.CENTER);
         this.p5NativeSketchRef.stroke(0, 0, 0, 120);
 
         if (this.node_renderingprops.colorByClusterPalettes)
@@ -110,36 +112,46 @@ export class SitoTreeNode {
             }
             
         }
+
+        let weightForNodeBorder = this.node_renderingprops.nodeBorderWeight ? this.node_renderingprops.nodeBorderWeight : 1;
         //node border based on having children or not
         if(this.children && this.children.length > 0)
         {
             
         this.p5NativeSketchRef.stroke(0, 0, 0, 255);
-            this.p5NativeSketchRef.strokeWeight(3);
+            this.p5NativeSketchRef.strokeWeight(weightForNodeBorder*3);
         }
         else
         {
-            this.p5NativeSketchRef.strokeWeight(1);
+            this.p5NativeSketchRef.strokeWeight(weightForNodeBorder);
         }
+        //node drawing
         this.p5NativeSketchRef.ellipse(0, 0, this.ray, this.ray);
+
         if(this.borderHightlightColor)
         {
-            this.p5NativeSketchRef.strokeWeight(3);
+            this.p5NativeSketchRef.strokeWeight(weightForNodeBorder*3);
             this.p5NativeSketchRef.noFill();
             this.p5NativeSketchRef.stroke(this.borderHightlightColor);
             this.p5NativeSketchRef.ellipse(0, 0, this.ray+10, this.ray+10);
             this.p5NativeSketchRef.ellipse(0, 0, this.ray+20, this.ray+20);
         }
-        this.p5NativeSketchRef.strokeWeight(0.5);
-        this.p5NativeSketchRef.fill(0, 255);
-        this.p5NativeSketchRef.textSize(14);
-        this.p5NativeSketchRef.stroke(0, 255);
-        let labelToShow = this.label.substring(0,Math.min(3,this.label.length))+"...";
+        //label drawing
+        let labelStrokeWeight = this.node_renderingprops.textWeight ? this.node_renderingprops.textWeight : 0.5;
+        this.p5NativeSketchRef.strokeWeight(labelStrokeWeight);
+        let textColor = this.node_renderingprops.textColor ? this.node_renderingprops.textColor : "#000000";
+        this.p5NativeSketchRef.fill(textColor);
+        this.p5NativeSketchRef.stroke(textColor);
+        let textSize = this.node_renderingprops.textSize ? this.node_renderingprops.textSize : 14;
+        this.p5NativeSketchRef.textSize(textSize);
+        let labelMaxLength = this.node_renderingprops.labelMaxLength ? this.node_renderingprops.labelMaxLength : 3;
+        let labelTrailing = this.node_renderingprops.labelTrailing ? this.node_renderingprops.labelTrailing : "...";
+        let labelToShow = this.label.substring(0,Math.min(labelMaxLength,this.label.length))+labelTrailing;
         this.p5NativeSketchRef.text( labelToShow, 0, 0);
         //if the node has children we will write the num of children 
         if(this.children && this.children.length > 0)
         {   
-            this.p5NativeSketchRef.textSize(9);
+            this.p5NativeSketchRef.textSize(textSize-5);
             this.p5NativeSketchRef.text( "("+this.children.length+")", 0, +this.ray * 0.25);
         }
         this.p5NativeSketchRef.pop();

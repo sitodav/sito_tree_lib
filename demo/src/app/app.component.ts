@@ -37,9 +37,21 @@ export class AppComponent implements OnInit {
       "SCHEDULED": "#bfbfbf",
       "DEFAULT": "#000000" //fallback
     },
-    sizeBasedOnNumChildren : true
+    sizeBasedOnNumChildren : false
+    //other graphical props for node
+    //   labelMaxLength : 10,
+    //  labelTrailing : "---",
+    //  nodeBorderWeight  : 3,
+    //  vertexStrokeWeight : 5,
+    //  vertexColor : '#ff0000',
+    //  textColor : '#00ff00',
+    //  textWeight : 3,
+    //  textSize : 22
 
   }
+ 
+
+
   /*The layouts are used when generating trees from data, to give the position to the trees */
   /*example of a fixed horizontal, expand vertically , layout */
  
@@ -251,6 +263,16 @@ export class AppComponent implements OnInit {
         ]
     }
   ];
+
+  public expandAllTree()
+  {
+    this.tree_readonly_colorbystate_autosize.expandAll();
+  }
+
+  public collapseAllTree()
+  {
+    this.tree_readonly_colorbystate_autosize.collapseAll();
+  }
 
 
   public updateDataForTree()

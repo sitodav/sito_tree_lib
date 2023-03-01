@@ -10,14 +10,13 @@ export interface SitoTreeNodeRendering {
      labelMaxLength ?: number;
      labelTrailing ?: string;
      sizeBasedOnNumChildren ?: boolean; 
-     minimumRay ?: number;
-     maximumRay ?: number;
-     minimumChildrenDistance ?: number;
-     maximumChildrenDistance ?: number;
-     nodeHighlightingColor ?: string;
-     vertexHighlightingColor ?: string;
-     nodeBorderWidth ?: number;
-     vertexStrokeWidth ?: number;
+     startingRay ?: number;  
+     nodeBorderWeight ?: number;
+     vertexStrokeWeight ?: number;
+     vertexColor ?:string;
+     textWeight ?: number;
+     textColor ?:string;
+     textSize ?:number;
 
 }
 

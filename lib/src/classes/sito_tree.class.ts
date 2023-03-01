@@ -584,7 +584,7 @@ export class SitoTree {
 
         let newRoot = SitoTreeNode._builder(
             this.nativeP5SketchRef.createVector(xpos, ypos),
-            50,
+            this.node_rendering.startingRay ? this.node_rendering.startingRay : 50,
             label,
             id,
             this.nativeP5SketchRef,
