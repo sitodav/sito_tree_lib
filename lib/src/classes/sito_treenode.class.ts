@@ -15,6 +15,7 @@ export class SitoTreeNode {
     public orderInfather = 0;
     public borderHightlightColor = undefined;
     
+    
     //public justInitialized = true;
 
 
@@ -22,7 +23,8 @@ export class SitoTreeNode {
 
 
     constructor(public center, public ray,  public label, public id,
-        public p5NativeSketchRef, public myColor,  public node_renderingprops, public status 
+        public p5NativeSketchRef, public myColor,  public node_renderingprops, public status ,
+        public dataobject
         ) {
          
         
@@ -235,12 +237,12 @@ export class SitoTreeNode {
 
 
 
-    public static _builder = (center, ray,  label,id,
-        sketchRef, startingColor, node_renderingprops , status ): SitoTreeNode => {
+    public static _builder =  (center, ray,  label,id,
+        sketchRef, startingColor, node_renderingprops , status ,dataobject): SitoTreeNode => {
 
         if (sketchRef) {
 
-            let newTreeNode = new SitoTreeNode(center, ray,  label, id,sketchRef, startingColor,node_renderingprops, status );
+            let newTreeNode = new SitoTreeNode(center, ray,  label, id,sketchRef, startingColor,node_renderingprops, status,dataobject );
 
             return newTreeNode;
         }

@@ -171,6 +171,12 @@ export class SitoTree {
             let idfornode = data[i][nodeschema.idproperty];
             let labelfornode = data[i][nodeschema.textproperty];
             let nodestatus = data[i][nodeschema.statusproperty];
+            let dataobject;
+            if(data[i][nodeschema.dataobject])
+            {
+                dataobject = JSON.parse(data[i][nodeschema.dataobject]);
+            }
+            
             /*If horizontal layout is given it will try to dispose horizontally,
             otherwise it will use vertical layout if given
             otherwise it will just set them at start of window going down*/
@@ -205,7 +211,7 @@ export class SitoTree {
                 yPos = 100 + parseInt(i) * 200;
             }
             //roots are created on the left, and the vertical allign is based on the index
-            let rootnode = this.createNewNode(xPos, yPos, labelfornode, idfornode, nodestatus)
+            let rootnode = this.createNewNode(xPos, yPos, labelfornode, idfornode, nodestatus,dataobject)
             //save the root node
             newroots.push(rootnode);
             //check recursively on children
@@ -421,6 +427,15 @@ export class SitoTree {
             dataelem[nodeschema.textproperty] = node.label;
             dataelem[nodeschema.idproperty] = node.id;
             dataelem[nodeschema.statusproperty] = node.status;
+            if(nodeschema.fathersproperty)
+            {
+                dataelem[nodeschema.fathersproperty] = node.fathers;
+            }
+            if(nodeschema.dataobject)
+            {
+                dataelem[nodeschema.dataobject] = JSON.stringify( node.dataobject );
+            }
+            
 
             if(node.children)
             {
@@ -446,6 +461,8 @@ export class SitoTree {
        loadData_end : function input (tree,nodeschema,data),
        createNode_start : function input (tree,xpos, ypos, label, id, status),
        createNode_end : function input (tree,newRoot),
+       deleteNode_start : function input (tree,id)
+       deleteNode_end : function input (tree, deleted[])
        appendNodeTo_start : function input (tree,source,target),
        appendNodeTo_end : function input (tree,source,target),
        expandAll_start : function input (tree ),
@@ -574,9 +591,84 @@ export class SitoTree {
         return null;
     }
 
+
+    /*Delete node and its children and returns a list of all the deleted nodes , children included */
+    public deleteNodeAndItsChildren(nodeId)
+    {
+        let deleted = [];
+        if (this.addedCallback["deleteNode_start"]) {
+            this.addedCallback["deleteNode_start"](this, nodeId);
+        }
+
+        if(this.roots)
+        {
+            for(let i in this.roots)
+            {
+                //searching all roots until we find the branch with the node
+                let foundNode = this.findIdRecursive(this.roots[i],nodeId);
+                if(foundNode)
+                {
+                    this.deleteNodeAndChildrenRecursive(foundNode,deleted);
+                    if(foundNode.fathers)
+                    {
+                        for(let i in foundNode.fathers)
+                        {
+                            this.removeById(nodeId,  foundNode.fathers[i].children);
+                            // for(let j in foundNode.fathers[i].children)
+                            // {
+                            //     if(foundNode.fathers[i].children[j])
+                            // }
+                            // foundNode.fathers[i]
+                        }
+                    }
+                    
+                    break;
+                }
+            }
+
+            //effective removal from tree if they are roots
+            for(let i in deleted)
+            {
+                for(let j in this.roots)
+                {
+                    if(this.roots[j].id == deleted[i].id)
+                    {
+                        this.roots.splice(parseInt(j),1);
+                    }
+                }
+            }
+         
+            
+        }
+
+        
+       
+       
+        if (this.addedCallback["deleteNode_end"]) {
+            this.addedCallback["deleteNode_end"](this,  deleted);
+        }
+
+        return deleted;
+
+    }
+
+    private deleteNodeAndChildrenRecursive(node, deleted)
+    {   
+        deleted.push(node);
+        
+        delete this.alreadyEncounteredNodes[node.id];
+        if(node.children)
+        {
+            for(let i in node.children)
+            {
+                this.deleteNodeAndChildrenRecursive(node.children[i],deleted);
+            }
+        }
+    }
+
     //this simply create a new node and returns it,
     //the new node will be alone, so a single root, with no children and no father
-    public createNewNode(xpos, ypos, label, id, status) {
+    public createNewNode(xpos, ypos, label, id, status,dataobject) {
 
         if (this.addedCallback["createNode_start"]) {
             this.addedCallback["createNode_start"](this, xpos, ypos, label, id, status);
@@ -590,7 +682,8 @@ export class SitoTree {
             this.nativeP5SketchRef,
             this.node_rendering.colorByClusterPalettes ? this.nativeP5SketchRef.random(this.node_rendering.colorByClusterPalettes) : undefined,
             this.node_rendering,
-            status );
+            status,
+            dataobject );
 
 
         newRoot.isRoot = true;
@@ -644,6 +737,10 @@ export class SitoTree {
         source.orderInfather = target.children.length - 1;
         // if (!this.multipleFathers) {
 
+        if(target.children.length == 1) 
+        {
+            this.deepExpansionRecursive(target);
+        }
         if (target.fathers && target.fathers.length > 0) {
             target.fathers[0]._applyChildStartPos();
         }
@@ -665,6 +762,7 @@ export class SitoTree {
         let idfornode = childdata[nodeschema.idproperty];
         let labelfornode = childdata[nodeschema.textproperty];
         let nodestatus = childdata[nodeschema.statusproperty];
+        let dataobject = childdata[nodeschema.dataobject];
         //use the same vertical align of the father , and move orizontally
         //to allow multiple fathers we have to reuse already encountered nodes
         let node;
@@ -672,7 +770,7 @@ export class SitoTree {
             return this.alreadyEncounteredNodes[idfornode];
         }
         else {
-            node = this.createNewNode(Math.random() * 500, father.goToCenter.y + 100, labelfornode, idfornode, nodestatus)
+            node = this.createNewNode(Math.random() * 500, father.goToCenter.y + 100, labelfornode, idfornode, nodestatus,dataobject)
             this.alreadyEncounteredNodes[idfornode] = node;
         }
 
@@ -1009,7 +1107,7 @@ export class SitoTree {
             }
 
             let newRootId = "" + (_p5sketch.frameCount % 1000);
-            this.createNewNode(_p5sketch.mouseX, _p5sketch.mouseY, newRootId, newRootId, "COMPLETED_SUCCESS");
+            this.createNewNode(_p5sketch.mouseX, _p5sketch.mouseY, newRootId, newRootId, "COMPLETED_SUCCESS",null);
 
 
             if (this.addedCallback["mouseClicked_end"]) {
