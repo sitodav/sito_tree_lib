@@ -747,10 +747,12 @@ export class SitoTree {
         else
             target._applyChildStartPos();
         // }
-
+        this.restoreRoots();
+        
         if (this.addedCallback["appendNodeTo_end"]) {
             this.addedCallback["appendNodeTo_end"](this, source, target);
         }
+       
 
         return target;
 
