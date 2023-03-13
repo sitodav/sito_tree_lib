@@ -14,7 +14,7 @@ treesSchemaForBETasks: SitoTreeNodeSchema = {
     statusproperty: "status", -->tells the library to create the status in the tree node taking the status from the json input
     idproperty: "taskId", --> tells the library that id property on node will come from taskId in the json data
     childrenproperty: "children", ...etc
-    textproperty: "taskId",
+    textproperty: "text",
   };
 
 if this is used for data exporting

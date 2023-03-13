@@ -403,7 +403,10 @@ export class SitoTree {
 
     /*Export data : use the internal tree/nodes structures to map to a json, using the schema
     to export the node property */
-    public exportData(nodeschema) {
+    //To reconstruct the tree from the exported data we don't need to export the father dependencies
+    //(and it s better to keep it to true to remove fathers link and circular dependencies) because 
+    //if we want to represent the export as string via JSON.stringify it won't work without removing circular dependencies
+    public exportData(nodeschema ) {
         let data = [];
 
         if (!this.roots || this.roots.length == 0)
@@ -412,14 +415,14 @@ export class SitoTree {
         for (let i in this.roots) {
 
             /*root node to root data element */
-            let rootDataElm = this.createDataElementFromNode(this.roots[i],nodeschema);
+            let rootDataElm = this.createDataElementFromNode(this.roots[i],nodeschema );
             data.push(rootDataElm);
         }
 
         return data;
     }
 
-    private createDataElementFromNode(node : SitoTreeNode, nodeschema :SitoTreeNodeSchema )
+    private createDataElementFromNode(node : SitoTreeNode, nodeschema :SitoTreeNodeSchema  )
     {   
         let dataelem = {};
         try
@@ -427,7 +430,7 @@ export class SitoTree {
             dataelem[nodeschema.textproperty] = node.label;
             dataelem[nodeschema.idproperty] = node.id;
             dataelem[nodeschema.statusproperty] = node.status;
-            if(nodeschema.fathersproperty)
+            if(nodeschema.fathersproperty  )
             {
                 dataelem[nodeschema.fathersproperty] = node.fathers;
             }
@@ -442,7 +445,7 @@ export class SitoTree {
                 dataelem[nodeschema.childrenproperty] = [];
                 for(let i in node.children)
                 {
-                    let childrendataelm = this.createDataElementFromNode(node.children[i],nodeschema);
+                    let childrendataelm = this.createDataElementFromNode(node.children[i],nodeschema );
                     dataelem[nodeschema.childrenproperty].push(childrendataelm);
                 }
             }
@@ -608,7 +611,7 @@ export class SitoTree {
                 let foundNode = this.findIdRecursive(this.roots[i],nodeId);
                 if(foundNode)
                 {
-                    this.deleteNodeAndChildrenRecursive(foundNode,deleted);
+                    this.deleteNodeAndChildrenRecursive(foundNode, foundNode.id, deleted);
                     if(foundNode.fathers)
                     {
                         for(let i in foundNode.fathers)
@@ -641,7 +644,7 @@ export class SitoTree {
             
         }
 
-        
+        this.restoreRoots();
        
        
         if (this.addedCallback["deleteNode_end"]) {
@@ -652,16 +655,38 @@ export class SitoTree {
 
     }
 
-    private deleteNodeAndChildrenRecursive(node, deleted)
+    private deleteNodeAndChildrenRecursive(node, fatherIdComingFrom, deleted)
     {   
         deleted.push(node);
         
         delete this.alreadyEncounteredNodes[node.id];
+
+
+        //this is to avoid that a children with multiple fathers, that wont' be removed
+        //would still point to a ghost father
+        if(node.fathers && node.fathers.length > 1)
+        {
+            let iFound = -1;
+            for(let i in node.fathers)
+            {
+                if(node.fathers[i].id == fatherIdComingFrom)
+                {
+                    iFound = parseInt(i);
+                    
+                    break;
+                }
+            }
+            if(iFound >= 0)
+            {
+                node.fathers.splice(iFound,1);
+            }
+        }
+        
         if(node.children)
         {
             for(let i in node.children)
             {
-                this.deleteNodeAndChildrenRecursive(node.children[i],deleted);
+                this.deleteNodeAndChildrenRecursive(node.children[i], node.id,deleted);
             }
         }
     }
@@ -714,6 +739,25 @@ export class SitoTree {
         if (this.addedCallback["appendNodeTo_start"]) {
             this.addedCallback["appendNodeTo_start"](this, source, target);
         }
+
+
+        //if source and target are direct childre-father or father-children
+        //do nothing
+        if(source.children)
+        {
+            for(let i in source.children)
+            {
+                if(source.children[i].id == target.id)
+                {
+                    if (this.addedCallback["appendNodeTo_end"]) {
+                        this.addedCallback["appendNodeTo_end"](this, source, target);
+                    }
+
+                    return;
+                }
+            }
+        }
+
 
         source.isRoot = false;
         if (!source.fathers) {
