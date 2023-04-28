@@ -21,6 +21,7 @@ export class SitoTree {
     hidden: boolean = false;
     addedCallback = {}
     alreadyEncounteredNodes: any = {};
+    lockedNodePositions : boolean = false; //to avoid resetting node positions when appending nodes
     
 
     /*If using colorByClusterPalettes , we want a single color, and this will be 
@@ -221,7 +222,7 @@ export class SitoTree {
                 let childrendatas = data[i][nodeschema.childrenproperty];
                 for (let j in childrendatas) {
                     let children = this.recursiveNodeGeneration(rootnode, childrendatas[j], nodeschema);
-                    this.appendNodeTo(children, rootnode);
+                    this.appendNodeTo(children, rootnode,false);
                 }
 
             }
@@ -436,7 +437,15 @@ export class SitoTree {
             }
             if(nodeschema.dataobject)
             {
+               if (typeof  node.dataobject  === 'string' || node.dataobject  instanceof String)  //to avoid stringify of string (creates problems)
+               {
+                dataelem[nodeschema.dataobject] = node.dataobject;
+               }
+               else
+               {
                 dataelem[nodeschema.dataobject] = JSON.stringify( node.dataobject );
+               }
+                
             }
             
 
@@ -457,8 +466,11 @@ export class SitoTree {
     }
 
     
-
-
+    public lockNodePositionsOnAppend   (val : boolean)  
+    {
+         this.lockedNodePositions = val;
+    }
+ 
     /*available callback are :
        loadData_start : function input (tree,nodeschema,data),
        loadData_end : function input (tree,nodeschema,data),
@@ -734,7 +746,7 @@ export class SitoTree {
     //source (the node to append)
     //target (where to append)
 
-    public appendNodeTo(source: any, target: any) {
+    public appendNodeTo(source: any, target: any, _lockedNodePositions: boolean) {
 
         if (this.addedCallback["appendNodeTo_start"]) {
             this.addedCallback["appendNodeTo_start"](this, source, target);
@@ -786,11 +798,14 @@ export class SitoTree {
             this.deepExpansionRecursive(target);
         }
         if (target.fathers && target.fathers.length > 0) {
-            target.fathers[0]._applyChildStartPos();
+           if(!_lockedNodePositions)
+                target.fathers[0]._applyChildStartPos();
         }
         else
+        {
+          if(!_lockedNodePositions)
             target._applyChildStartPos();
-        // }
+        }
         this.restoreRoots();
         
         if (this.addedCallback["appendNodeTo_end"]) {
@@ -828,7 +843,7 @@ export class SitoTree {
             let childrendatas = childdata[nodeschema.childrenproperty];
             for (let j in childrendatas) {
                 let children = this.recursiveNodeGeneration(node, childrendatas[j], nodeschema);
-                this.appendNodeTo(children, node);
+                this.appendNodeTo(children, node,false);
             }
         }
 
@@ -1241,7 +1256,7 @@ export class SitoTree {
                         continue;
                     let target = found;
                     if (!this.allowedOperations.readOnly && this.allowedOperations.nodeAppend)
-                        this.appendNodeTo(this.draggedNode, target);
+                        this.appendNodeTo(this.draggedNode, target,this.lockedNodePositions);
                     break;
                 }
 
