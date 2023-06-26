@@ -4,6 +4,7 @@ import { SitoForestLayout } from "./sito_forest_layout";
 import { SitoTreeNode } from "./sito_treenode.class";
 import { SitoTreeNodeRendering } from "./sito_treenoderendering";
 import { SitoTreeNodeSchema } from "./sito_treenodeschema";
+import { DebugTimer } from "./debug-timer";
 
 /*
 author: sitodav@gmail.com
@@ -39,6 +40,8 @@ export class SitoTree {
         public layout?: SitoForestLayout) {
 
         this.p5wrapper = new p5(this.sketchDefinitionFunction);
+        //DebugTimer._enabled = true; //to enable time debugging
+         
     }
 
 
@@ -108,6 +111,12 @@ export class SitoTree {
     /*Use data input, */
     public loadData(data: any, nodeschema: SitoTreeNodeSchema, debug: boolean) {
 
+       
+        DebugTimer.start("loadData");
+
+        if(this.hidden) //to avoid useless computation
+         return;
+
         if (this.addedCallback["loadData_start"]) {
             this.addedCallback["loadData_start"](this, nodeschema, data);
         }
@@ -157,11 +166,16 @@ export class SitoTree {
             return;
         }
 
+        DebugTimer.start2(5,"loadData");
+
     }
 
 
     /*the forests layout are used to define how to distribute different roots for different trees */
     private createNewNodesStructureFromDataLoading(data: any, nodeschema: SitoTreeNodeSchema, debug: boolean) {
+
+        DebugTimer.start("createNewNodesStructureFromDataLoading");
+
         this.alreadyEncounteredNodes = {};
         let newroots = [];
         if (debug)
@@ -233,6 +247,8 @@ export class SitoTree {
         this.updateRays();
         this.reorderChilds();
         this.nativeP5SketchRef.loop(1);
+
+        DebugTimer.start2(5,"createNewNodesStructureFromDataLoading");
     }
 
     //to avoid rounding error on index
@@ -244,6 +260,9 @@ export class SitoTree {
 
     //this can be called only if we are sure the structures of data and nodes are the same
     private static recursiveNodeUpdateFromData(data_element, node: SitoTreeNode, nodeschema: SitoTreeNodeSchema) {
+
+
+        DebugTimer.start("recursiveNodeUpdateFromData");
 
         node.status = data_element[nodeschema.statusproperty];
 
@@ -257,7 +276,23 @@ export class SitoTree {
             }
         }
 
+        DebugTimer.start2(5,"recursiveNodeUpdateFromData");
+ 
+    }
 
+    /*used to remove from memory */
+    private static detachAllChildrenNodesForMemoryCleaning(node : SitoTreeNode)
+    {
+        if(node.children)
+        {
+            for(let i in node.children)
+            {
+                this.detachAllChildrenNodesForMemoryCleaning(node.children[i]);
+            }
+        }
+
+        node.children.length = 0;
+         
 
     }
 
@@ -269,6 +304,9 @@ export class SitoTree {
     */
 
     private static compareDataPathsAndTreePath(datas, tree: SitoTree, treenodeschema: SitoTreeNodeSchema): number {
+
+        DebugTimer.start("compareDataPathsAndTreePath");
+
         let result = 0;
         let treepaths = tree.getAllTreePaths();
         let dataPaths = SitoTree.getAllDataPaths(datas, treenodeschema);
@@ -302,6 +340,9 @@ export class SitoTree {
                     result = -1;
             }
         }
+
+        DebugTimer.start2(5,"compareDataPathsAndTreePath");
+
         return result;
     }
 
@@ -312,6 +353,8 @@ export class SitoTree {
 
 
     private getAllTreePaths(): string[] {
+
+        DebugTimer.start("getAllTreePaths");
         let paths = [];
 
         if (this.roots) {
@@ -323,6 +366,8 @@ export class SitoTree {
 
             }
         }
+
+        DebugTimer.start2(5,"getAllTreePaths");
 
         return paths;
     }
@@ -336,6 +381,9 @@ export class SitoTree {
     ]
     */
     private dfs_visitAllTreePaths(node: SitoTreeNode, pathToMyFather: string): string[] {
+
+        DebugTimer.start("dfs_visitAllTreePaths");
+
         let mySubPaths = [];
 
         let pathToMe = pathToMyFather + "->" + node.id + "[" + node.status + "]";
@@ -355,12 +403,18 @@ export class SitoTree {
             }
         }
 
+
+        DebugTimer.start2(5,"dfs_visitAllTreePaths");
+
         return mySubPaths;
     }
 
 
     /*Same methods of two previous, but for data */
     private static getAllDataPaths(data, treenodeschema: SitoTreeNodeSchema): string[] {
+
+        DebugTimer.start("getAllDataPaths");
+
         let paths = [];
 
         if (data) {
@@ -373,11 +427,15 @@ export class SitoTree {
             }
         }
 
+        DebugTimer.start2(5,"getAllDataPaths");
         return paths;
     }
 
 
     private static dfs_visitAllDataPaths(treenodeschema: SitoTreeNodeSchema, data_elm: SitoTreeNode, pathToMyFather: string): string[] {
+
+        DebugTimer.start("dfs_visitAllDataPaths");
+
         let mySubPaths = [];
 
         let pathToMe = pathToMyFather + "->" + data_elm[treenodeschema.idproperty] + "[" + data_elm[treenodeschema.statusproperty] + "]";
@@ -397,6 +455,8 @@ export class SitoTree {
             }
         }
 
+        DebugTimer.start2(5,"dfs_visitAllDataPaths");
+
         return mySubPaths;
     }
 
@@ -408,6 +468,8 @@ export class SitoTree {
     //(and it s better to keep it to true to remove fathers link and circular dependencies) because 
     //if we want to represent the export as string via JSON.stringify it won't work without removing circular dependencies
     public exportData(nodeschema ) {
+
+        
         let data = [];
 
         if (!this.roots || this.roots.length == 0)
@@ -425,6 +487,9 @@ export class SitoTree {
 
     private createDataElementFromNode(node : SitoTreeNode, nodeschema :SitoTreeNodeSchema  )
     {   
+
+        DebugTimer.start("createDataElementFromNode");
+
         let dataelem = {};
         try
         {
@@ -462,6 +527,9 @@ export class SitoTree {
 
         }
         catch(e){}
+
+        DebugTimer.start2(5,"createDataElementFromNode");
+
         return dataelem;
     }
 
@@ -508,14 +576,38 @@ export class SitoTree {
         this.addedCallback[type] = callback;
     }
     public empty() {
+
+        if(this.roots)
+        {
+            for(let i in this.roots)
+            {
+                SitoTree.detachAllChildrenNodesForMemoryCleaning(this.roots[i]);
+            }
+        }
+        
         this.roots.length = 0;
+   
     }
 
 
-
+    public deleteResourcesFromMemory()
+    {
+       
+        this.empty();
+        for (let key in this.alreadyEncounteredNodes){
+            delete this.alreadyEncounteredNodes[key];
+        }
+        delete this.alreadyEncounteredNodes;
+        this.nativeP5SketchRef.remove();
+        delete this.nativeP5SketchRef;
+        this.nativeP5SketchRef = null;
+    }
     public hide() {
-        this.hidden = true;
-        this.nativeP5SketchRef.loop(1);
+        DebugTimer.start("hide");
+        this.hidden= true;
+        if(this.nativeP5SketchRef)
+         this.nativeP5SketchRef.loop(1);
+        DebugTimer.start2(5,"hide");
     }
     public show() {
         this.hidden = false;
@@ -580,6 +672,7 @@ export class SitoTree {
     }
 
     public findRootForNode(id) {
+        DebugTimer.start("findRootForNode_"+id);
         let foundRoot;
         if (this.roots) {
             for (let i in this.roots) {
@@ -588,12 +681,13 @@ export class SitoTree {
                     return t;
             }
         }
-
+        DebugTimer.start2(5,"findRootForNode_"+id);
         return null;
 
     }
 
     private findIdRecursive(node, nodeId) {
+        DebugTimer.start("findRootForNode_"+nodeId);
         if (node.id == nodeId)
             return node;
         if (node.children) {
@@ -603,6 +697,7 @@ export class SitoTree {
                     return t;
             }
         }
+        DebugTimer.start2(5,"findRootForNode_"+nodeId);
         return null;
     }
 
@@ -610,6 +705,9 @@ export class SitoTree {
     /*Delete node and its children and returns a list of all the deleted nodes , children included */
     public deleteNodeAndItsChildren(nodeId)
     {
+
+        DebugTimer.start("deleteNodeAndItsChildren");
+
         let deleted = [];
         if (this.addedCallback["deleteNode_start"]) {
             this.addedCallback["deleteNode_start"](this, nodeId);
@@ -663,12 +761,16 @@ export class SitoTree {
             this.addedCallback["deleteNode_end"](this,  deleted);
         }
 
+
+        DebugTimer.start2(5,"deleteNodeAndItsChildren");
+
         return deleted;
 
     }
 
     private deleteNodeAndChildrenRecursive(node, fatherIdComingFrom, deleted)
     {   
+        DebugTimer.start("deleteNodeAndChildrenRecursive"+fatherIdComingFrom);
         deleted.push(node);
         
         delete this.alreadyEncounteredNodes[node.id];
@@ -701,11 +803,14 @@ export class SitoTree {
                 this.deleteNodeAndChildrenRecursive(node.children[i], node.id,deleted);
             }
         }
+        DebugTimer.start2(5,"deleteNodeAndChildrenRecursive"+fatherIdComingFrom);
     }
 
     //this simply create a new node and returns it,
     //the new node will be alone, so a single root, with no children and no father
     public createNewNode(xpos, ypos, label, id, status,dataobject) {
+
+        DebugTimer.start("createNewNode"+id);
 
         if (this.addedCallback["createNode_start"]) {
             this.addedCallback["createNode_start"](this, xpos, ypos, label, id, status);
@@ -738,7 +843,8 @@ export class SitoTree {
         if (this.addedCallback["createNode_end"]) {
             this.addedCallback["createNode_end"](this, newRoot);
         }
-
+        
+        DebugTimer.start2(5,"createNewNode"+id);
         return newRoot;
     }
 
@@ -747,6 +853,8 @@ export class SitoTree {
     //target (where to append)
 
     public appendNodeTo(source: any, target: any, _lockedNodePositions: boolean) {
+
+        DebugTimer.start("appendNodeTo"+source);
 
         if (this.addedCallback["appendNodeTo_start"]) {
             this.addedCallback["appendNodeTo_start"](this, source, target);
@@ -812,7 +920,7 @@ export class SitoTree {
             this.addedCallback["appendNodeTo_end"](this, source, target);
         }
        
-
+        DebugTimer.start2(5,"appendNodeTo"+source);
         return target;
 
 
@@ -820,6 +928,7 @@ export class SitoTree {
     }
 
     private recursiveNodeGeneration(father: any, childdata: any, nodeschema: SitoTreeNodeSchema) {
+        DebugTimer.start("recursiveNodeGeneration"+father);
         let idfornode = childdata[nodeschema.idproperty];
         let labelfornode = childdata[nodeschema.textproperty];
         let nodestatus = childdata[nodeschema.statusproperty];
@@ -846,7 +955,7 @@ export class SitoTree {
                 this.appendNodeTo(children, node,false);
             }
         }
-
+        DebugTimer.start2(5,"recursiveNodeGeneration"+father);
         return node;
     }
 
@@ -863,7 +972,7 @@ export class SitoTree {
     ************************************                                                           ************************************/
 
     public expandAll = () => {
-
+        DebugTimer.start("expandAll");
         if (this.addedCallback["expandAll_start"]) {
             this.addedCallback["expandAll_start"](this);
         }
@@ -876,10 +985,12 @@ export class SitoTree {
         if (this.addedCallback["expandAll_end"]) {
             this.addedCallback["expandAll_end"](this);
         }
-
+        DebugTimer.start2(5,"expandAll");
     }
 
     public collapseAll = () => {
+        
+        DebugTimer.start("collapseAll");
         if (this.addedCallback["collapseAll_start"]) {
             this.addedCallback["collapseAll_start"](this);
         }
@@ -892,6 +1003,8 @@ export class SitoTree {
         if (this.addedCallback["collapseAll_end"]) {
             this.addedCallback["collapseAll_end"](this);
         }
+        
+        DebugTimer.start2(5,"expandAll");
     }
 
     private isMouseInSketch(mouseX, mouseY, sketchRef): boolean {
@@ -902,7 +1015,8 @@ export class SitoTree {
 
 
     private customDoubleClick = () => {
-
+        
+        DebugTimer.start("customDoubleClick");
         if (this.addedCallback["doubleClick_start"]) {
             this.addedCallback["doubleClick_start"](this, null);
         }
@@ -921,7 +1035,8 @@ export class SitoTree {
                 if (this.addedCallback["doubleClick_end"]) {
                     this.addedCallback["doubleClick_end"](this, found);
                 }
-
+                
+                DebugTimer.start2(5,"customDoubleClick");
                 return;
             }
         }
@@ -929,7 +1044,8 @@ export class SitoTree {
         if (this.addedCallback["doubleClick_end"]) {
             this.addedCallback["doubleClick_end"](this, null);
         }
-
+        
+        DebugTimer.start2(5,"customDoubleClick");
     }
 
 
@@ -945,6 +1061,7 @@ export class SitoTree {
 
 
     private restoreRoots = () => {
+        DebugTimer.start("restoreRoots");
         let newRoots = [];
         for (let i in this.roots) {
             if (this.roots[i].isRoot)
@@ -953,26 +1070,36 @@ export class SitoTree {
         }
         this.roots = newRoots;
         // this.treeNodesService.notifyTreeNodesUpdate(this.roots);
+        
+        DebugTimer.start2(5,"restoreRoots");
     }
 
 
     private updateRays = () => {
+        DebugTimer.start("updateRays");
         for (let i in this.roots) {
             this.roots[i]._updateRay();
         }
+        
+        DebugTimer.start2(5,"updateRays");
     }
 
     private reorderChilds = () => {
+        
+        DebugTimer.start("reorderChilds");
         for (let i in this.roots) {
             this.roots[i]._reorderChilds();
         }
+        
+        DebugTimer.start2(5,"reorderChilds");
     }
 
 
 
 
     private triggerDoubleClick = (id: string, deep: boolean) => {
-
+        
+        DebugTimer.start("triggerDoubleClick");
         let found = this.roots.find(elm => elm.id === id)
         if (null != found) {
 
@@ -989,11 +1116,14 @@ export class SitoTree {
 
 
         }
+        
+        DebugTimer.start2(5,"triggerDoubleClick");
 
     }
 
     private deepExpansionRecursive = (elm: SitoTreeNode) => {
-
+        
+        DebugTimer.start("deepExpansionRecursive");
         elm.expanded = true;
 
 
@@ -1002,6 +1132,8 @@ export class SitoTree {
                 this.deepExpansionRecursive(child)
             }
         }
+        
+        DebugTimer.start2(5,"deepExpansionRecursive");
 
     }
 
@@ -1054,6 +1186,8 @@ export class SitoTree {
         //p5js draw function
         _p5sketch.draw = () => {
 
+            
+             DebugTimer.start("draw");
 
             if (this.addedCallback["draw_start"]) {
                 this.addedCallback["draw_start"](this, _p5sketch);
@@ -1061,7 +1195,7 @@ export class SitoTree {
 
             _p5sketch.background("#fffffff");
             if (this.hidden) {
-
+                return;
             }
             if (this.isDoubleClicked) {
 
@@ -1077,6 +1211,9 @@ export class SitoTree {
             if (this.addedCallback["draw_end"]) {
                 this.addedCallback["draw_end"](this, _p5sketch);
             }
+
+            
+            DebugTimer.start2(5,"draw");
 
         };
 
@@ -1110,6 +1247,8 @@ export class SitoTree {
 
         //allowed only in readOnly == false mode
         _p5sketch.mouseClicked = (evt) => {
+            
+            DebugTimer.start("mouseClicked");
 
             /*not in sketch, return anyway */
             if (!this.isMouseInSketch(_p5sketch.mouseX, _p5sketch.mouseY, this.nativeP5SketchRef)) {
@@ -1136,6 +1275,8 @@ export class SitoTree {
                 if (this.addedCallback["mouseClicked_end"]) {
                     this.addedCallback["mouseClicked_end"](evt, this, _p5sketch, found);
                 }
+                
+                DebugTimer.start2(5,"mouseClicked");
                 return;
             }
 
@@ -1174,6 +1315,9 @@ export class SitoTree {
             if (this.addedCallback["mouseClicked_end"]) {
                 this.addedCallback["mouseClicked_end"](evt, this, _p5sketch, found);
             }
+
+            
+            DebugTimer.start2(5,"mouseClicked");
         }
 
         _p5sketch.mouseDragged = (evt) => {

@@ -1,3 +1,4 @@
+import { DebugTimer } from "./debug-timer";
 
 /*
 author: sitodav@gmail.com
@@ -61,6 +62,7 @@ export class SitoTreeNode {
 
         //drawing the line connecting the node with the father
         //only for expanded fathers
+        DebugTimer.start("_draw: drawing line connecting node with fathers");
         if (null != this.fathers) {
 
             for(let i in this.fathers)
@@ -73,8 +75,8 @@ export class SitoTreeNode {
                     this.p5NativeSketchRef.strokeWeight(WeightForEdges);
                     this.p5NativeSketchRef.stroke(colorForEdges); 
                     this.p5NativeSketchRef.line(this.fathers[i].center.x, this.fathers[i].center.y, this.center.x, this.center.y);
+                    
                     this.p5NativeSketchRef.push();
-                   
                     this.p5NativeSketchRef.strokeWeight(WeightForEdges * 2);
                     let angle = this.p5NativeSketchRef.atan2((this.center.y - this.fathers[i].center.y), (this.center.x - this.fathers[i].center.x));
                     this.p5NativeSketchRef.translate(this.center.x - this.p5NativeSketchRef.cos(angle) * this.ray * 0.5, this.center.y - this.p5NativeSketchRef.sin(angle) * this.ray * 0.5);
@@ -86,13 +88,20 @@ export class SitoTreeNode {
             }
             
         }
-         
+        DebugTimer.start2(5,"_draw: drawing line connecting node with father"); 
+
+
+        DebugTimer.start("_draw: recursive _draw on children of "+this.id);
 
         if (this.children.length > 0 && this.expanded) {
             for (let i in this.children) {
                 this.children[i]._draw();
             }
         }
+        DebugTimer.start2(5,"_draw: recursive _draw on children of "+this.id);
+
+
+        DebugTimer.start("_draw: node rendering "+this.id);
 
         this.p5NativeSketchRef.ellipseMode(this.p5NativeSketchRef.CENTER);
         this.p5NativeSketchRef.push();
@@ -120,7 +129,7 @@ export class SitoTreeNode {
         if(this.children && this.children.length > 0)
         {
             
-        this.p5NativeSketchRef.stroke(0, 0, 0, 255);
+            this.p5NativeSketchRef.stroke(0, 0, 0, 255);
             this.p5NativeSketchRef.strokeWeight(weightForNodeBorder*3);
         }
         else
@@ -151,16 +160,18 @@ export class SitoTreeNode {
         let labelToShow = this.label.substring(0,Math.min(labelMaxLength,this.label.length))+labelTrailing;
         this.p5NativeSketchRef.text( labelToShow, 0, 0);
         //if the node has children we will write the num of children 
-        if(this.children && this.children.length > 0)
-        {   
-            this.p5NativeSketchRef.textSize(textSize-5);
-            this.p5NativeSketchRef.text( "("+this.children.length+")", 0, +this.ray * 0.25);
-        }
+        // if(this.children && this.children.length > 0)
+        // {   
+        //     this.p5NativeSketchRef.textSize(textSize-5);
+        //     this.p5NativeSketchRef.text( "("+this.children.length+")", 0, +this.ray * 0.25);
+        // }
         this.p5NativeSketchRef.pop();
+
+        DebugTimer.start2(5,"_draw: node rendering "+this.id);
     }
 
     public _checkMouseIn = (x, y) => {
-
+        DebugTimer.start("_checkMouseIn"+this.id);
         if (this.expanded && this.children.length > 0) {
             for (let i in this.children) {
                 let found = this.children[i]._checkMouseIn(x, y);
@@ -172,14 +183,18 @@ export class SitoTreeNode {
 
         if (this.p5NativeSketchRef.createVector(this.center.x - x, this.center.y - y).mag() < 0.5 * this.ray) {
 
+            DebugTimer.start2(5,"_checkMouseIn"+this.id);
             return this;
 
         }
+        DebugTimer.start2(5,"_checkMouseIn"+this.id);
         return null;
     }
 
     //partial means not all the way, used for multiple fathers
     public _applyChildStartPos = (partial?:number) => {
+        DebugTimer.start("_applyChildStartPos"+this.id);
+        
         partial = !partial ? 1.0 : partial;
 
         for (let i in this.children) {
@@ -192,15 +207,19 @@ export class SitoTreeNode {
                 this.goToCenter.y + 2*childRay * this.p5NativeSketchRef.sin(anglePorz));
             this.children[i]._applyChildStartPos();
         }
+
+        DebugTimer.start2(5,"_applyChildStartPos"+this.id);
     }
 
     public _updateRay = () => {
+        DebugTimer.start("_updateRay"+this.id);
         if(!this.node_renderingprops.sizeBasedOnNumChildren)
             return;
         this.ray = this.p5NativeSketchRef.max(50, 30 * this.children.length);
         for (let i in this.children) {
             this.children[i]._updateRay();
         }
+        DebugTimer.start2(5,"_updateRay"+this.id);
     }
 
     //used only if colorByCluster
@@ -225,11 +244,13 @@ export class SitoTreeNode {
     }
 
     public _reorderChilds = () => {
+        DebugTimer.start("_reorderChilds"+this.id);
         this.children.sort((a, b) => {
             if (a.orderInfather > b.orderInfather)
                 return 1;
             else return -1;
         });
+        DebugTimer.start2(5,"_reorderChilds"+this.id);
     }
 
 
@@ -239,13 +260,15 @@ export class SitoTreeNode {
 
     public static _builder =  (center, ray,  label,id,
         sketchRef, startingColor, node_renderingprops , status ,dataobject): SitoTreeNode => {
-
+            
+        DebugTimer.start("_builder"+id);
         if (sketchRef) {
 
             let newTreeNode = new SitoTreeNode(center, ray,  label, id,sketchRef, startingColor,node_renderingprops, status,dataobject );
-
+            DebugTimer.start("_reorderChilds"+id);
             return newTreeNode;
         }
+        DebugTimer.start2(5,"_builder"+id);
         return undefined;
 
     }
