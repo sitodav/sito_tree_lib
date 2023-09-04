@@ -1272,7 +1272,7 @@ export class SitoTree {
                     let nodeA = this._saveOveredEdgesVerticesHere[0];
                     let nodeB = this._saveOveredEdgesVerticesHere[1];
                     
-                        _p5sketch.strokeWeight(this.node_rendering.vertexStrokeWeight*5);
+                        _p5sketch.strokeWeight( (this.node_rendering.vertexStrokeWeight ? this.node_rendering.vertexStrokeWeight : 1.0) *5);
                         _p5sketch.noFill();
                         _p5sketch.stroke(this.node_rendering.hightlightEdgesOnMouseOverColor); //opacity from color input
                         _p5sketch.line(nodeA.center.x, nodeA.center.y, nodeB.center.x,nodeB.center.y);
