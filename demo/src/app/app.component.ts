@@ -115,6 +115,7 @@ export class AppComponent implements OnInit {
      
     /*tree with color by cluster, no autosize, interactive */
     let clonedProps0 = JSON.parse(JSON.stringify(this.node_rendering_props1 ));
+    clonedProps0.clickableEdges = true;
     clonedProps0.hightlightEdgesOnMouseOverColor = "#479ff588"; //cloning props to set highlight for edges only on first tree (opacity in the #hex color as last two digits)
     this.tree_interactiveClustercolorsNoautosize = new SitoTree('tree_interactive_clustercolors_noautosize', {readOnly: false, nodeCreation : true, nodeAppend : true}, clonedProps0, false);
 

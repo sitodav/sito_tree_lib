@@ -1263,7 +1263,7 @@ export class SitoTree {
             Edge over repainting is done externally to the node rendering
             //draw before drawing nodes
             */
-            if(this.node_rendering.hightlightEdgesOnMouseOverColor)
+            if(this.node_rendering.clickableEdges)
             {
                 this._saveOveredEdgesVerticesHere = this.findEdgeMouseOver(_p5sketch.mouseX, _p5sketch.mouseY);
                 //but mouse must not be in one (of the two nodes of the edge) path/subpath (to avoid highlighting an edge when the mouse in over a NODE)
@@ -1271,10 +1271,10 @@ export class SitoTree {
                 {
                     let nodeA = this._saveOveredEdgesVerticesHere[0];
                     let nodeB = this._saveOveredEdgesVerticesHere[1];
-                    
+                        let _colToUseForHighlight = this.node_rendering.hightlightEdgesOnMouseOverColor ? this.node_rendering.hightlightEdgesOnMouseOverColor : "#00000055";
                         _p5sketch.strokeWeight( (this.node_rendering.vertexStrokeWeight ? this.node_rendering.vertexStrokeWeight : 1.0) *5);
                         _p5sketch.noFill();
-                        _p5sketch.stroke(this.node_rendering.hightlightEdgesOnMouseOverColor); //opacity from color input
+                        _p5sketch.stroke(_colToUseForHighlight); //opacity from color input
                         _p5sketch.line(nodeA.center.x, nodeA.center.y, nodeB.center.x,nodeB.center.y);
                 }
                 else
@@ -1374,12 +1374,14 @@ export class SitoTree {
             else
             {
                 //if in this click event the mouse was not found in a node ,we can have a valid mouse over edge click
-                //because a mouse over edge is set in the .draw() function, only if over an existing edge
-                //and outside every node. So if we have a click (this event handler) and the global 
+                //because a mouse over edge is set in the .draw() function, only if the rendering properties
+                //set the edge as clickable,  and the mouse was found overing on an edge when
+                //outside every other node.
+                // So if we have a click (this event handler) and the global 
                 //variable for mouse over edge is true, we have a valid edge click
-                if(this._saveOveredEdgesVerticesHere) //NB THIS IS AN ARRAY (FIRST ELEMENT IS THE FIRST NODE OF VERTEX, SECOND THE SECOND NODE)
+                if(this.node_rendering.clickableEdges && this._saveOveredEdgesVerticesHere) 
                 {
-                    if (this.addedCallback["edgeClicked"]) {
+                    if (this.addedCallback["edgeClicked"]) { //NB THIS IS AN ARRAY (FIRST ELEMENT IS THE FIRST NODE OF VERTEX, SECOND THE SECOND NODE)
                         this.addedCallback["edgeClicked"](evt, this, _p5sketch, this._saveOveredEdgesVerticesHere);
                     }
                     return ;
