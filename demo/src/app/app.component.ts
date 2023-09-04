@@ -22,8 +22,12 @@ export class AppComponent implements OnInit {
   node_rendering_props1 : SitoTreeNodeRendering = 
   {
     colorByClusterPalettes : ["#048ba8","#5f0f40","#1b998b","#9a031e","#30638e","#fb8b24","#e36414","#1982c4","#0f4c5c","#d100d1","#31572c","#fbff12","#132a13","#ffd6ff","#2dc653","#ead2ac","#208b3a","#fdc500","#ffff3f","#ff0a54","#f3722c","#43aa8b","#660708","#6a00f4","#8ac926","#415a77"],
-    sizeBasedOnNumChildren : false
+    sizeBasedOnNumChildren : false ,
+    vertexStrokeWeight : 1,
+    // hightlightEdgesOnMouseOverColor = "#479ff555" //added manually on the cloned properties only for the first tree
+    
 
+   
   }
 
   node_rendering_props2 : SitoTreeNodeRendering = 
@@ -110,11 +114,14 @@ export class AppComponent implements OnInit {
   ngOnInit() {
      
     /*tree with color by cluster, no autosize, interactive */
-    this.tree_interactiveClustercolorsNoautosize = new SitoTree('tree_interactive_clustercolors_noautosize', {readOnly: false, nodeCreation : true, nodeAppend : true}, this.node_rendering_props1 , false);
+    let clonedProps0 = JSON.parse(JSON.stringify(this.node_rendering_props1 ));
+    clonedProps0.hightlightEdgesOnMouseOverColor = "#479ff588"; //cloning props to set highlight for edges only on first tree (opacity in the #hex color as last two digits)
+    this.tree_interactiveClustercolorsNoautosize = new SitoTree('tree_interactive_clustercolors_noautosize', {readOnly: false, nodeCreation : true, nodeAppend : true}, clonedProps0, false);
+
     /*tree with color by cluster, autosize, interactive */
-    let clonedProps = JSON.parse(JSON.stringify(this.node_rendering_props1 ));
-    clonedProps.sizeBasedOnNumChildren = true;
-    this.tree_interactiveClustercolorsAutosize = new SitoTree('tree_interactive_clustercolors_autosize', {readOnly: false, nodeCreation : true, nodeAppend : true}, clonedProps, false);
+    let clonedProps1 = JSON.parse(JSON.stringify(this.node_rendering_props1 ));
+    clonedProps1.sizeBasedOnNumChildren = true;
+    this.tree_interactiveClustercolorsAutosize = new SitoTree('tree_interactive_clustercolors_autosize', {readOnly: false, nodeCreation : true, nodeAppend : true}, clonedProps1, false);
     // /*tree with color by node state, autosize, data loaded with json data, single father */
     this.tree_readonly_colorbystate_autosize = new SitoTree('tree_readonly_colorbystate_autosize', {readOnly: true, nodeCreation : false, nodeAppend : false}, this.node_rendering_props2,  false);
     // /*tree with color by node state, autosize, loaded with json data, multiple fathers */
@@ -124,7 +131,7 @@ export class AppComponent implements OnInit {
     // /*tree with color by node state, autosize, loaded with json data, multiple father and expand horizontal layout */
     this.tree_readonly_expandhorizontallayout = new SitoTree('tree_readonly_expandhorizontallayout', {readOnly: true, nodeCreation : false, nodeAppend : false},  this.node_rendering_props2,  true, this.forest_layout_expandhorizontal );
     // /*interactive tree with color by cluster, no autosize, interactive, and callbacks */
-    this.tree_readonly_interactive_withcallbacks = new SitoTree('tree_readonly_interactive_withcallbacks', {readOnly: false, nodeCreation : true, nodeAppend : true}, this.node_rendering_props1, false); 
+    this.tree_readonly_interactive_withcallbacks = new SitoTree('tree_readonly_interactive_withcallbacks', {readOnly: false, nodeCreation : true, nodeAppend : true}, clonedProps0, false); 
     // /*interactive tree but initialized with json data*/
     this.tree_interactive_anddataviajson = new SitoTree('tree_interactive_anddataviajson', {readOnly: false, nodeCreation : true, nodeAppend : true},  this.node_rendering_props1, false);
    }
@@ -149,6 +156,11 @@ export class AppComponent implements OnInit {
     },3000);
 
 
+     //adding a callback to highlight when node clicked
+     this.tree_interactiveClustercolorsNoautosize.addCallback("nodeClicked",this.callbackOnNodeClick);
+
+    
+
     /*registering the callbacks on one tree */
     /*for a list of available callbacks (and what parameters to expect as input ) checkout the git readme out */
     this.tree_readonly_interactive_withcallbacks.addCallback(
@@ -162,6 +174,19 @@ export class AppComponent implements OnInit {
             
           }
     );
+
+    this.tree_readonly_interactive_withcallbacks.addCallback("edgeClicked",(evt, tree, sketch, verticesEdge) => {
+      try
+      {
+        console.log("clicked on edge from two nodes, first : "+verticesEdge[0].label+" and second : "+verticesEdge[1].label);
+        evt.stopPropagation();
+      }catch(e){}
+     
+    });
+
+
+    //adding a callback to highlight when node clicked
+    this.tree_readonly_interactive_withcallbacks.addCallback("nodeClicked",this.callbackOnNodeClick);
 
     //nb : always catch exception in callback, or check what parameters are available
     this.tree_readonly_interactive_withcallbacks.addCallback(
@@ -263,6 +288,16 @@ export class AppComponent implements OnInit {
         ]
     }
   ];
+
+
+  private callbackOnNodeClick = (evt, tree, sketch, node) => {
+
+    //simulating click on row on the ro
+    let _nodeId = node.id;
+    tree.removeAllhightlits();
+    tree.highlightNode(_nodeId, "#479ff5");
+    
+  }
 
   public expandAllTree()
   {

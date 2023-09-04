@@ -13,6 +13,7 @@ export class SitoTree {
 
     p5wrapper: p5;
     roots: SitoTreeNode[] = [];
+    _saveOveredEdgesVerticesHere : SitoTreeNode[] = undefined;
     draggedNode = null;
     lastClick = 0;
     isDoubleClicked = false;
@@ -562,14 +563,16 @@ export class SitoTree {
        mouseMoved_end : function input (evt,tree,p5sketch),
        mouseStopped_start : function input (evt,tree,p5sketch),
        mouseStopped_end : function input (evt,tree,p5sketch),
-       mouseClicked_start : function input (evt,tree,p5sketch,node),
-       mouseClicked_end : function input (evt,tree,p5sketch,node),
-       mouseDragged_start : function input (evt,tree,p5sketch,node),
-       mouseDragged_end : function input (evt,tree,p5sketch,node),
-       mousePressed_start : function input (evt,tree,p5sketch,node),
-       mousePressed_end : function input (evt,tree,p5sketch,node),
-       mouseReleased_start : function input (evt,tree,p5sketch,node),
-       mouseReleased_end : function input (evt,tree,p5sketch,node) 
+       mouseClicked_start : function input (evt,tree,p5sketch,node), <--the input node is null if the click was not inside a node
+       mouseClicked_end : function input (evt,tree,p5sketch,node), <--the input node is null if the click was not inside a node
+       mouseDragged_start : function input (evt,tree,p5sketch,node), <--the input node is null if the click was not inside a node
+       mouseDragged_end : function input (evt,tree,p5sketch,node),<--the input node is null if the click was not inside a node
+       mousePressed_start : function input (evt,tree,p5sketch,node), <--the input node is null if the click was not inside a node
+       mousePressed_end : function input (evt,tree,p5sketch,node), <--the input node is null if the click was not inside a node
+       mouseReleased_start : function input (evt,tree,p5sketch,node), <--the input node is null if the click was not inside a node
+       mouseReleased_end : function input (evt,tree,p5sketch,node) , <--the input node is null if the click was not inside a node
+       nodeClicked :  function input (evt,tree,p5sketch,node), //NB <-- this start only when mouse is clicked inside a node (while mouseClicked_end and start are always called, and the input parameter node is null if the click was not on a node, or with a value if it was)
+       edgeClicked : function input (evt, tree, p5sketch, node[])
        
    */
     public addCallback(type: string, callback: Function) {
@@ -1094,8 +1097,59 @@ export class SitoTree {
         DebugTimer.start2(5,"reorderChilds");
     }
 
+    //return the two nodes which edge is with mouse over
+    public findEdgeMouseOver(_mouseX: number,mouseY:number) : SitoTreeNode[]
+    {
+      
 
+        if(this.roots)
+        {
+            for(let idx in this.roots)
+            {
+                let found = this.findEdgeMouseOverRecursive(_mouseX,mouseY,this.roots[idx]);
+                if(found)
+                    return found;
+            }
+        }
 
+        return null;
+    }
+
+    public findEdgeMouseOverRecursive( _mouseX: number,_mouseY:number,node : SitoTreeNode) : SitoTreeNode[]
+    {
+        let found = null;
+
+        if(node && node.expanded && node.children)
+        {
+            for(let idxChild in node.children)
+            {
+                let pA = node.center;
+                let pB = node.children[idxChild].center;
+                //if the sum of distances between : mouse and 1 node center, and mouse and the second node center (children) is equal
+                //to the sum between the two nodes (father and children) center, +- some buffer, we are on the line
+                let pADist = this.nativeP5SketchRef.dist(_mouseX,_mouseY,pA.x,pA.y);
+                let pBDist = this.nativeP5SketchRef.dist(_mouseX,_mouseY,pB.x,pB.y);
+                let nodesDistance = this.nativeP5SketchRef.dist(pA.x,pA.y,pB.x,pB.y);
+                if(Math.abs(nodesDistance -  (pADist+pBDist)) < 5)
+                {
+                     
+                    return [ node, node.children[idxChild] ];
+                }
+            }
+
+            //if we arrive here, no edge was with mouseOver between the input node and its children
+            //let's try between its children and children children
+            for(let idxChild in node.children)
+            {
+                let foundOnDescendents =this.findEdgeMouseOverRecursive(_mouseX,_mouseY, node.children[idxChild]);
+                if(foundOnDescendents) //if found on one children subpath we can stop and return, otherwise keep looking on other childrens
+                    return foundOnDescendents;
+            }
+           
+        }
+
+        return null;
+    }
 
     private triggerDoubleClick = (id: string, deep: boolean) => {
         
@@ -1204,9 +1258,40 @@ export class SitoTree {
 
             }
 
+
+             /*check for mouse over on edges 
+            Edge over repainting is done externally to the node rendering
+            //draw before drawing nodes
+            */
+            if(this.node_rendering.hightlightEdgesOnMouseOverColor)
+            {
+                this._saveOveredEdgesVerticesHere = this.findEdgeMouseOver(_p5sketch.mouseX, _p5sketch.mouseY);
+                //but mouse must not be in one (of the two nodes of the edge) path/subpath (to avoid highlighting an edge when the mouse in over a NODE)
+                if(this._saveOveredEdgesVerticesHere && !this._saveOveredEdgesVerticesHere[0]._checkMouseIn(_p5sketch.mouseX, _p5sketch.mouseY) &&  !this._saveOveredEdgesVerticesHere[1]._checkMouseIn(_p5sketch.mouseX, _p5sketch.mouseY))
+                {
+                    let nodeA = this._saveOveredEdgesVerticesHere[0];
+                    let nodeB = this._saveOveredEdgesVerticesHere[1];
+                    
+                        _p5sketch.strokeWeight(this.node_rendering.vertexStrokeWeight*5);
+                        _p5sketch.noFill();
+                        _p5sketch.stroke(this.node_rendering.hightlightEdgesOnMouseOverColor); //opacity from color input
+                        _p5sketch.line(nodeA.center.x, nodeA.center.y, nodeB.center.x,nodeB.center.y);
+                }
+                else
+                {
+                    this._saveOveredEdgesVerticesHere = undefined; //we manually set it to undefined even if was found but the mouse was even in a NODE
+                }
+            
+                        
+            }
+           
+
             for (let i in this.roots) {
                 this.roots[i]._draw();
             }
+
+            
+
 
             if (this.addedCallback["draw_end"]) {
                 this.addedCallback["draw_end"](this, _p5sketch);
@@ -1223,7 +1308,10 @@ export class SitoTree {
                 this.addedCallback["mouseMoved_start"](evt, this, _p5sketch);
             }
 
-            /* ... */
+           /*
+           ...
+           */
+           
 
             if (this.addedCallback["mouseMoved_end"]) {
                 this.addedCallback["mouseMoved_end"](evt, this, _p5sketch);
@@ -1272,6 +1360,10 @@ export class SitoTree {
             //click on already existing node, we do nothing (return) in the tree, just call the external callback if present
             if (found)
             {
+                if (this.addedCallback["nodeClicked"]) {
+                    this.addedCallback["nodeClicked"](evt, this, _p5sketch, found);
+                }
+
                 if (this.addedCallback["mouseClicked_end"]) {
                     this.addedCallback["mouseClicked_end"](evt, this, _p5sketch, found);
                 }
@@ -1279,7 +1371,20 @@ export class SitoTree {
                 DebugTimer.start2(5,"mouseClicked");
                 return;
             }
-
+            else
+            {
+                //if in this click event the mouse was not found in a node ,we can have a valid mouse over edge click
+                //because a mouse over edge is set in the .draw() function, only if over an existing edge
+                //and outside every node. So if we have a click (this event handler) and the global 
+                //variable for mouse over edge is true, we have a valid edge click
+                if(this._saveOveredEdgesVerticesHere) //NB THIS IS AN ARRAY (FIRST ELEMENT IS THE FIRST NODE OF VERTEX, SECOND THE SECOND NODE)
+                {
+                    if (this.addedCallback["edgeClicked"]) {
+                        this.addedCallback["edgeClicked"](evt, this, _p5sketch, this._saveOveredEdgesVerticesHere);
+                    }
+                    return ;
+                }
+            }
             //if we are in readonly we can do nothing else
             if (this.allowedOperations.readOnly) {
                //no need to call the callback because we clicked outside a node , in the sketch,

@@ -15,6 +15,8 @@ export class SitoTreeNode {
     public goToCenter = null;
     public orderInfather = 0;
     public borderHightlightColor = undefined;
+
+    
     
     
     //public justInitialized = true;
