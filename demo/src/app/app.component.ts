@@ -24,7 +24,8 @@ export class AppComponent implements OnInit {
     colorByClusterPalettes : ["#048ba8","#5f0f40","#1b998b","#9a031e","#30638e","#fb8b24","#e36414","#1982c4","#0f4c5c","#d100d1","#31572c","#fbff12","#132a13","#ffd6ff","#2dc653","#ead2ac","#208b3a","#fdc500","#ffff3f","#ff0a54","#f3722c","#43aa8b","#660708","#6a00f4","#8ac926","#415a77"],
     sizeBasedOnNumChildren : false ,
     vertexStrokeWeight : 1,
-    // hightlightEdgesOnMouseOverColor = "#479ff555" //added manually on the cloned properties only for the first tree
+    // clickableEdges : true, //added manually on cloned, needed to highlight edges
+    // hightlightEdgesOnMouseOverColor : "#479ff588"
     
 
    
@@ -160,6 +161,8 @@ export class AppComponent implements OnInit {
      //adding a callback to highlight when node clicked
      this.tree_interactiveClustercolorsNoautosize.addCallback("nodeClicked",this.callbackOnNodeClick);
 
+     this.tree_interactiveClustercolorsNoautosize.addCallback("edgeClicked",this.callbackOnEdgeClick);
+
     
 
     /*registering the callbacks on one tree */
@@ -176,14 +179,7 @@ export class AppComponent implements OnInit {
           }
     );
 
-    this.tree_readonly_interactive_withcallbacks.addCallback("edgeClicked",(evt, tree, sketch, verticesEdge) => {
-      try
-      {
-        console.log("clicked on edge from two nodes, first : "+verticesEdge[0].label+" and second : "+verticesEdge[1].label);
-        evt.stopPropagation();
-      }catch(e){}
-     
-    });
+    this.tree_readonly_interactive_withcallbacks.addCallback("edgeClicked",this.callbackOnEdgeClick);
 
 
     //adding a callback to highlight when node clicked
@@ -291,11 +287,27 @@ export class AppComponent implements OnInit {
   ];
 
 
+
+  private callbackOnEdgeClick = (evt, tree, sketch, verticesEdge) => {
+    try
+    {
+      console.log("clicked on edge from two nodes, first : "+verticesEdge[0].label+" and second : "+verticesEdge[1].label);
+      if(tree.isEdgeHighlighted(verticesEdge[0],verticesEdge[1]))
+        tree.removeHighlightEdge(verticesEdge[0],verticesEdge[1]);
+      else
+        tree.highlightEdge(verticesEdge[0],verticesEdge[1],"#479ff5");
+
+      
+      evt.stopPropagation();
+    }catch(e){}
+   
+  }
+
   private callbackOnNodeClick = (evt, tree, sketch, node) => {
 
     //simulating click on row on the ro
     let _nodeId = node.id;
-    tree.removeAllhightlits();
+    tree.removeAllNodeshightlits();
     tree.highlightNode(_nodeId, "#479ff5");
     
   }

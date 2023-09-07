@@ -14,6 +14,8 @@ export class SitoTree {
     p5wrapper: p5;
     roots: SitoTreeNode[] = [];
     _saveOveredEdgesVerticesHere : SitoTreeNode[] = undefined;
+    _saveHighlightedEdgesVerticesHere  = [];
+    _saveHighlightedEdgesVerticesToColorHere  = {};  
     draggedNode = null;
     lastClick = 0;
     isDoubleClicked = false;
@@ -618,6 +620,54 @@ export class SitoTree {
     }
 
 
+    /*Edge highlighting methods */
+
+    public isEdgeHighlighted(nodeA : SitoTreeNode, nodeB: SitoTreeNode) { //because highlighting is a global property, we don't have a single prop on node to know if it's highlighted, so...
+         
+         
+        let inputNodesAsKey =  nodeA.id +"-"+ nodeB.id ;
+        for(let i in this._saveHighlightedEdgesVerticesHere)
+        {
+            let _A:SitoTreeNode = this._saveHighlightedEdgesVerticesHere[i][0]; 
+            let _B:SitoTreeNode= this._saveHighlightedEdgesVerticesHere[i][1];
+            let keyInMap = _A.id+"-"+_B.id;
+            if(keyInMap == inputNodesAsKey)
+                return true;
+        }
+        return false;
+    }
+
+    public highlightEdge(nodeA : SitoTreeNode, nodeB: SitoTreeNode, color) {
+         
+        if(this.isEdgeHighlighted(nodeA,nodeB))
+            return;
+
+        this._saveHighlightedEdgesVerticesHere.push([nodeA,nodeB]);
+        let inputNodesAsKey =  nodeA.id +"-"+ nodeB.id ;
+        this._saveHighlightedEdgesVerticesToColorHere[inputNodesAsKey] = color;
+    }
+
+    public removeHighlightEdge(nodeA, nodeB) {
+        
+        let inputNodesAsKey = nodeA.id +"-"+ nodeB.id ;
+        let newList= [];
+        //empting list
+        for(let i in this._saveHighlightedEdgesVerticesHere)
+        {
+            let _A:SitoTreeNode = this._saveHighlightedEdgesVerticesHere[i][0]; 
+            let _B:SitoTreeNode= this._saveHighlightedEdgesVerticesHere[i][1];
+            let keyInMap = _A.id+"-"+_B.id;
+            if(keyInMap == inputNodesAsKey)
+                this._saveHighlightedEdgesVerticesHere.splice(+i,1);
+            //newList.push([_A,_B]);
+
+        }
+        // this._saveHighlightedEdgesVerticesHere = newList;
+        delete this._saveHighlightedEdgesVerticesToColorHere[inputNodesAsKey];
+    }
+
+
+    /*Node highlighting methods */
     public highlightNode(nodeId, color) {
         if (this.roots) {
             for (let i in this.roots) {
@@ -654,20 +704,20 @@ export class SitoTree {
 
     }
 
-    public removeAllhightlits() {
+    public removeAllNodeshightlits() {
         if (this.roots) {
             for (let i in this.roots) {
-                this.removeAllhightlitsRecurs(this.roots[i]);
+                this.removeAllhightlitsNodesRecurs(this.roots[i]);
             }
         }
 
     }
 
-    public removeAllhightlitsRecurs(node) {
+    public removeAllhightlitsNodesRecurs(node) {
         node.borderHightlightColor = undefined;
         if (node.children) {
             for (let i in node.children) {
-                this.removeAllhightlitsRecurs(node.children[i]);
+                this.removeAllhightlitsNodesRecurs(node.children[i]);
             }
         }
 
@@ -1285,6 +1335,25 @@ export class SitoTree {
                         
             }
            
+
+            /*drawing again edges that are highlighted */
+
+            if(this._saveHighlightedEdgesVerticesHere  )
+            {
+                for(let i in this._saveHighlightedEdgesVerticesHere)
+                {
+                    let nodeA = this._saveHighlightedEdgesVerticesHere[i][0];
+                    let nodeB = this._saveHighlightedEdgesVerticesHere[i][1];
+                    let nodesAsK = nodeA.id+"-"+nodeB.id;
+                    let _col = this._saveHighlightedEdgesVerticesToColorHere[nodesAsK];
+
+                    _p5sketch.strokeWeight( (this.node_rendering.vertexStrokeWeight ? this.node_rendering.vertexStrokeWeight : 1.0) *5);
+                    _p5sketch.noFill();
+                    _p5sketch.stroke(_col); //opacity from color input
+                    _p5sketch.line(nodeA.center.x, nodeA.center.y, nodeB.center.x,nodeB.center.y);
+
+                }
+            }
 
             for (let i in this.roots) {
                 this.roots[i]._draw();
