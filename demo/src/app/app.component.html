@@ -5,17 +5,18 @@
     <h4>Tree example: click on a white area to create a node. Drag a node onto another to merge them. Double click to
       explode and see the childs.</h4>
     <br>
+    <!-----------------------------------------------EXAMPLE 1 -------------------------------------------------------->
     <mat-card>
       <mat-card-header>
         <mat-card-title style="font-size:larger;"><b> Example 1: </b>Interactive, no autosize, color by cluster (nodes
           get the same color of the
-          father/cluster). <br>Click on the canvas to create a new node, drag a node on top of another to append to,
-          double click a node to expand</mat-card-title>
+          father/cluster). <br>Click on the canvas to create a new node<br>Drag a node  on top of another (on a different cluster) to append to,
+          double click a node to expand. Click on an edge to select it.</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <mat-card-content>
-
-          <div id="tree_interactive_clustercolors_noautosize" style="border-color:black; border-style: solid;">
+          <!--DIV FOR EXAMPLE 1 HERE-->
+          <div id="example_1_div" style="border-color:black; border-style: solid;">
 
           </div>
 
@@ -25,15 +26,16 @@
     </mat-card>
 
     <br>
+     <!-----------------------------------------------EXAMPLE 2 -------------------------------------------------------->
     <mat-card>
       <mat-card-header>
-        <mat-card-title style="font-size:larger;"><b> Example 2: </b>Same as before, but node get bigger the more
+        <mat-card-title style="font-size:larger;"><b> Example 2: </b>Similar as before (but non-clickable edges), but node get bigger the more
           children they have</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <mat-card-content>
-
-          <div id="tree_interactive_clustercolors_autosize" style="border-color:black; border-style: solid;">
+           <!--DIV FOR EXAMPLE 2 HERE-->
+          <div id="example_2_div" style="border-color:black; border-style: solid;">
 
           </div>
 
@@ -42,21 +44,22 @@
 
     </mat-card>
     <br>
+      <!-----------------------------------------------EXAMPLE 3 -------------------------------------------------------->
     <mat-card>
       <mat-card-header>
-        <mat-card-title style="font-size:larger;"><b> Example 3: </b>Readonly, autosize, color by state (the color of a
+        <mat-card-title style="font-size:larger;"><b> Example 3: </b>Custom graphical props. Readonly, autosize, color by state (the color of a
           node depends on its internal status).
-          <br>After some seconds you can see the node colors changing because their internal status changed <br>
-          <br>Double click a node to expand. Click update button to update , or expand 
-          <button (click)="updateDataForTree()">UPDATE</button>  &nbsp;
-          <button (click)="expandAllTree()">EXPAND</button>  &nbsp; 
-          <button (click)="collapseAllTree()">COLLAPSE</button></mat-card-title>
+          <br>The tree is non modifiable, and it's nodes are loaded asynchronously (after some second) from read (mocked) data <br>
+          <br>Double click a node to expand. Click update button to change node state/color <button (click)="updateDataForExample3Tree()">UPDATE</button>  &nbsp; , or expand <button (click)="expandExample3Tree()">EXPAND</button>  &nbsp; <button (click)="collapseExample3Tree()">COLLAPSE</button></mat-card-title>
+          
+          
+          
           
       </mat-card-header>
       <mat-card-content>
         <mat-card-content>
-
-          <div id="tree_readonly_colorbystate_autosize" style="border-color:black; border-style: solid;">
+           <!--DIV FOR EXAMPLE 3 HERE-->
+          <div id="example_3_div" style="border-color:black; border-style: solid;">
 
           </div>
 
@@ -64,18 +67,19 @@
       </mat-card-content>
 
     </mat-card>
-
+    <br>
+      <!-----------------------------------------------EXAMPLE 4 -------------------------------------------------------->
     <mat-card>
       <mat-card-header>
         <mat-card-title style="font-size:larger;"><b> Example 4: </b>
-          Readonly, color by state, but with multiple fathers for a node allowed
+          Readonly, color by state, but with multiple fathers for a node allowed. Clickable edges, but with no callback on click
         </mat-card-title>
 
       </mat-card-header>
       <mat-card-content>
         <mat-card-content>
-
-          <div id="tree_readonly_multiplefathers" style="border-color:black; border-style: solid;">
+          <!--DIV FOR EXAMPLE 4 HERE-->
+          <div id="example_4_div" style="border-color:black; border-style: solid;">
 
           </div>
 
@@ -83,17 +87,18 @@
       </mat-card-content>
 
     </mat-card>
-
+    <br>
+     <!-----------------------------------------------EXAMPLE 5 -------------------------------------------------------->
     <mat-card>
       <mat-card-header>
         <mat-card-title style="font-size:larger;"><b> Example 5: </b>
-          Same as before, but trees are disposed along row-wise using a fixed layout.
+          Same as before (but clickable edges with callback for setting highlight and click handler on nodes for highlight on those too), but trees are disposed along row-wise using a fixed layout.
         </mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <mat-card-content>
-
-          <div id="tree_readonly_expandverticallayout" style="border-color:black; border-style: solid;">
+         <!--DIV FOR EXAMPLE 5 HERE-->
+          <div id="example_5_div" style="border-color:black; border-style: solid;">
 
           </div>
 
