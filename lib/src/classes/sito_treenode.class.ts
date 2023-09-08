@@ -172,6 +172,7 @@ export class SitoTreeNode {
         DebugTimer.start2(5,"_draw: node rendering "+this.id);
     }
 
+    
     public _checkMouseIn = (x, y) => {
         DebugTimer.start("_checkMouseIn"+this.id);
         if (this.expanded && this.children.length > 0) {

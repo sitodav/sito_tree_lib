@@ -1,7 +1,7 @@
 {
   "name": "sito-tree",
-  "version": "0.17.4",
-  "description": "little library for graphs",
+  "version": "0.17.5",
+  "description": "graphs/trees rendering library",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

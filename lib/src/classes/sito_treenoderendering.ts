@@ -24,8 +24,7 @@ export interface SitoTreeNodeRendering {
      textWeight ?: number;
      textColor ?:string;
      textSize ?:number;
-     clickableEdges ?: boolean;
-     hightlightEdgesOnMouseOverColor ?:string; //while node highlight color is defined on the set, externally, the fixed highlighting color for edge is defined here
+     edgeMouseOverColor ?:string; //while node highlight color is defined on the set, externally, the fixed highlighting color for edge is defined here
 
 
 }

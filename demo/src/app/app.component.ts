@@ -48,7 +48,7 @@ export class AppComponent implements OnInit {
    DECLARATION OF EXAMPLE 1 TREE RENDERING PROPERTIES:
     -Color of nodes by cluster
     -No changing node size (based on children number)
-    -Clickable edges
+    -Clickable edges (when it's allowed you can register a callback on it)
     -Fully modifiable tree (node creation, node append)
     -Multiple father disabled
   */
@@ -57,14 +57,13 @@ export class AppComponent implements OnInit {
       colorByClusterPalettes: this.sharedColorPalettesForRandomGeneration,
       sizeBasedOnNumChildren: false,
       vertexStrokeWeight: 1,
-      clickableEdges: true,
-      hightlightEdgesOnMouseOverColor: "#479ff588"
+      edgeMouseOverColor: "#479ff588"
 
     }
   /*
    DECLARATION OF EXAMPLE 1 ALLOWED PROPERTIES 
   */
-  allowed_ops1 = { readOnly: false, nodeCreation: true, nodeAppend: true };
+  allowed_ops1 = { readOnly: false, nodeCreation: true, nodeAppend: true, clickableEdges: true };
   /*
    EXAMPLE 1 TREE DECLARATION
   */
@@ -147,14 +146,13 @@ export class AppComponent implements OnInit {
   node_rendering_props4: SitoTreeNodeRendering =
     {
       colorByStateMap: this.sharedColorByStateMap,
-      clickableEdges: true,
-      hightlightEdgesOnMouseOverColor: "#ff00ff88"
+      edgeMouseOverColor: "#ff00ff88"
 
     }
   /*
    DECLARATION OF EXAMPLE 4 ALLOWED PROPERTIES 
   */
-  allowed_ops4 = { readOnly: true, nodeCreation: false, nodeAppend: false };
+  allowed_ops4 = { readOnly: true, nodeCreation: false, nodeAppend: false, clickableEdges: true };
   /*
    EXAMPLE 4 TREE DECLARATION
   */
@@ -163,7 +161,7 @@ export class AppComponent implements OnInit {
 
 
 
-   /*****************EXAMPLE 5 DATA STRUCTURES *********************** **********************************/
+  /*****************EXAMPLE 5 DATA STRUCTURES *********************** **********************************/
   /*SAME AS BEFORE, BUT THIS TREE WILL BE INITIALIZED (CONSTRUCTOR) USING A VERTICAL LAYOUT
   FOR NODE DISPOSITIONS
   /*
@@ -174,22 +172,22 @@ export class AppComponent implements OnInit {
     -Non modifiable tree (data is loaded asynchronously to populate the tree)
     -Multiple father ENABLED 
   */
-    node_rendering_props5: SitoTreeNodeRendering =
+  node_rendering_props5: SitoTreeNodeRendering =
     {
       colorByStateMap: this.sharedColorByStateMap,
-      clickableEdges: true,
-      hightlightEdgesOnMouseOverColor: "#ff00ff88"
+
+      edgeMouseOverColor: "#ff00ff88"
 
     }
   /*
    DECLARATION OF EXAMPLE 5 ALLOWED PROPERTIES 
   */
-  allowed_ops5 = { readOnly: true, nodeCreation: false, nodeAppend: false };
+  allowed_ops5 = { readOnly: true, nodeCreation: false, nodeAppend: false, clickableEdges: true };
   /*
   LAYOUT DECLARATION 
    The layouts are used when generating trees from data, to give the position to the trees 
-  */ 
-  vertical_layout_example5: SitoForestLayout =
+  */
+  rowWise_layout_example5: SitoForestLayout =
     {
       orientation: "FILLFIXEDHORIZONTAL_EXPANDVERTICAL",
       maxNumOfColumns: 4,
@@ -208,21 +206,69 @@ export class AppComponent implements OnInit {
 
 
 
+  /*****************EXAMPLE 6 DATA STRUCTURES *********************** **********************************/
+  /*SAME AS BEFORE, BUT THIS TREE WILL BE INITIALIZED (CONSTRUCTOR) USING A HORIZONTAL LAYOUT
+  /*
+   DECLARATION OF EXAMPLE 5 TREE RENDERING PROPERTIES:
+    -Color of node state
+    -Fixed node size
+    -Clickable edges
+    -Non modifiable tree (data is loaded asynchronously to populate the tree)
+    -Multiple father ENABLED 
+  */
+  node_rendering_props6: SitoTreeNodeRendering =
+    {
+      colorByStateMap: this.sharedColorByStateMap,
+      edgeMouseOverColor: "#ff00ff88"
 
-
-  /*Example of FILLFIXEDVERTICAL_EXPANDHORIZONTAL*/
-  forest_layout_expandhorizontal: SitoForestLayout =
+    }
+  /*
+  DECLARATION OF EXAMPLE 6 ALLOWED PROPERTIES 
+ */
+  allowed_ops6 = { readOnly: true, nodeCreation: false, nodeAppend: false, clickableEdges: true };
+  /*
+  LAYOUT DECLARATION 
+   The layouts are used when generating trees from data, to give the position to the trees 
+  */
+  /*Example of HORIZONTAL LAYOUT*/
+  columnWide_layout_example6: SitoForestLayout =
     {
       orientation: "FILLFIXEDVERTICAL_EXPANDHORIZONTAL",
       maxNumOfColumns: -1,
       maxNumberOfRows: 4,
       horizontalReservedSpaceForTree: 400,
-      verticalReservedSpaceForTree: 450,
+      verticalReservedSpaceForTree: 250,
       paddingLeft: 0,
       paddingTop: 20,
       paddingRight: 450,
       paddingBottom: 20
     }
+  /*
+   EXAMPLE 6 TREE DECLARATION
+  */
+  tree_example6: SitoTree;
+
+/*****************EXAMPLE 7 DATA STRUCTURES *********************** ***********************************/
+  /*
+   DECLARATION OF EXAMPLE 7 TREE RENDERING PROPERTIES:
+     
+  */
+    node_rendering_props7: SitoTreeNodeRendering =
+    {
+      colorByClusterPalettes: this.sharedColorPalettesForRandomGeneration,
+      sizeBasedOnNumChildren: false,
+      vertexStrokeWeight: 1,
+      edgeMouseOverColor: "#479ff588"
+
+    }
+  /*
+   DECLARATION OF EXAMPLE 1 ALLOWED PROPERTIES 
+  */
+  allowed_ops7 = { readOnly: false, nodeCreation: true, nodeAppend: true, clickableEdges: true };
+  /*
+   EXAMPLE 1 TREE DECLARATION
+  */
+  tree_example7: SitoTree;
 
 
 
@@ -230,8 +276,6 @@ export class AppComponent implements OnInit {
 
 
   /*the various example */
-  tree_readonly_expandhorizontallayout: SitoTree;
-  tree_readonly_interactive_withcallbacks: SitoTree;
   tree_interactive_anddataviajson: SitoTree;
   exportedData_jsonPretty: string;
 
@@ -248,14 +292,13 @@ export class AppComponent implements OnInit {
     /*EXAMPLE 3 TREE */
     this.tree_example3 = new SitoTree('example_3_div', this.allowed_ops3, this.node_rendering_props3, false);
     /*EXAMPLE 4 TREE */
-    this.tree_example4 = new SitoTree('example_4_div', this.allowed_ops4, this.node_rendering_props4, true); 
-     /*EXAMPLE 5 TREE */
-    this.tree_example5 = new SitoTree('example_5_div', this.allowed_ops5, this.node_rendering_props5, true, this.vertical_layout_example5);
-    
-    // /*tree with color by node state, autosize, loaded with json data, multiple father and expand horizontal layout */
-    this.tree_readonly_expandhorizontallayout = new SitoTree('tree_readonly_expandhorizontallayout', { readOnly: true, nodeCreation: false, nodeAppend: false }, this.node_rendering_props2, true, this.forest_layout_expandhorizontal);
-    // /*interactive tree with color by cluster, no autosize, interactive, and callbacks */
-    this.tree_readonly_interactive_withcallbacks = new SitoTree('tree_readonly_interactive_withcallbacks', { readOnly: false, nodeCreation: true, nodeAppend: true }, this.node_rendering_props1, false);
+    this.tree_example4 = new SitoTree('example_4_div', this.allowed_ops4, this.node_rendering_props4, true);
+    /*EXAMPLE 5 TREE */
+    this.tree_example5 = new SitoTree('example_5_div', this.allowed_ops5, this.node_rendering_props5, true, this.rowWise_layout_example5);
+    /*EXAMPLE 6 TREE */
+    this.tree_example6 = new SitoTree('example_6_div', this.allowed_ops5, this.node_rendering_props6, true, this.columnWide_layout_example6);
+    /*EXAMPLE 6 TREE */
+    this.tree_example7 = new SitoTree('example_7_div', { readOnly: false, nodeCreation: true, nodeAppend: true }, this.node_rendering_props1, false);
     // /*interactive tree but initialized with json data*/
     this.tree_interactive_anddataviajson = new SitoTree('tree_interactive_anddataviajson', { readOnly: false, nodeCreation: true, nodeAppend: true }, this.node_rendering_props1, false);
   }
@@ -279,51 +322,27 @@ export class AppComponent implements OnInit {
     */
 
     /*CALLBACK REGISTRATION EXAMPLE 1*/
-    this.tree_example1.addCallback("nodeClicked", this.callbackOnNodeClick);
-    this.tree_example1.addCallback("edgeClicked", this.callbackOnEdgeClick);
+    this.tree_example1.addCallback("nodeClicked", this.callback_OnNodeClick_Highlight);
+    this.tree_example1.addCallback("edgeClicked", this.callback_OnEdgeClick_Highlight);
+
     /*CALLBACK REGISTRATION EXAMPLE5*/
-    this.tree_example5.addCallback("nodeClicked", this.callbackOnNodeClick);
-    this.tree_example5.addCallback("edgeClicked", this.callbackOnEdgeClick);
+    this.tree_example5.addCallback("nodeClicked", this.callback_OnNodeClick_Highlight);
+    this.tree_example5.addCallback("edgeClicked", this.callback_OnEdgeClick_Highlight);
 
-    this.tree_readonly_interactive_withcallbacks.addCallback(
-      "doubleClick_end",
-      (tree, node) => {
-        try {
-          console.log("CALLBACK >>>Double click on node : " + node.id);
-        } catch (e) { }
+    /*CALLBACK REGISTRATION EXAMPLE6*/
+    this.tree_example6.addCallback("nodeClicked", this.callback_OnNodeClick_Highlight);
+    this.tree_example6.addCallback("edgeClicked", this.callback_OnEdgeClick_Highlight);
 
-
-      }
-    );
-
-    this.tree_readonly_interactive_withcallbacks.addCallback("edgeClicked", this.callbackOnEdgeClick);
-
-
-    //adding a callback to highlight when node clicked
-    this.tree_readonly_interactive_withcallbacks.addCallback("nodeClicked", this.callbackOnNodeClick);
-
-    //nb : always catch exception in callback, or check what parameters are available
-    this.tree_readonly_interactive_withcallbacks.addCallback(
-      "createNode_start",
-      (tree, xpos, ypos, label, id, status) => {
-        try {
-          console.log("CALLBACK >>>New node creation : " + id + " in x: " + xpos + " and y: " + ypos);
-        } catch (e) { }
-
-      }
-    );
+    /*CALLBACK REGISTRATION EXAMPLE7*/
+    this.tree_example7.addCallback("doubleClick_end", this.callback_OnDoubleClick_Logging);
+    this.tree_example7.addCallback("edgeClicked", this.callback_OnEdgeClick_Highlight);
+    this.tree_example7.addCallback("nodeClicked", this.callback_OnNodeClick_Highlight);
+    this.tree_example7.addCallback("createNode_start", this.callback_OnNodeCreation_Logging);
+    this.tree_example7.addCallback("appendNodeTo_end", this.callback_OnNodeAppend_Logging);
+    this.tree_example7.addCallback("mouseDragged_end", this.callback_OnMouseDragged_Logging);
 
 
-    this.tree_readonly_interactive_withcallbacks.addCallback("appendNodeTo_end", this.simpleNodeAppendLogCallback  
-    );
-
-
-   
-
-
-    this.tree_interactive_anddataviajson.addCallback("createNode_start", this.nodeCreationCallback);
-
-
+    this.tree_interactive_anddataviajson.addCallback("createNode_start", this.callback_OnNodeCreation_saveTreeData);
     this.tree_interactive_anddataviajson.addCallback(
       "appendNodeTo_end",
       (tree, source, target) => {
@@ -349,7 +368,7 @@ export class AppComponent implements OnInit {
   */
 
   //this callback , when edge is clicked, trigger edge highlighint (different from edge highlighting on mouse over, which is automatic)
-  callbackOnEdgeClick = (evt, tree, sketch, verticesEdge) => {
+  callback_OnEdgeClick_Highlight = (evt, tree, sketch, verticesEdge) => {
     try {
       console.log("clicked on edge from two nodes, first : " + verticesEdge[0].label + " and second : " + verticesEdge[1].label);
       if (tree.isEdgeHighlighted(verticesEdge[0], verticesEdge[1]))
@@ -364,7 +383,7 @@ export class AppComponent implements OnInit {
   }
 
   //this callback highlight a node when clicked
-  callbackOnNodeClick = (evt, tree, sketch, node) => {
+  callback_OnNodeClick_Highlight = (evt, tree, sketch, node) => {
 
     //simulating click on row on the ro
     let _nodeId = node.id;
@@ -374,26 +393,47 @@ export class AppComponent implements OnInit {
   }
 
   //this callback export tree data when a node is added
-  nodeCreationCallback = 
-  (tree, xpos, ypos, label, id, status) => {
-    try {
-      let dataForTree = tree.exportData(this.sharedTreeSchemaForDataLoading);
-      this.exportedData_jsonPretty = GenericUtils.prittifyJson(dataForTree);
-    } catch (e) { }
+  callback_OnNodeCreation_saveTreeData =
+    (tree, xpos, ypos, label, id, status) => {
+      try {
+        let dataForTree = tree.exportData(this.sharedTreeSchemaForDataLoading);
+        this.exportedData_jsonPretty = GenericUtils.prittifyJson(dataForTree);
+      } catch (e) { }
 
-  }
+    }
 
   //this callback just print a log at console
-  simpleNodeAppendLogCallback =  (tree, source, target) => {
+  callback_OnNodeAppend_Logging = (tree, source, target) => {
     try {
       console.log("CALLBACK >>>Node append : appending " + source.id + " to " + target.id);
     } catch (e) { }
 
   }
 
- 
+  callback_OnDoubleClick_Logging = (tree, node) => {
+    try {
+      console.log("CALLBACK >>>Double click on node : " + node.id);
+    } catch (e) { }
 
- 
+  }
+
+  callback_OnNodeCreation_Logging =
+    (tree, xpos, ypos, label, id, status) => {
+      try {
+        console.log("CALLBACK >>>New node creation : " + id + " in x: " + xpos + " and y: " + ypos);
+      } catch (e) { }
+
+    }
+
+  callback_OnMouseDragged_Logging = (evt, tree, sketch, node) => {
+    try {
+      console.log("CALLBACK MOUSE DRAGGED WITH ID " + node.id);
+    } catch (e) { }
+
+  }
+
+
+
   /*Method called onInit to load asynchronous data for trees */
   loadDataForTheNeededTrees() {
 
@@ -402,17 +442,19 @@ export class AppComponent implements OnInit {
     /*ASYNC DATA LOADING FOR EXAMPLE 4*/
     this.tree_example4.loadData(MockDataUtils.mockedDataMultipleFathers, this.sharedTreeSchemaForDataLoading, true);
     /*ASYNC DATA LOADING FOR EXAMPLE 5*/
-    this.tree_example5.loadData(MockDataUtils.mockedDataMultipleFathers, this.sharedTreeSchemaForDataLoading, true); 
+    this.tree_example5.loadData(MockDataUtils.mockedDataMultipleFathers, this.sharedTreeSchemaForDataLoading, true);
+    /*ASYNC DATA LOADING FOR EXAMPLE 6*/
+    this.tree_example6.loadData(MockDataUtils.mockedDataMultipleFathers, this.sharedTreeSchemaForDataLoading, true);
 
-    this.tree_readonly_expandhorizontallayout.loadData(MockDataUtils.mockedDataMultipleFathers, this.sharedTreeSchemaForDataLoading, true);
+
     this.tree_interactive_anddataviajson.loadData(MockDataUtils.mockedData1, this.sharedTreeSchemaForDataLoading, true);
   }
 
 
 
-   /* METHOD REGISTERED ON SIMPLE HTML BUTTONS TO INTERACT EXTERNALLY (NO CALLBACK) WITH THE TREES */
+  /* METHOD REGISTERED ON SIMPLE HTML BUTTONS TO INTERACT EXTERNALLY (NO CALLBACK) WITH THE TREES */
 
-   public expandExample3Tree() {
+  public expandExample3Tree() {
     this.tree_example3.expandAll();
   }
 
