@@ -8,40 +8,41 @@ from a json file or API response and visualizing it as graph/tree).
 
 The library allows tree creation/interaction (expansion, collapse, drag, redisposition) and json loading/export, according to a given/chosen (by you) schema.
 It allows multiple callback functions to be registered on events on tree.
+
 A list of events you can register on :
 
-  loadData_start : function input (tree,nodeschema,data),
-       loadData_end : function input (tree,nodeschema,data),
-       createNode_start : function input (tree,xpos, ypos, label, id, status),
-       createNode_end : function input (tree,newRoot),
-       deleteNode_start : function input (tree,id)
-       deleteNode_end : function input (tree, deleted[])
-       appendNodeTo_start : function input (tree,source,target),
-       appendNodeTo_end : function input (tree,source,target),
-       expandAll_start : function input (tree ),
-       expandAll_end : function input (tree ),
-       collapseAll_start : function input (tree ),
-       collapseAll_end : function input (tree ),
-       doubleClick_start : function input (tree,node),
-       doubleClick_end : function input (tree,node),
-       setup_start : function input (tree,p5sketch),
-       setup_end : function input (tree,p5sketch),
-       draw_start : function input (tree,p5sketch),
-       draw_start : function input (tree,p5sketch),
-       mouseMoved_start : function input (evt,tree,p5sketch),
-       mouseMoved_end : function input (evt,tree,p5sketch),
-       mouseStopped_start : function input (evt,tree,p5sketch),
-       mouseStopped_end : function input (evt,tree,p5sketch),
-       mouseClicked_start : function input (evt,tree,p5sketch,node), <--the input node is null if the click was not inside a node
-       mouseClicked_end : function input (evt,tree,p5sketch,node), <--the input node is null if the click was not inside a node
-       mouseDragged_start : function input (evt,tree,p5sketch,node), <--the input node is null if the click was not inside a node
-       mouseDragged_end : function input (evt,tree,p5sketch,node),<--the input node is null if the click was not inside a node
-       mousePressed_start : function input (evt,tree,p5sketch,node), <--the input node is null if the click was not inside a node
-       mousePressed_end : function input (evt,tree,p5sketch,node), <--the input node is null if the click was not inside a node
-       mouseReleased_start : function input (evt,tree,p5sketch,node), <--the input node is null if the click was not inside a node
-       mouseReleased_end : function input (evt,tree,p5sketch,node) , <--the input node is null if the click was not inside a node
-       nodeClicked :  function input (evt,tree,p5sketch,node), //NB <-- this start only when mouse is clicked inside a node (while mouseClicked_end and start are always called, and the input parameter node is null if the click was not on a node, or with a value if it was)
-       edgeClicked : function input (evt, tree, p5sketch, node[])
+- loadData_start : function input (tree,nodeschema,data),
+- loadData_end : function input (tree,nodeschema,data),
+- createNode_start : function input (tree,xpos, ypos, label, id, status),
+- createNode_end : function input (tree,newRoot),
+- deleteNode_start : function input (tree,id)
+- deleteNode_end : function input (tree, deleted[])
+- appendNodeTo_start : function input (tree,source,target),
+- appendNodeTo_end : function input (tree,source,target),
+- expandAll_start : function input (tree ),
+- expandAll_end : function input (tree ),
+- collapseAll_start : function input (tree ),
+- collapseAll_end : function input (tree ),
+- doubleClick_start : function input (tree,node),
+- doubleClick_end : function input (tree,node),
+- setup_start : function input (tree,p5sketch),
+- setup_end : function input (tree,p5sketch),
+- draw_start : function input (tree,p5sketch),
+- draw_start : function input (tree,p5sketch),
+- mouseMoved_start : function input (evt,tree,p5sketch),
+- mouseMoved_end : function input (evt,tree,p5sketch),
+- mouseStopped_start : function input (evt,tree,p5sketch),
+- mouseStopped_end : function input (evt,tree,p5sketch),
+- mouseClicked_start : function input (evt,tree,p5sketch,node), <--the input node is null if the click was not inside a node
+- mouseClicked_end : function input (evt,tree,p5sketch,node), <--the input node is null if the click was not inside a node
+- mouseDragged_start : function input (evt,tree,p5sketch,node), <--the input node is null if the click was not inside a node
+- mouseDragged_end : function input (evt,tree,p5sketch,node),<--the input node is null if the click was not inside a node
+- mousePressed_start : function input (evt,tree,p5sketch,node), <--the input node is null if the click was not inside a node
+- mousePressed_end : function input (evt,tree,p5sketch,node), <--the input node is null if the click was not inside a node
+- mouseReleased_start : function input (evt,tree,p5sketch,node), <--the input node is null if the click was not inside a node
+- mouseReleased_end : function input (evt,tree,p5sketch,node) , <--the input node is null if the click was not inside a node
+- nodeClicked :  function input (evt,tree,p5sketch,node), //NB <-- this start only when mouse is clicked inside a node (while mouseClicked_end and start are always called, and the input parameter node is null if the click was not on a node, or with a value if it was)
+- edgeClicked : function input (evt, tree, p5sketch, node[])
        
  
 
