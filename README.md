@@ -12,7 +12,9 @@ It allows multiple callback functions to be registered on events on tree.
 A list of events you can register on :
 
 - loadData_start : function input (tree,nodeschema,data),
+  
 - loadData_end : function input (tree,nodeschema,data),
+  
 - createNode_start : function input (tree,xpos, ypos, label, id, status),
 - createNode_end : function input (tree,newRoot),
 - deleteNode_start : function input (tree,id)
