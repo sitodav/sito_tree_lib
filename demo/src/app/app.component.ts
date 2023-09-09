@@ -36,12 +36,7 @@ export class AppComponent implements OnInit {
  When we create a node from data, we have to create a schema that tells the
  library what data use from the json to create node structures 
  */
-  sharedTreeSchemaForDataLoading: SitoTreeNodeSchema = {
-    statusproperty: "status",
-    idproperty: "fooId",
-    childrenproperty: "children",
-    textproperty: "fooId",
-  };
+  sharedTreeSchemaForDataLoading: SitoTreeNodeSchema = { statusproperty: "status", idproperty: "fooId", childrenproperty: "children", textproperty: "fooId"};
 
   /*****************EXAMPLE 1 DATA STRUCTURES *********************** ***********************************/
   /*
@@ -63,7 +58,7 @@ export class AppComponent implements OnInit {
   /*
    DECLARATION OF EXAMPLE 1 ALLOWED PROPERTIES 
   */
-  allowed_ops1 = { readOnly: false, nodeCreation: true, nodeAppend: true, clickableEdges: true };
+  allowed_ops1 = { readOnly: false, nodeCreation: true, nodeAppend: true };
   /*
    EXAMPLE 1 TREE DECLARATION
   */
@@ -80,14 +75,13 @@ export class AppComponent implements OnInit {
     -Fully modifiable tree (node creation, node append)
     -Multiple father disabled
   */
-  node_rendering_props2: SitoTreeNodeRendering =
-    {
-      colorByClusterPalettes: this.sharedColorPalettesForRandomGeneration,
-      sizeBasedOnNumChildren: true,
-      vertexStrokeWeight: 1,
+  node_rendering_props2: SitoTreeNodeRendering = {
+    colorByClusterPalettes: this.sharedColorPalettesForRandomGeneration,
+    sizeBasedOnNumChildren: true,
+    vertexStrokeWeight: 1,
 
 
-    }
+  }
   /*
    DECLARATION OF EXAMPLE 2 ALLOWED PROPERTIES 
   */
@@ -152,7 +146,7 @@ export class AppComponent implements OnInit {
   /*
    DECLARATION OF EXAMPLE 4 ALLOWED PROPERTIES 
   */
-  allowed_ops4 = { readOnly: true, nodeCreation: false, nodeAppend: false, clickableEdges: true };
+  allowed_ops4 = { readOnly: true, nodeCreation: false, nodeAppend: false };
   /*
    EXAMPLE 4 TREE DECLARATION
   */
@@ -182,7 +176,7 @@ export class AppComponent implements OnInit {
   /*
    DECLARATION OF EXAMPLE 5 ALLOWED PROPERTIES 
   */
-  allowed_ops5 = { readOnly: true, nodeCreation: false, nodeAppend: false, clickableEdges: true };
+  allowed_ops5 = { readOnly: true, nodeCreation: false, nodeAppend: false };
   /*
   LAYOUT DECLARATION 
    The layouts are used when generating trees from data, to give the position to the trees 
@@ -225,7 +219,7 @@ export class AppComponent implements OnInit {
   /*
   DECLARATION OF EXAMPLE 6 ALLOWED PROPERTIES 
  */
-  allowed_ops6 = { readOnly: true, nodeCreation: false, nodeAppend: false, clickableEdges: true };
+  allowed_ops6 = { readOnly: true, nodeCreation: false, nodeAppend: false };
   /*
   LAYOUT DECLARATION 
    The layouts are used when generating trees from data, to give the position to the trees 
@@ -248,12 +242,12 @@ export class AppComponent implements OnInit {
   */
   tree_example6: SitoTree;
 
-/*****************EXAMPLE 7 DATA STRUCTURES *********************** ***********************************/
+  /*****************EXAMPLE 7 DATA STRUCTURES *********************** ***********************************/
   /*
    DECLARATION OF EXAMPLE 7 TREE RENDERING PROPERTIES:
      
   */
-    node_rendering_props7: SitoTreeNodeRendering =
+  node_rendering_props7: SitoTreeNodeRendering =
     {
       colorByClusterPalettes: this.sharedColorPalettesForRandomGeneration,
       sizeBasedOnNumChildren: false,
@@ -262,22 +256,69 @@ export class AppComponent implements OnInit {
 
     }
   /*
-   DECLARATION OF EXAMPLE 1 ALLOWED PROPERTIES 
+   DECLARATION OF EXAMPLE 7 ALLOWED PROPERTIES 
   */
-  allowed_ops7 = { readOnly: false, nodeCreation: true, nodeAppend: true, clickableEdges: true };
+  allowed_ops7 = { readOnly: false, nodeCreation: true, nodeAppend: true };
   /*
-   EXAMPLE 1 TREE DECLARATION
+   EXAMPLE 7 TREE DECLARATION
   */
   tree_example7: SitoTree;
 
 
 
+  /*****************EXAMPLE 8 DATA STRUCTURES *********************** ***********************************/
+  /*
+   DECLARATION OF EXAMPLE 8 TREE RENDERING PROPERTIES:
+     
+  */
+  node_rendering_props8: SitoTreeNodeRendering =
+    {
+      colorByStateMap: this.sharedColorByStateMap,
+      sizeBasedOnNumChildren: false,
+      vertexStrokeWeight: 1
+
+    }
+  /*
+   DECLARATION OF EXAMPLE 8 ALLOWED PROPERTIES 
+  */
+  allowed_ops8 = { readOnly: false, nodeCreation: true, nodeAppend: true };
+  /*
+   EXAMPLE 8 TREE DECLARATION
+  */
+  tree_example8: SitoTree;
+  /*Exported json data for example 8 */
+  exporteddata_example8_jsonpretty: string;
 
 
+  /*****************EXAMPLE 9  DATA STRUCTURES *********************** ***********************************//*
+    DECLARATION OF EXAMPLE 9 TREE RENDERING PROPERTIES:
+      
+   */
+    example9_typemap = {
+      "PERSON": "#00ffcc",
+      "EMPLOYEE": "#e95a13",
+      "STUDENT": "#0672de",
+      "BACHELOR": "#bfbf00",
+      "MASTER": "#ff3333",
+      "MANAGER": "#bfbfbf",
+      "TASKMANAGER": "#0ff02a" //fallback
+    }; 
 
-  /*the various example */
-  tree_interactive_anddataviajson: SitoTree;
-  exportedData_jsonPretty: string;
+ 
+  /*
+   DECLARATION OF EXAMPLE 9 ALLOWED PROPERTIES 
+  */
+  allowed_ops9 = { readOnly: true, nodeCreation: false, nodeAppend: false, false: true };
+  example9_renderingprops = { startingRay : 60, textSize: 20, labelMaxLength: 50, colorByStateMap: this.example9_typemap };
+  /*
+   EXAMPLE 9 TREE DECLARATION
+  */
+  tree_example9: SitoTree;
+  /*Exported json data for example 9-10-11 */
+  example9_sourcedata_jsonstr: string = GenericUtils.prittifyJson(MockDataUtils.mockedData9);
+  /*Tree schemas for example 9-10-11 */
+  example9_schema : SitoTreeNodeSchema =  { statusproperty: "type", idproperty: "typeId", childrenproperty: "subTypes", textproperty: "typeName" };
+  example9_schema_jsonstr : string = GenericUtils.prittifyJson(this.example9_schema); //for html visualization as json
 
   ngOnInit() {
 
@@ -297,10 +338,14 @@ export class AppComponent implements OnInit {
     this.tree_example5 = new SitoTree('example_5_div', this.allowed_ops5, this.node_rendering_props5, true, this.rowWise_layout_example5);
     /*EXAMPLE 6 TREE */
     this.tree_example6 = new SitoTree('example_6_div', this.allowed_ops5, this.node_rendering_props6, true, this.columnWide_layout_example6);
-    /*EXAMPLE 6 TREE */
-    this.tree_example7 = new SitoTree('example_7_div', { readOnly: false, nodeCreation: true, nodeAppend: true }, this.node_rendering_props1, false);
-    // /*interactive tree but initialized with json data*/
-    this.tree_interactive_anddataviajson = new SitoTree('tree_interactive_anddataviajson', { readOnly: false, nodeCreation: true, nodeAppend: true }, this.node_rendering_props1, false);
+    /*EXAMPLE 7 TREE */
+    this.tree_example7 = new SitoTree('example_7_div', this.allowed_ops7, this.node_rendering_props7, false);
+    /*EXAMPLE 8 TREE */
+    this.tree_example8 = new SitoTree('example_8_div', this.allowed_ops8, this.node_rendering_props8, false);
+    /*EXAMPLE 9 TREE */
+    this.tree_example9 = new SitoTree('example_9_div', this.allowed_ops9, 
+      this.example9_renderingprops, false);
+
   }
   ngAfterViewInit(): void {
 
@@ -341,14 +386,14 @@ export class AppComponent implements OnInit {
     this.tree_example7.addCallback("appendNodeTo_end", this.callback_OnNodeAppend_Logging);
     this.tree_example7.addCallback("mouseDragged_end", this.callback_OnMouseDragged_Logging);
 
-
-    this.tree_interactive_anddataviajson.addCallback("createNode_start", this.callback_OnNodeCreation_saveTreeData);
-    this.tree_interactive_anddataviajson.addCallback(
+    /*CALLBACK REGISTRATION EXAMPLE8*/
+    this.tree_example8.addCallback("createNode_start", this.callback_OnNodeCreation_saveTreeData);
+    this.tree_example8.addCallback(
       "appendNodeTo_end",
       (tree, source, target) => {
         try {
           let dataForTree = tree.exportData(this.sharedTreeSchemaForDataLoading);
-          this.exportedData_jsonPretty = GenericUtils.prittifyJson(dataForTree);
+          this.exporteddata_example8_jsonpretty = GenericUtils.prittifyJson(dataForTree);
         } catch (e) { }
 
       }
@@ -392,15 +437,7 @@ export class AppComponent implements OnInit {
 
   }
 
-  //this callback export tree data when a node is added
-  callback_OnNodeCreation_saveTreeData =
-    (tree, xpos, ypos, label, id, status) => {
-      try {
-        let dataForTree = tree.exportData(this.sharedTreeSchemaForDataLoading);
-        this.exportedData_jsonPretty = GenericUtils.prittifyJson(dataForTree);
-      } catch (e) { }
 
-    }
 
   //this callback just print a log at console
   callback_OnNodeAppend_Logging = (tree, source, target) => {
@@ -433,6 +470,15 @@ export class AppComponent implements OnInit {
   }
 
 
+  //this callback export tree data when a node is added
+  callback_OnNodeCreation_saveTreeData =
+    (tree, xpos, ypos, label, id, status) => {
+      try {
+        let dataForTree = tree.exportData(this.sharedTreeSchemaForDataLoading);
+        this.exporteddata_example8_jsonpretty = GenericUtils.prittifyJson(dataForTree);
+      } catch (e) { }
+
+    }
 
   /*Method called onInit to load asynchronous data for trees */
   loadDataForTheNeededTrees() {
@@ -445,9 +491,10 @@ export class AppComponent implements OnInit {
     this.tree_example5.loadData(MockDataUtils.mockedDataMultipleFathers, this.sharedTreeSchemaForDataLoading, true);
     /*ASYNC DATA LOADING FOR EXAMPLE 6*/
     this.tree_example6.loadData(MockDataUtils.mockedDataMultipleFathers, this.sharedTreeSchemaForDataLoading, true);
-
-
-    this.tree_interactive_anddataviajson.loadData(MockDataUtils.mockedData1, this.sharedTreeSchemaForDataLoading, true);
+    /*ASYNC DATA LOADING FOR EXAMPLE 8*/
+    this.tree_example8.loadData(MockDataUtils.mockedData1, this.sharedTreeSchemaForDataLoading, true);
+    /*ASYNC DATA LOADING FOR EXAMPLE 9-10-11*/
+    this.tree_example9.loadData(MockDataUtils.mockedData9, this.example9_schema, true);
   }
 
 

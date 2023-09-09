@@ -1264,20 +1264,21 @@ export class SitoTree {
 
 
             /*check for mouse over on edges 
-           Edge over repainting is done externally to the node rendering
-           //draw before drawing nodes
-           */
-            // if(this.node_rendering.overableEdges) //commented because always check mouseOver edge
-            // {
+             THIS CHECK IS ALWAYS MADE, BECAUSE IT'S NEEDED FOR MOUSE CLICK
+            */
             this._saveOveredEdgesVerticesHere = this.findEdgeMouseOver(_p5sketch.mouseX, _p5sketch.mouseY);
-            //but mouse must not be in one (of the two nodes of the edge) path/subpath (to avoid highlighting an edge when the mouse in over a NODE)
-            if (this._saveOveredEdgesVerticesHere && !this._saveOveredEdgesVerticesHere[0]._checkMouseIn(_p5sketch.mouseX, _p5sketch.mouseY) && !this._saveOveredEdgesVerticesHere[1]._checkMouseIn(_p5sketch.mouseX, _p5sketch.mouseY)) {
+            //WE ONLY HIGHLIGHT FOR MOUSEOVEREDGE IF A COLOR IS DEFINED
+            if (this.node_rendering.edgeMouseOverColor && 
+                this._saveOveredEdgesVerticesHere && 
+                !this._saveOveredEdgesVerticesHere[0]._checkMouseIn(_p5sketch.mouseX, _p5sketch.mouseY) && 
+                !this._saveOveredEdgesVerticesHere[1]._checkMouseIn(_p5sketch.mouseX, _p5sketch.mouseY)) {
+
                 let nodeA = this._saveOveredEdgesVerticesHere[0];
                 let nodeB = this._saveOveredEdgesVerticesHere[1];
-                let _colToUseForHighlight = this.node_rendering.edgeMouseOverColor ? this.node_rendering.edgeMouseOverColor : "#00000055";
+               
                 _p5sketch.strokeWeight((this.node_rendering.vertexStrokeWeight ? this.node_rendering.vertexStrokeWeight : 1.0) * 5);
                 _p5sketch.noFill();
-                _p5sketch.stroke(_colToUseForHighlight); //opacity from color input
+                _p5sketch.stroke(this.node_rendering.edgeMouseOverColor); //opacity from color input
                 _p5sketch.line(nodeA.center.x, nodeA.center.y, nodeB.center.x, nodeB.center.y);
             }
             else {
@@ -1396,7 +1397,7 @@ export class SitoTree {
                 //outside every other node.
                 // So if we have a click (this event handler) and the global 
                 //variable for mouse over edge is true, we have a valid edge click
-                if (this.allowedOperations.clickableEdges && this._saveOveredEdgesVerticesHere) {
+                if (this._saveOveredEdgesVerticesHere) {
                     if (this.addedCallback["edgeClicked"]) { //NB THIS IS AN ARRAY (FIRST ELEMENT IS THE FIRST NODE OF VERTEX, SECOND THE SECOND NODE)
                         this.addedCallback["edgeClicked"](evt, this, _p5sketch, this._saveOveredEdgesVerticesHere);
                     }

@@ -1,6 +1,5 @@
-export class MockDataUtils
-{
-     //mocked data   
+export class MockDataUtils {
+  //mocked data   
   /*the data must be nested. Then it can have different properties, the schema will map them */
   public static mockedData1 = [
 
@@ -173,5 +172,42 @@ export class MockDataUtils
           }
         ]
     }
+  ];
+
+
+  
+
+  
+
+  public static mockedData9 = [
+
+    {
+      type: "PERSON", typeId: "1", typeName :"PERSON TYPE" ,subTypes:
+        [
+          {
+            type: "STUDENT", typeId: "2", typeName :"STUDENT SUB-TYPE", subTypes:
+              [
+
+                { type: "MASTER", typeId: "3", typeName :"MASTER SUB-SUB-TYPE" },
+                { type: "BACHELOR", typeId: "4", typeName :"BACHELOR SUB-SUB-TYPE" }
+
+              ]
+          }
+        ]
+    },
+    {
+      type: "EMPLOYEE", typeId: "5",  typeName :"EMPLOYEE TYPE", subTypes:
+        [
+          {
+            type: "MANAGER", typeId: "6", typeName : "MANAGER SUB-TYPE", subTypes:
+              [
+
+                { type: "TASKMANAGER",typeId: "7", typeName: "TASK MANAGER SUB-SUB-TYPE"  }
+
+              ]
+          }
+        ]
+    }
+     
   ];
 }
