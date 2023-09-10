@@ -87,9 +87,7 @@ You can find a video for the demo (base on an *older version*) here : https://yo
 - ng serve --port=4201
 - connect to http://localhost:4201
 
-
-*How to use the tree schema to show existing json data as tree*:
-TODO
+ 
 
  
  
