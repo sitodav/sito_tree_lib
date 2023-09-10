@@ -26,7 +26,7 @@ This library is published on npm registry with the name *"sito-tree"* .
 
 ## How to install the library using npm: ##  
 
--in your angular project folder launch from terminal : *npm install sito-tree*
+- in your angular project folder launch from terminal : *npm install sito-tree*
 
 
 ## How to update the library using npm: ##  
