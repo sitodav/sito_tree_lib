@@ -15,7 +15,7 @@ For the library refer to the */lib* folder.
 
 The */demo* folder is relative to the demo project (read below).
 
-You can find a video for the demo (base on an *older version*) here : https://youtu.be/st5lzQrSdFw
+You can find a video for the demo (base on an *older version*) here : [https://youtu.be/st5lzQrSdFw](https://youtu.be/vhS_yK41MUo)
 
 The library depends on *P5js* for rendering (https://p5js.org/) that comes bundled with it (no need to include it directly
 in your project)
