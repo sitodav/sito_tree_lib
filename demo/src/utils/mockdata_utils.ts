@@ -178,6 +178,45 @@ export class MockDataUtils {
   
 
   
+  public static mockedData8 = [
+
+    {
+      status: "CREATED", fooId: "1", fooPayload : {foo: "FOO1", bar: "BAR1"} ,children:
+        [
+          {
+            status: "CREATED", fooId: "2", fooPayload : {foo: "FOO2", bar: "BAR2"},children:
+              [
+                {
+                  status: "CREATED", fooId: "3",fooPayload : {foo: "FOO3", bar: "BAR3"}, children:
+                    [
+                      { status: "COMPLETED_SUCCESS", fooId: "4" ,fooPayload : {foo: "FOO4", bar: "BAR4"}},
+                      { status: "COMPLETED_ERROR", fooId: "5",fooPayload : {foo: "FOO5", bar: "BAR5"} }
+                    ]
+                }
+              ]
+          }
+        ]
+    },
+    { //2nd root (lvl 0)  , path A1
+      status: "RUNNING", fooId: "6", fooPayload : {foo: "FOO6", bar: "BAR6"},children:
+        [
+          { status: "COMPLETED_SUCCESS", fooId: "7",fooPayload : {foo: "FOO7", bar: "BAR7"} },
+          {
+            status: "STOPPED", fooId: "8",fooPayload : {foo: "FOO8", bar: "BAR8"}, children:
+              [
+                {
+                  status: "STOPPED", fooId: "9", fooPayload : {foo: "FOO9", bar: "BAR9"},children:
+                    [
+                      { status: "COMPLETED_SUCCESS", fooId: "10",fooPayload : {foo: "FOO10", bar: "BAR10"} },
+                      { status: "COMPLETED_ERROR", fooId: "11",fooPayload : {foo: "FOO11", bar: "BAR11"} }
+                    ]
+                }
+              ]
+          }
+        ]
+    }
+  ];
+
 
   public static mockedData9 = [
 

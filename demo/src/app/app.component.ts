@@ -16,6 +16,8 @@ import { GenericUtils } from 'src/utils/utils';
 export class AppComponent implements OnInit {
 
   /****************GENERAL DATA STRUCTURES ************************************************************** */
+  /*schema is used to map json data to tree node structures */
+  shared_simpleschema: SitoTreeNodeSchema = { statusproperty: "status", idproperty: "fooId", childrenproperty: "children", textproperty: "fooId" };
   /*this is just a random color generation array. These will be randomly assigned as colors to node clusters .
   It's used from multiple trees */
   sharedColorPalettesForRandomGeneration = ["#048ba8", "#5f0f40", "#1b998b", "#9a031e", "#30638e", "#fb8b24", "#e36414", "#1982c4", "#0f4c5c", "#d100d1", "#31572c", "#fbff12", "#132a13", "#ffd6ff", "#2dc653", "#ead2ac", "#208b3a", "#fdc500", "#ffff3f", "#ff0a54", "#f3722c", "#43aa8b", "#660708", "#6a00f4", "#8ac926", "#415a77"];
@@ -32,11 +34,6 @@ export class AppComponent implements OnInit {
     "DEFAULT": "#000000" //fallback
   };
 
-  /*
- When we create a node from data, we have to create a schema that tells the
- library what data use from the json to create node structures 
- */
-  sharedTreeSchemaForDataLoading: SitoTreeNodeSchema = { statusproperty: "status", idproperty: "fooId", childrenproperty: "children", textproperty: "fooId"};
 
   /*****************EXAMPLE 1 DATA STRUCTURES *********************** ***********************************/
   /*
@@ -64,35 +61,7 @@ export class AppComponent implements OnInit {
   */
   tree_example1: SitoTree;
 
-
-
-  /*****************EXAMPLE 2 DATA STRUCTURES *********************** ***********************************/
-  /*
-   DECLARATION OF EXAMPLE 2 TREE RENDERING PROPERTIES:
-    -Color of nodes by cluster
-    -Node size changing according to children number
-    -Non Clickable edges
-    -Fully modifiable tree (node creation, node append)
-    -Multiple father disabled
-  */
-  node_rendering_props2: SitoTreeNodeRendering = {
-    colorByClusterPalettes: this.sharedColorPalettesForRandomGeneration,
-    sizeBasedOnNumChildren: true,
-    vertexStrokeWeight: 1,
-
-
-  }
-  /*
-   DECLARATION OF EXAMPLE 2 ALLOWED PROPERTIES 
-  */
-  allowed_ops2 = { readOnly: false, nodeCreation: true, nodeAppend: true };
-  /*
-   EXAMPLE 2 TREE DECLARATION
-  */
-  tree_example2: SitoTree;
-
-
-
+ 
   /*****************EXAMPLE 3 DATA STRUCTURES *********************** ***********************************/
   /*
    DECLARATION OF EXAMPLE 3 TREE RENDERING PROPERTIES:
@@ -126,32 +95,7 @@ export class AppComponent implements OnInit {
   */
   tree_example3: SitoTree;
 
-
-
-  /*****************EXAMPLE 4 DATA STRUCTURES *********************** **********************************/
-  /*
-   DECLARATION OF EXAMPLE 4 TREE RENDERING PROPERTIES:
-    -Color of node state
-    -Fixed node size
-    -Clickable edges
-    -Non modifiable tree (data is loaded asynchronously to populate the tree)
-    -Multiple father ENABLED 
-  */
-  node_rendering_props4: SitoTreeNodeRendering =
-    {
-      colorByStateMap: this.sharedColorByStateMap,
-      edgeMouseOverColor: "#ff00ff88"
-
-    }
-  /*
-   DECLARATION OF EXAMPLE 4 ALLOWED PROPERTIES 
-  */
-  allowed_ops4 = { readOnly: true, nodeCreation: false, nodeAppend: false };
-  /*
-   EXAMPLE 4 TREE DECLARATION
-  */
-  tree_example4: SitoTree;
-
+ 
 
 
 
@@ -242,29 +186,7 @@ export class AppComponent implements OnInit {
   */
   tree_example6: SitoTree;
 
-  /*****************EXAMPLE 7 DATA STRUCTURES *********************** ***********************************/
-  /*
-   DECLARATION OF EXAMPLE 7 TREE RENDERING PROPERTIES:
-     
-  */
-  node_rendering_props7: SitoTreeNodeRendering =
-    {
-      colorByClusterPalettes: this.sharedColorPalettesForRandomGeneration,
-      sizeBasedOnNumChildren: false,
-      vertexStrokeWeight: 1,
-      edgeMouseOverColor: "#479ff588"
-
-    }
-  /*
-   DECLARATION OF EXAMPLE 7 ALLOWED PROPERTIES 
-  */
-  allowed_ops7 = { readOnly: false, nodeCreation: true, nodeAppend: true };
-  /*
-   EXAMPLE 7 TREE DECLARATION
-  */
-  tree_example7: SitoTree;
-
-
+   
 
   /*****************EXAMPLE 8 DATA STRUCTURES *********************** ***********************************/
   /*
@@ -287,38 +209,45 @@ export class AppComponent implements OnInit {
   */
   tree_example8: SitoTree;
   /*Exported json data for example 8 */
-  exporteddata_example8_jsonpretty: string;
-
-
+  example8_sourcedata_jsonstr: string;
+  /*
+  When we create a node from data, we have to create a schema that tells the
+  library what data use from the json to create node structures 
+  */
+  example8_schema: SitoTreeNodeSchema = { statusproperty: "status", idproperty: "fooId", childrenproperty: "children", textproperty: "fooId", dataobject: "fooPayload" };
+  example8_schema_jsonstr: string = GenericUtils.prittifyJson(this.example8_schema);
+  example8_selectednode_jsonstr: string;
   /*****************EXAMPLE 9  DATA STRUCTURES *********************** ***********************************//*
     DECLARATION OF EXAMPLE 9 TREE RENDERING PROPERTIES:
       
    */
-    example9_typemap = {
-      "PERSON": "#00ffcc",
-      "EMPLOYEE": "#e95a13",
-      "STUDENT": "#0672de",
-      "BACHELOR": "#bfbf00",
-      "MASTER": "#ff3333",
-      "MANAGER": "#bfbfbf",
-      "TASKMANAGER": "#0ff02a" //fallback
-    }; 
+  example9_typemap = {
+    "PERSON": "#00ffcc",
+    "EMPLOYEE": "#e95a13",
+    "STUDENT": "#0672de",
+    "BACHELOR": "#bfbf00",
+    "MASTER": "#ff3333",
+    "MANAGER": "#bfbfbf",
+    "TASKMANAGER": "#0ff02a" //fallback
+  };
 
- 
+
   /*
    DECLARATION OF EXAMPLE 9 ALLOWED PROPERTIES 
   */
-  allowed_ops9 = { readOnly: true, nodeCreation: false, nodeAppend: false, false: true };
-  example9_renderingprops = { startingRay : 60, textSize: 20, labelMaxLength: 50, colorByStateMap: this.example9_typemap };
+  allowed_ops9 = { readOnly: true, nodeCreation: false, nodeAppend: false, false: true, };
+  example9_renderingprops = { startingRay: 60, textSize: 12, labelMaxLength: 10, colorByStateMap: this.example9_typemap, edgeMouseOverColor: "#479ff588" };
   /*
    EXAMPLE 9 TREE DECLARATION
   */
   tree_example9: SitoTree;
   /*Exported json data for example 9-10-11 */
   example9_sourcedata_jsonstr: string = GenericUtils.prittifyJson(MockDataUtils.mockedData9);
-  /*Tree schemas for example 9-10-11 */
-  example9_schema : SitoTreeNodeSchema =  { statusproperty: "type", idproperty: "typeId", childrenproperty: "subTypes", textproperty: "typeName" };
-  example9_schema_jsonstr : string = GenericUtils.prittifyJson(this.example9_schema); //for html visualization as json
+  /*Tree schemas for example 9 */
+  example9_schema: SitoTreeNodeSchema = { statusproperty: "type", idproperty: "typeId", childrenproperty: "subTypes", textproperty: "typeName" };
+  example9_schema_jsonstr: string = GenericUtils.prittifyJson(this.example9_schema); //for html visualization as json
+  example9_selectededge_str: string;
+
 
   ngOnInit() {
 
@@ -328,23 +257,18 @@ export class AppComponent implements OnInit {
 
     /*EXAMPLE 1 TREE */
     this.tree_example1 = new SitoTree('example_1_div', this.allowed_ops1, this.node_rendering_props1, false);
-    /*EXAMPLE 2 TREE */
-    this.tree_example2 = new SitoTree('example_2_div', this.allowed_ops2, this.node_rendering_props2, false);
+    
     /*EXAMPLE 3 TREE */
     this.tree_example3 = new SitoTree('example_3_div', this.allowed_ops3, this.node_rendering_props3, false);
-    /*EXAMPLE 4 TREE */
-    this.tree_example4 = new SitoTree('example_4_div', this.allowed_ops4, this.node_rendering_props4, true);
+     
     /*EXAMPLE 5 TREE */
     this.tree_example5 = new SitoTree('example_5_div', this.allowed_ops5, this.node_rendering_props5, true, this.rowWise_layout_example5);
     /*EXAMPLE 6 TREE */
     this.tree_example6 = new SitoTree('example_6_div', this.allowed_ops5, this.node_rendering_props6, true, this.columnWide_layout_example6);
-    /*EXAMPLE 7 TREE */
-    this.tree_example7 = new SitoTree('example_7_div', this.allowed_ops7, this.node_rendering_props7, false);
     /*EXAMPLE 8 TREE */
     this.tree_example8 = new SitoTree('example_8_div', this.allowed_ops8, this.node_rendering_props8, false);
     /*EXAMPLE 9 TREE */
-    this.tree_example9 = new SitoTree('example_9_div', this.allowed_ops9, 
-      this.example9_renderingprops, false);
+    this.tree_example9 = new SitoTree('example_9_div', this.allowed_ops9, this.example9_renderingprops, false);
 
   }
   ngAfterViewInit(): void {
@@ -369,6 +293,11 @@ export class AppComponent implements OnInit {
     /*CALLBACK REGISTRATION EXAMPLE 1*/
     this.tree_example1.addCallback("nodeClicked", this.callback_OnNodeClick_Highlight);
     this.tree_example1.addCallback("edgeClicked", this.callback_OnEdgeClick_Highlight);
+    this.tree_example1.addCallback("doubleClick_end", this.callback_OnDoubleClick_Logging);
+    this.tree_example1.addCallback("nodeClicked", this.callback_OnNodeClick_Highlight);
+    this.tree_example1.addCallback("createNode_start", this.callback_OnNodeCreation_Logging);
+    this.tree_example1.addCallback("appendNodeTo_end", this.callback_OnNodeAppend_Logging);
+    this.tree_example1.addCallback("mouseDragged_end", this.callback_OnMouseDragged_Logging);
 
     /*CALLBACK REGISTRATION EXAMPLE5*/
     this.tree_example5.addCallback("nodeClicked", this.callback_OnNodeClick_Highlight);
@@ -378,13 +307,6 @@ export class AppComponent implements OnInit {
     this.tree_example6.addCallback("nodeClicked", this.callback_OnNodeClick_Highlight);
     this.tree_example6.addCallback("edgeClicked", this.callback_OnEdgeClick_Highlight);
 
-    /*CALLBACK REGISTRATION EXAMPLE7*/
-    this.tree_example7.addCallback("doubleClick_end", this.callback_OnDoubleClick_Logging);
-    this.tree_example7.addCallback("edgeClicked", this.callback_OnEdgeClick_Highlight);
-    this.tree_example7.addCallback("nodeClicked", this.callback_OnNodeClick_Highlight);
-    this.tree_example7.addCallback("createNode_start", this.callback_OnNodeCreation_Logging);
-    this.tree_example7.addCallback("appendNodeTo_end", this.callback_OnNodeAppend_Logging);
-    this.tree_example7.addCallback("mouseDragged_end", this.callback_OnMouseDragged_Logging);
 
     /*CALLBACK REGISTRATION EXAMPLE8*/
     this.tree_example8.addCallback("createNode_start", this.callback_OnNodeCreation_saveTreeData);
@@ -392,16 +314,17 @@ export class AppComponent implements OnInit {
       "appendNodeTo_end",
       (tree, source, target) => {
         try {
-          let dataForTree = tree.exportData(this.sharedTreeSchemaForDataLoading);
-          this.exporteddata_example8_jsonpretty = GenericUtils.prittifyJson(dataForTree);
+          let dataForTree = tree.exportData(this.example8_schema);
+          this.example8_sourcedata_jsonstr = GenericUtils.prittifyJson(dataForTree);
         } catch (e) { }
 
       }
     );
+    this.tree_example8.addCallback("nodeClicked", this.callback_OnNodeClick_Example8);
 
-
+    /*CALLBACK REGISTRATION EXAMPLE9*/
+    this.tree_example9.addCallback("edgeClicked", this.callback_OnEdgeClick_Example9);
   }
-
 
 
 
@@ -474,26 +397,51 @@ export class AppComponent implements OnInit {
   callback_OnNodeCreation_saveTreeData =
     (tree, xpos, ypos, label, id, status) => {
       try {
-        let dataForTree = tree.exportData(this.sharedTreeSchemaForDataLoading);
-        this.exporteddata_example8_jsonpretty = GenericUtils.prittifyJson(dataForTree);
+        let dataForTree = tree.exportData(this.example8_schema);
+        this.example8_sourcedata_jsonstr = GenericUtils.prittifyJson(dataForTree);
       } catch (e) { }
 
     }
+
+  callback_OnNodeClick_Example8 = (evt, tree, sketch, node) => {
+
+    try {
+
+      let _nodeId = node.id;
+      tree.removeAllNodeshightlits();
+      tree.highlightNode(_nodeId, "#479ff5");
+      this.example8_selectednode_jsonstr = GenericUtils.prittifyJson(JSON.stringify(node.dataobject));
+    } catch (E) { }
+
+
+  }
+
+  callback_OnEdgeClick_Example9 = (evt, tree, p5sketch, verticesEdge) => {
+
+    try {
+
+      tree.removeAllHighlightEdge();
+      tree.highlightEdge(verticesEdge[0], verticesEdge[1], "#00ff00cc");
+
+      this.example9_selectededge_str = "from " + verticesEdge[0].id + " to " + verticesEdge[1].id;
+
+    } catch (E) { }
+
+
+  }
 
   /*Method called onInit to load asynchronous data for trees */
   loadDataForTheNeededTrees() {
 
     /*ASYNC DATA LOADING FOR EXAMPLE 3*/
-    this.tree_example3.loadData(MockDataUtils.mockedData1, this.sharedTreeSchemaForDataLoading, true);
-    /*ASYNC DATA LOADING FOR EXAMPLE 4*/
-    this.tree_example4.loadData(MockDataUtils.mockedDataMultipleFathers, this.sharedTreeSchemaForDataLoading, true);
+    this.tree_example3.loadData(MockDataUtils.mockedData1, this.example8_schema, true);
     /*ASYNC DATA LOADING FOR EXAMPLE 5*/
-    this.tree_example5.loadData(MockDataUtils.mockedDataMultipleFathers, this.sharedTreeSchemaForDataLoading, true);
+    this.tree_example5.loadData(MockDataUtils.mockedDataMultipleFathers, this.example8_schema, true);
     /*ASYNC DATA LOADING FOR EXAMPLE 6*/
-    this.tree_example6.loadData(MockDataUtils.mockedDataMultipleFathers, this.sharedTreeSchemaForDataLoading, true);
+    this.tree_example6.loadData(MockDataUtils.mockedDataMultipleFathers, this.example8_schema, true);
     /*ASYNC DATA LOADING FOR EXAMPLE 8*/
-    this.tree_example8.loadData(MockDataUtils.mockedData1, this.sharedTreeSchemaForDataLoading, true);
-    /*ASYNC DATA LOADING FOR EXAMPLE 9-10-11*/
+    this.tree_example8.loadData(MockDataUtils.mockedData8, this.example8_schema, true);
+    /*ASYNC DATA LOADING FOR EXAMPLE 9*/
     this.tree_example9.loadData(MockDataUtils.mockedData9, this.example9_schema, true);
   }
 
@@ -512,7 +460,7 @@ export class AppComponent implements OnInit {
 
   public updateDataForExample3Tree() {
     setTimeout(() => {
-      this.tree_example3.loadData(MockDataUtils.mockedData1_differentstatus, this.sharedTreeSchemaForDataLoading, false);
+      this.tree_example3.loadData(MockDataUtils.mockedData1_differentstatus, this.example8_schema, false);
     }, 1000);
   }
 

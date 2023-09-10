@@ -7,11 +7,13 @@
     <h3>The library allows interactive creation of a tree/graph, or creation from json data (it's configurable to allow
       agnostic data representation!)</h3>
     <h3>There are several examples below to show some of the properties/behaviours and use cases for the library.</h3>
-    <h3>The most interesting part is at the <a href="#end">end</a>, where you can see how to read json data into a
+    <h3>The most interesting part is at the <a href="#example_8_div">end</a>, where you can see how to read json data
+      into a
       tree/graph, save and restore.</h3>
     <br>
     <br>
     <br>
+    <hr>
     <!-----------------------------------------------EXAMPLE 1 -------------------------------------------------------->
     <mat-card>
       <mat-card-header>
@@ -19,7 +21,8 @@
           get the same color of the
           father/cluster). <br>Click on the canvas to create a new node<br>Drag a node on top of another (on a different
           cluster) to append to,
-          double click a node to expand. Mouseover on edges highlights them, and the click select it.</mat-card-title>
+          double click a node to expand. Mouseover on edges highlights them, and the click select it.<br>
+          While interacting, open the console to see the registered callbacks logging</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <mat-card-content>
@@ -34,25 +37,7 @@
     </mat-card>
 
     <br>
-    <!-----------------------------------------------EXAMPLE 2 -------------------------------------------------------->
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title style="font-size:larger;"><b> Example 2: </b>Similar as before (but no hovering and
-          non-clickable edges): this time the nodes get bigger the more
-          children they have</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <mat-card-content>
-          <!--DIV FOR EXAMPLE 2 HERE-->
-          <div id="example_2_div" style="border-color:black; border-style: solid;">
-
-          </div>
-
-        </mat-card-content>
-      </mat-card-content>
-
-    </mat-card>
-    <br>
+    <hr>
     <!-----------------------------------------------EXAMPLE 3 -------------------------------------------------------->
     <mat-card>
       <mat-card-header>
@@ -82,27 +67,8 @@
 
     </mat-card>
     <br>
-    <!-----------------------------------------------EXAMPLE 4 -------------------------------------------------------->
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title style="font-size:larger;"><b> Example 4: </b>
-          Readonly, color by state, but with multiple fathers for a node allowed. Clickable edges, but with no callback
-          on click
-        </mat-card-title>
+    <hr>
 
-      </mat-card-header>
-      <mat-card-content>
-        <mat-card-content>
-          <!--DIV FOR EXAMPLE 4 HERE-->
-          <div id="example_4_div" style="border-color:black; border-style: solid;">
-
-          </div>
-
-        </mat-card-content>
-      </mat-card-content>
-
-    </mat-card>
-    <br>
     <!-----------------------------------------------EXAMPLE 5 -------------------------------------------------------->
     <mat-card>
       <mat-card-header>
@@ -123,6 +89,7 @@
 
     </mat-card>
     <br>
+    <hr>
     <!-----------------------------------------------EXAMPLE 6 -------------------------------------------------------->
     <mat-card>
       <mat-card-header>
@@ -142,34 +109,15 @@
 
     </mat-card>
     <br>
-    <!-----------------------------------------------EXAMPLE 7 -------------------------------------------------------->
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title style="font-size:larger;"><b> Example 7: </b>
-          Interactive tree with registered callback.<br>
-          Open the console to see the logs on double click and node creation (there are lots of events you can catch)
-        </mat-card-title>
+    <hr>
 
-      </mat-card-header>
-      <mat-card-content>
-        <mat-card-content>
-          <!--DIV FOR EXAMPLE 7 HERE-->
-          <div id="example_7_div" style="border-color:black; border-style: solid;">
-
-          </div>
-
-        </mat-card-content>
-      </mat-card-content>
-
-    </mat-card>
-
-    <br>
     <!-----------------------------------------------EXAMPLE 8 -------------------------------------------------------->
     <mat-card>
       <mat-card-header>
         <mat-card-title style="font-size:larger;"><b> Example 8: </b>
           Tree loaded via json and interactive, with data exporting in json.
           You can configure what json schema to use and what data use as node status.<br>
+          The schema tells the library how to interpret the json data and map it to trees/graph nodes.<br>
           Interact to create new nodes on the loaded (via json data) tree. On every interaction with the tree
           (create/append etc)
           the data is exported (on the right)
@@ -179,58 +127,68 @@
       </mat-card-header>
       <mat-card-content>
         <mat-card-content>
-
-          <div class="float-container" style="border-color:black; border-style: solid;">
+          <div class="float-container">
             <div class="float-child-left">
+              <div class="float-container">
+                <div class="float-child-left">
+                  <h3>Json Data</h3>
+                  <pre style="overflow-y: scroll; height:600px;" [innerHTML]="example8_sourcedata_jsonstr"></pre>
+                </div>
+
+                <div class="float-child-right">
+                  <h3>Tree Mapping Schema</h3>
+                  <pre style="overflow-y: scroll; height:150px;" [innerHTML]="example8_schema_jsonstr"></pre>
+                  <h3>Selected Node Payload</h3>
+                  <pre style="overflow-y: scroll; height:350px;" [innerHTML]="example8_selectednode_jsonstr"></pre>
+                </div>
+              </div>
+
+            </div>
+            <!--DIV FOR EXAMPLE 9 TREE-->
+            <div class="float-child-right">
               <!--DIV FOR EXAMPLE 8 HERE-->
               <div id="example_8_div"></div>
             </div>
-
-            <div class="float-child-right">
-              <h3>Exported Data</h3>
-              <pre style="overflow-y: scroll; height:600px;" [innerHTML]="exporteddata_example8_jsonpretty"></pre>
-            </div>
           </div>
-
 
         </mat-card-content>
       </mat-card-content>
 
     </mat-card>
     <br>
-    <!-----------------------------------------------END PART (MULTIPLE EXAMPLES) -------------------------------------------------------->
+    <hr>
+    <!-----------------------------------------------EXAMPLE 9 -------------------------------------------------------->
     <mat-card>
       <mat-card-header>
-        <mat-card-title style="font-size:larger;"><b> Different schemas example </b>
-          Here you can see how to load trees/graph from different schemas.
-          The schema tells the library how to interpret the json data and map it to trees/graph nodes.
-          You can write your own schema and json data and try it out.
+        <mat-card-title style="font-size:larger;"><b> Different schemas example (read only tree this time) </b>
+          Click on an edge!
 
         </mat-card-title>
 
       </mat-card-header>
       <mat-card-content>
         <mat-card-content>
-          <!--EXAMPLE 9-->
-          <div id="end" class="float-container" style="border-color:black; border-style: solid;">
+          <div class="float-container">
             <div class="float-child-left">
-                <div  class="float-container" style="border-color:black; border-style: solid;">
-                  <div class="float-child-left">
-                    <h3>Source Json Data</h3>
-                    <pre style="overflow-y: scroll; height:600px;" [innerHTML]="example9_sourcedata_jsonstr"></pre>
-                  </div>
-
-                  <div class="float-child-right">
-                    <h3>Tree Mapping Schema</h3>
-                    <pre style="overflow-y: scroll; height:600px;" [innerHTML]="example9_schema_jsonstr"></pre>
-                  </div>
+              <div class="float-container">
+                <div class="float-child-left">
+                  <h3>Json Data</h3>
+                  <pre style="overflow-y: scroll; height:600px;" [innerHTML]="example9_sourcedata_jsonstr"></pre>
                 </div>
-                
+
+                <div class="float-child-right">
+                  <h3>Tree Mapping Schema</h3>
+                  <pre style="overflow-y: scroll; height:150px;" [innerHTML]="example9_schema_jsonstr"></pre>
+                  <h3>Selected Edge</h3>
+                  <pre style="overflow-y: scroll; height:350px;" [innerHTML]="example9_selectededge_str"></pre>
+                </div>
+              </div>
+
             </div>
             <!--DIV FOR EXAMPLE 9 TREE-->
             <div class="float-child-right">
-                <h3>Resulting tree</h3>
-                <div id="example_9_div"></div>
+              <!--DIV FOR EXAMPLE 8 HERE-->
+              <div id="example_9_div"></div>
             </div>
           </div>
         </mat-card-content>

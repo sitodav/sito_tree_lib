@@ -191,7 +191,14 @@ export class SitoTree {
             let nodestatus = data[i][nodeschema.statusproperty];
             let dataobject;
             if (data[i][nodeschema.dataobject]) {
-                dataobject = JSON.parse(data[i][nodeschema.dataobject]);
+                if(typeof data[i][nodeschema.dataobject] == 'string')
+                { //it's a string to be parsed
+                    dataobject = JSON.parse(data[i][nodeschema.dataobject]);
+                }
+                else
+                { //it's already an object
+                    dataobject = data[i][nodeschema.dataobject]
+                }
             }
 
             /*If horizontal layout is given it will try to dispose horizontally,
@@ -647,6 +654,12 @@ export class SitoTree {
         }
         // this._saveHighlightedEdgesVerticesHere = newList;
         delete this._saveHighlightedEdgesVerticesToColorHere[inputNodesAsKey];
+    }
+
+    public removeAllHighlightEdge(nodeA, nodeB) {
+
+        this._saveHighlightedEdgesVerticesHere = [];
+        this._saveHighlightedEdgesVerticesToColorHere = {};
     }
 
 
