@@ -11,7 +11,9 @@
       into a
       tree/graph, save and restore.</h3>
     <br>
+    <i>&nbsp;Library last update : 10/09/2023</i>
     <br>
+    
     <br>
     <hr>
     <!-----------------------------------------------EXAMPLE 1 -------------------------------------------------------->
@@ -38,22 +40,44 @@
 
     <br>
     <hr>
-    <!-----------------------------------------------EXAMPLE 3 -------------------------------------------------------->
+    <!-----------------------------------------------EXAMPLE 2 -------------------------------------------------------->
     <mat-card>
       <mat-card-header>
-        <mat-card-title style="font-size:larger;"><b> Example 3: </b>Custom graphical props. Readonly, autosize, color
+        <mat-card-title style="font-size:larger;"><b> Example 2: </b>Custom graphical props. Readonly, autosize, color
           by state (the color of a
           node depends on its internal status).
           <br>The tree is non modifiable, and it's nodes are loaded asynchronously (after some second) from read
           (mocked) data <br>
           <br>Double click a node to expand. Click update button to change node state/color <button
-            (click)="updateDataForExample3Tree()">UPDATE</button> &nbsp; , or expand <button
-            (click)="expandExample3Tree()">EXPAND</button> &nbsp; <button
-            (click)="collapseExample3Tree()">COLLAPSE</button></mat-card-title>
+            (click)="updateDataForExample2Tree()">UPDATE</button> &nbsp; , or expand <button
+            (click)="expandExample2Tree()">EXPAND</button> &nbsp; <button
+            (click)="collapseExample2Tree()">COLLAPSE</button></mat-card-title>
 
 
 
 
+      </mat-card-header>
+      <mat-card-content>
+        <mat-card-content>
+          <!--DIV FOR EXAMPLE 2 HERE-->
+          <div id="example_2_div" style="border-color:black; border-style: solid;">
+
+          </div>
+
+        </mat-card-content>
+      </mat-card-content>
+
+    </mat-card>
+    <br>
+    <hr>
+
+    <!-----------------------------------------------EXAMPLE 3 -------------------------------------------------------->
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title style="font-size:larger;"><b> Example 3: </b>
+          Same as before (but clickable edges with callback for setting highlight and click handler on nodes for
+          highlight on those too): trees are disposed along row-wise using a fixed layout.
+        </mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <mat-card-content>
@@ -68,39 +92,17 @@
     </mat-card>
     <br>
     <hr>
-
-    <!-----------------------------------------------EXAMPLE 5 -------------------------------------------------------->
+    <!-----------------------------------------------EXAMPLE 4 -------------------------------------------------------->
     <mat-card>
       <mat-card-header>
-        <mat-card-title style="font-size:larger;"><b> Example 5: </b>
-          Same as before (but clickable edges with callback for setting highlight and click handler on nodes for
-          highlight on those too): trees are disposed along row-wise using a fixed layout.
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <mat-card-content>
-          <!--DIV FOR EXAMPLE 5 HERE-->
-          <div id="example_5_div" style="border-color:black; border-style: solid;">
-
-          </div>
-
-        </mat-card-content>
-      </mat-card-content>
-
-    </mat-card>
-    <br>
-    <hr>
-    <!-----------------------------------------------EXAMPLE 6 -------------------------------------------------------->
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title style="font-size:larger;"><b> Example 6: </b>
+        <mat-card-title style="font-size:larger;"><b> Example 4: </b>
           Same as before, but node are disposed using column-wise layout
         </mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <mat-card-content>
-          <!--DIV FOR EXAMPLE 6 HERE-->
-          <div id="example_6_div" style="border-color:black; border-style: solid;">
+          <!--DIV FOR EXAMPLE 4 HERE-->
+          <div id="example_4_div" style="border-color:black; border-style: solid;">
 
           </div>
 
@@ -111,10 +113,10 @@
     <br>
     <hr>
 
-    <!-----------------------------------------------EXAMPLE 8 -------------------------------------------------------->
+    <!-----------------------------------------------EXAMPLE 5 -------------------------------------------------------->
     <mat-card>
       <mat-card-header>
-        <mat-card-title style="font-size:larger;"><b> Example 8: </b>
+        <mat-card-title style="font-size:larger;"><b> Example 5: </b>
           Tree loaded via json and interactive, with data exporting in json.
           You can configure what json schema to use and what data use as node status.<br>
           The schema tells the library how to interpret the json data and map it to trees/graph nodes.<br>
@@ -132,14 +134,14 @@
               <div class="float-container">
                 <div class="float-child-left">
                   <h3>Json Data</h3>
-                  <pre style="overflow-y: scroll; height:600px;" [innerHTML]="example8_sourcedata_jsonstr"></pre>
+                  <pre style="overflow-y: scroll; height:600px;" [innerHTML]="example5_sourcedata_jsonstr"></pre>
                 </div>
 
                 <div class="float-child-right">
                   <h3>Tree Mapping Schema</h3>
-                  <pre style="overflow-y: scroll; height:150px;" [innerHTML]="example8_schema_jsonstr"></pre>
+                  <pre style="overflow-y: scroll; height:150px;" [innerHTML]="example5_schema_jsonstr"></pre>
                   <h3>Selected Node Payload</h3>
-                  <pre style="overflow-y: scroll; height:350px;" [innerHTML]="example8_selectednode_jsonstr"></pre>
+                  <pre style="overflow-y: scroll; height:350px;" [innerHTML]="example5_selectednode_jsonstr"></pre>
                 </div>
               </div>
 
@@ -147,7 +149,7 @@
             <!--DIV FOR EXAMPLE 9 TREE-->
             <div class="float-child-right">
               <!--DIV FOR EXAMPLE 8 HERE-->
-              <div id="example_8_div"></div>
+              <div id="example_5_div"></div>
             </div>
           </div>
 
@@ -157,12 +159,11 @@
     </mat-card>
     <br>
     <hr>
-    <!-----------------------------------------------EXAMPLE 9 -------------------------------------------------------->
+    <!-----------------------------------------------EXAMPLE 6 -------------------------------------------------------->
     <mat-card>
       <mat-card-header>
-        <mat-card-title style="font-size:larger;"><b> Different schemas example (read only tree this time) </b>
-          Click on an edge!
-
+        <mat-card-title style="font-size:larger;"><b> Example 6: </b>
+          Read only with callback on edge click
         </mat-card-title>
 
       </mat-card-header>
@@ -173,22 +174,22 @@
               <div class="float-container">
                 <div class="float-child-left">
                   <h3>Json Data</h3>
-                  <pre style="overflow-y: scroll; height:600px;" [innerHTML]="example9_sourcedata_jsonstr"></pre>
+                  <pre style="overflow-y: scroll; height:600px;" [innerHTML]="example6_sourcedata_jsonstr"></pre>
                 </div>
 
                 <div class="float-child-right">
                   <h3>Tree Mapping Schema</h3>
-                  <pre style="overflow-y: scroll; height:150px;" [innerHTML]="example9_schema_jsonstr"></pre>
+                  <pre style="overflow-y: scroll; height:150px;" [innerHTML]="example6_schema_jsonstr"></pre>
                   <h3>Selected Edge</h3>
-                  <pre style="overflow-y: scroll; height:350px;" [innerHTML]="example9_selectededge_str"></pre>
+                  <pre style="overflow-y: scroll; height:350px;" [innerHTML]="example6_selectededge_str"></pre>
                 </div>
               </div>
 
             </div>
-            <!--DIV FOR EXAMPLE 9 TREE-->
+            <!--DIV FOR EXAMPLE 6 TREE-->
             <div class="float-child-right">
-              <!--DIV FOR EXAMPLE 8 HERE-->
-              <div id="example_9_div"></div>
+              <!--DIV FOR EXAMPLE 6 HERE-->
+              <div id="example_6_div"></div>
             </div>
           </div>
         </mat-card-content>
